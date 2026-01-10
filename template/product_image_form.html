@@ -1,0 +1,63 @@
+{% extends "dashboard/base.html" %} {% block content %}
+
+<div class="container-fluid">
+  
+            <h4 class="mb-0">
+            <i class="fa-solid fa-image"></i> Add Product Image
+          </h4>
+        </div>
+
+        <div class="card-body">
+          {% if messages %} {% for message in messages %}
+          <div class="alert alert-success">{{ message }}</div>
+          {% endfor %} {% endif %}
+
+          <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <!-- Product -->
+            <div class="mb-3">
+              <label class="form-label">
+                Product <span class="text-danger">*</span>
+              </label>
+              {{ form.product }}
+            </div>
+
+            <!-- Image Name -->
+            <div class="mb-3">
+              <label class="form-label">
+                Image Name <span class="text-danger">*</span>
+              </label>
+              {{ form.name }}
+            </div>
+
+            <!-- MULTIPLE PRODUCT IMAGES -->
+            <div class="mb-3">
+              <label class="form-label">
+                Product Images <span class="text-danger">*</span>
+              </label>
+
+              <input
+                type="file"
+                name="photos"
+                class="form-control"
+                multiple
+                accept="image/*"
+              />
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+              <a
+                href="{% url 'add_product' %}"
+                class="btn btn-secondary"
+              >
+                <i class="fa-solid fa-arrow-left"></i> Back
+              </a>
+
+              <button type="submit" class="btn btn-success">
+                <i class="fa-solid fa-save"></i> Save Image
+              </button>
+            </div>
+          </form>
+       {% endblock content %}

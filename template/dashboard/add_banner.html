@@ -1,0 +1,77 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">
+        <i class="fa-solid fa-image"></i> Add Banner
+    </h4>
+</div>
+
+<div class="card">
+    <div class="card-body">
+
+        <!-- Django Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- NON FIELD ERRORS -->
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors|striptags }}
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div class="mb-3">
+                <label class="form-label">
+                    Banner Title <span class="text-danger">*</span>
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    {% for error in form.title.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Image -->
+            <div class="mb-3">
+                <label class="form-label">
+                    Banner Image <span class="text-danger">*</span>
+                </label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                    {% for error in form.image.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-check mb-4">
+                {{ form.is_active }}
+                <label for="{{ form.is_active.id_for_label }}" class="form-check-label">
+                    Active Banner
+                </label>
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'banner'%}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Save Banner
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

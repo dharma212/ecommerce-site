@@ -1,0 +1,59 @@
+{% extends "dashboard/base.html" %} {% block content %}
+
+<div class="container-fluid">
+  <!-- ===== Header ===== -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Add User</h4>
+  </div>
+
+  <!-- ===== Card ===== -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <!-- ===== Messages ===== -->
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+      {% endfor %} {% endif %}
+
+      <!-- ===== Non-field errors ===== -->
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors|striptags }}
+      </div>
+      {% endif %}
+
+      <!-- ===== Form ===== -->
+      <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+          {% for field in form %}
+          <div class="col-md-6 mb-3">
+            <label class="form-label">
+              {{ field.label }} {% if field.field.required %}
+              <span class="text-danger">*</span>
+              {% endif %}
+            </label>
+
+            {{ field }} {% if field.errors %} {% for error in field.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %} {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- ===== Buttons ===== -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <a href="{% url 'user_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back
+          </a>
+
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-save me-1"></i> Save User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

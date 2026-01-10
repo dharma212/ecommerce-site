@@ -1,0 +1,137 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
+<nav class="navbar">
+  <!-- LOGO -->
+  <a href="/" class="logo">
+    <span>E-Commerce</span>
+  </a>
+
+  {% if user.is_authenticated %}
+  <!-- SEARCH (DESKTOP ONLY) -->
+  <div class="search desktop-only">
+    <input type="search" placeholder="Search items..." />
+    <button><i class="fa-solid fa-magnifying-glass"></i></button>
+  </div>
+  {% endif %}
+
+  <!-- RIGHT MENU -->
+  <div class="right-menu">
+    {% if user.is_authenticated %}
+    <!-- USER DROPDOWN -->
+    <div class="desktop-only admin-links">
+      <a href="{% url 'dashboard_index' %}">
+        <i class="fa-solid fa-chart-line"></i> Dashboard
+      </a>
+    </div>
+    <div class="desktop-only user-dropdown">
+      <a href="#" class="profile-btn">
+        <i class="fa-solid fa-user"></i> {{ user.username }}
+        <i class="fa-solid fa-caret-down"></i>
+      </a>
+      <div class="dropdown-content">
+        <a href="{% url 'profile' %}"
+          ><i class="fa-solid fa-user"></i> Profile</a
+        >
+        <a href="#"><i class="fa-solid fa-box"></i> Orders</a>
+        <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+      </div>
+    </div>
+
+    <!-- LOGOUT (DESKTOP + MOBILE) -->
+    <a href="{% url 'logout' %}" class="logout-btn">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+    {% else %}
+    <a href="{% url 'signup' %}">
+      <i class="fa-solid fa-user-plus"></i> Signup
+    </a>
+    <a href="{% url 'login' %}">
+      <i class="fa-solid fa-right-to-bracket"></i> Login
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- ====================================== -->
+  <!-- ========= Product Categories Bar ===== -->
+  <!-- ====================================== -->
+{% if user.is_authenticated %}
+  <section class="desktop-only-categories">
+    <div class="simple-dropdown">
+      <a href="#" class="main-cat-link">
+        <i class="fa-solid fa-laptop"></i> Laptops ▾
+      </a>
+      <div class="dropdown-content">
+        <!-- ===== Dell Brand ===== -->
+        <div class="submenu-container">
+          <a href="#" class="submenu-trigger">Dell</a>
+          <div class="sub-submenu-content">
+            <a href="#">Inspiron 15</a> <a href="#">XPS 13</a>
+            <a href="#">Alienware</a>
+          </div>
+        </div>
+        <!-- ===== HP Brand ===== -->
+        <div class="submenu-container">
+          <a href="#" class="submenu-trigger">HP</a>
+          <div class="sub-submenu-content">
+            <a href="#">Pavilion 14</a> <a href="#">Envy x360</a>
+            <a href="#">Spectre</a>
+          </div>
+        </div>
+        <!-- ===== Asus Brand ===== -->
+        <div class="submenu-container">
+          <a href="#" class="submenu-trigger">Asus</a>
+          <div class="sub-submenu-content">
+            <a href="#">VivoBook</a> <a href="#">ROG</a> <a href="#">ZenBook</a>
+          </div>
+        </div>
+        <!-- ===== Apple Brand ===== -->
+        <div class="submenu-container">
+          <a href="#" class="submenu-trigger">Apple</a>
+          <div class="sub-submenu-content">
+            <a href="#">MacBook Air</a> <a href="#">MacBook Pro</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ===== Tablet Category ===== -->
+    <div class="simple-dropdown">
+      <a href="#" class="main-cat-link">
+        <i class="fa-solid fa-tablet-screen-button"></i> Tablet ▾
+      </a>
+    </div>
+    <!-- ===== Smartphone Category ===== -->
+    <div class="simple-dropdown">
+      <a href="#" class="main-cat-link">
+        <i class="fa-solid fa-mobile-screen-button"></i> Smartphones ▾
+      </a>
+    </div>
+    <!-- ===== Mouse Category ===== -->
+    <div class="simple-dropdown">
+      <a href="#" class="main-cat-link">
+        <i class="fa-solid fa-computer-mouse"></i> Mouse ▾
+      </a>
+    </div>
+    <!-- ===== Keyboard Category ===== -->
+    <div class="simple-dropdown">
+      <a href="#" class="main-cat-link">
+        <i class="fa-solid fa-keyboard"></i> Keyboards ▾
+      </a>
+    </div>
+    <!-- ===== Headphones Category ===== -->
+    <div class="simple-dropdown">
+      <a href="#" class="main-cat-link">
+        <i class="fa-solid fa-headphones"></i> Headphones & Earbuds ▾
+      </a>
+    </div>
+    <!-- ===== Smart TV Category ===== -->
+    <div class="simple-dropdown">
+      <a href="#" class="main-cat-link">
+        <i class="fa-solid fa-tv"></i> Smart TVs ▾
+      </a>
+    </div>
+  </section>
+  {% endif %}
+</nav>

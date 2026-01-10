@@ -1,0 +1,126 @@
+{% extends "base.html" %} {% block content %}
+<!-- ===== HERO SECTION (TOP) ===== -->
+{% comment %}
+<section class="hero">
+  <h1>Welcome {{ user.username|default:"to our Store" }}</h1>
+  <p>Best laptop deals • Trusted brands • Fast delivery</p>
+
+  <a href="#products" class="hero-btn"> Explore Deals 🔥 </a>
+</section>
+{% endcomment %}
+<!-- ================================ -->
+<!-- ========= Banner Section ====== -->
+<!-- ================================ -->
+
+{% if user.is_authenticated %}
+<section class="hero-banner">
+  <div class="swiper bannerSwiper">
+    <div class="swiper-wrapper">
+      {% for banner in banners %}
+      <div class="swiper-slide">
+        <img src="{{ banner.image.url }}" alt="{{ banner.title }}" />
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Optional controls -->
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ================================ -->
+<!-- ===== Product Section Start ==== -->
+<!-- ================================ -->
+{% if user.is_authenticated %}
+<div class="product-section">
+  <h2>Laptop Deals</h2>
+
+  <div class="product-grid">
+    {% for product in all_product %}
+    <div class="product-card">
+      <!-- Wishlist Button -->
+      <button class="wishlist-btn">
+        <i class="fa-regular fa-heart"></i>
+      </button>
+
+      <!-- Product Image -->
+      {% if product.productimage_set.first %}
+      <img
+        src="{{ product.productimage_set.first.photo.url }}"
+        alt="{{ product.name }}"
+      />
+      {% else %}
+      <img src="/static/images/no-image.png" alt="No Image" />
+      {% endif %}
+
+      <!-- Product Name -->
+      <div class="product-title">{{ product.name }}</div>
+
+      <!-- Rating (static for now) -->
+      <div class="rating">4.4 ★</div>
+
+      <!-- Price Section -->
+      <div>
+        <span class="price">₹{{ product.price }}</span>
+
+        {% if product.discount %}
+        <span class="old-price">
+          ₹{{ product.price|add:product.discount }}
+        </span>
+        {% endif %}
+      </div>
+
+      <!-- Extra Specs -->
+      <div class="specs">
+        <small><strong>RAM: </strong>{{ product.ram }}</small>
+        <small><strong>ROM: </strong>{{ product.rom }}</small>
+        <small><strong>Screen: </strong>{{ product.screen_size }}</small>
+      </div>
+
+      <!-- Add to Cart -->
+      <button class="add-cart">Add to Cart</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center" style="margin-top: 100px">
+    <h2>You must be logged in to access this page!</h2>
+    <p>
+      Please <a href="{% url 'login' %}">login</a> or
+      <a href="{% url 'signup' %}">sign up</a> to continue.
+    </p>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  document.querySelectorAll(".wishlist-btn").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation(); // card click avoid
+      this.classList.toggle("active");
+
+      const icon = this.querySelector("i");
+      icon.classList.toggle("fa-regular");
+      icon.classList.toggle("fa-solid");
+    });
+  });
+  const swiper = new Swiper(".bannerSwiper", {
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false,
+    },
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+  });
+</script>
+{% endblock content %}

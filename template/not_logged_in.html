@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block content %}
+<div class="text-center" style="margin-top: 100px">
+  <h2>You must be logged in to access this page!</h2>
+  <p>
+    Please <a href="{% url 'login' %}">login</a> or
+    <a href="{% url 'signup' %}">sign up</a> to continue.
+  </p>
+  <!-- <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+  <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p> -->
+</div>
+{% endblock content %}

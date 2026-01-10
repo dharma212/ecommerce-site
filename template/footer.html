@@ -1,0 +1,28 @@
+<!-- ===== Mobile Bottom Navigation ===== -->
+<nav class="mobile-bottom-nav">
+  <a href="{% url 'index'%}" class="nav-item active">
+    <i class="fa-solid fa-house"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="#" class="nav-item">
+    <i class="fa-solid fa-play"></i>
+    <span>Play</span>
+  </a>
+
+  <a href="#" class="nav-item">
+    <i class="fa-solid fa-list"></i>
+    <span>Categories</span>
+  </a>
+
+  <a href="{% url 'profile' %}" class="nav-item">
+    <i class="fa-solid fa-user"></i>
+    <span>Account</span>
+  </a>
+
+  <a href="#" class="nav-item cart">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Cart</span>
+    <span class="cart-count">2</span>
+  </a>
+</nav>

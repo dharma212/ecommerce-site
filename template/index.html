@@ -1,17 +1,7 @@
 {% extends "base.html" %} {% block content %}
-<!-- ===== HERO SECTION (TOP) ===== -->
-{% comment %}
-<section class="hero">
-  <h1>Welcome {{ user.username|default:"to our Store" }}</h1>
-  <p>Best laptop deals • Trusted brands • Fast delivery</p>
-
-  <a href="#products" class="hero-btn"> Explore Deals 🔥 </a>
-</section>
-{% endcomment %}
 <!-- ================================ -->
 <!-- ========= Banner Section ====== -->
 <!-- ================================ -->
-
 {% if user.is_authenticated %}
 <section class="hero-banner">
   <div class="swiper bannerSwiper">

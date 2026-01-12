@@ -210,3 +210,15 @@ class UserProfileUpdateForm(forms.ModelForm):
                 raise forms.ValidationError("This contact number is already registered.")
         return contact_number
 
+# from django import forms
+# from .models import ContactMessage  # Make sure you have ContactMessage in models.py
+
+# class ContactForm(forms.ModelForm):
+#     class Meta:
+#         model = ContactMessage
+#         fields = ['name', 'email', 'message']
+#         widgets = {
+#             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Name'}),
+#             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Your Email'}),
+#             'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Your Message', 'rows': 5}),
+#         }

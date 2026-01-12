@@ -1608,3 +1608,99 @@ body {
         height: 400px;
     }
 }
+/* =====================================
+   FORCE MOBILE FIX FOR SWIPER BANNER
+===================================== */
+@media (max-width: 767px) {
+    .hero-banner {
+        margin-top: 10px;
+    }
+  /* Swiper main container */
+  .bannerSwiper {
+    width: 100% !important;
+    height: auto !important;
+    overflow: hidden !important;
+  }
+
+  /* Wrapper */
+  .bannerSwiper .swiper-wrapper {
+    height: auto !important;
+  }
+
+  /* Slide */
+  .bannerSwiper .swiper-slide {
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Banner image */
+  .bannerSwiper .swiper-slide img {
+    width: 100% !important;
+    height: 180px !important;   /* 🔥 mobile fixed height */
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  /* Hide arrows on mobile */
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none !important;
+  }
+}
+
+/* ============================ */
+/* ====== Footer Section ====== */
+/* ============================ */
+.footer {
+    background: #6d9deb;
+    color: black;
+    padding: 40px 50px 20px;
+    border-top: 4px solid #2874f0;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.footer-section h4 {
+    color: black;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.footer-section a,
+.footer-section p {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 17px;
+    font-weight: 450;
+    color: white;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-section a:hover {
+    color: #000;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #2874f0;
+    font-size: 15px;
+    color: #f1f1f1;
+}
+
+@media (max-width: 767px){
+    .footer {
+        display: none;
+    }
+}

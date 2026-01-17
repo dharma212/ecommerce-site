@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import User
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
+from .models import Contact
 
 class UserRegisterForm(UserCreationForm):
     password1 = forms.CharField(
@@ -209,16 +210,50 @@ class UserProfileUpdateForm(forms.ModelForm):
             if User.objects.exclude(pk=self.instance.pk).filter(contact_number=contact_number).exists():
                 raise forms.ValidationError("This contact number is already registered.")
         return contact_number
+from django import forms
+from .models import Contact
 
-# from django import forms
-# from .models import ContactMessage  # Make sure you have ContactMessage in models.py
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['name', 'email', 'phone', 'subject' ,'message']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter Your Name'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter Your Email'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Phone Number'
+            }),
+            'subject': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Subject'
+            }),
+            'message': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Write Your Message.....',
+                'rows': 2
+            }),
+        }
+        
+    def clean_contact(self):
+        contact = self.cleaned_data.get('contact')
 
-# class ContactForm(forms.ModelForm):
-#     class Meta:
-#         model = ContactMessage
-#         fields = ['name', 'email', 'message']
-#         widgets = {
-#             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Name'}),
-#             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Your Email'}),
-#             'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Your Message', 'rows': 5}),
-#         }
+        # Check if contact is empty
+        if not contact:
+            raise forms.ValidationError("Phone number is required")
+
+        # Check if it's all digits
+        if not contact.isdigit():
+            raise forms.ValidationError("Enter a valid phone number")
+
+        # Optional: check length
+        if len(contact) < 10:
+            raise forms.ValidationError("Phone number must be at least 10 digits")
+
+        return contact

@@ -22,7 +22,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     {% if user.is_authenticated %}
     <!-- USER DROPDOWN -->
     <div class="desktop-only admin-links">
-      <a href="{% url 'dashboard_index' %}">
+      <a href="{% url 'dashboard:dashboard_index' %}">
         <i class="fa-solid fa-chart-line"></i> Dashboard
       </a>
     </div>
@@ -57,7 +57,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   <!-- ====================================== -->
   <!-- ========= Product Categories Bar ===== -->
   <!-- ====================================== -->
-  {% if user.is_authenticated %}
+  {% comment %} {% if user.is_authenticated %}
   <section class="desktop-only-categories">
     <div class="simple-dropdown">
       <a href="#" class="main-cat-link">
@@ -133,5 +133,5 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       </a>
     </div>
   </section>
-  {% endif %}
+  {% endif %} {% endcomment %}
 </nav>

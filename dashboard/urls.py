@@ -1,18 +1,18 @@
 from django.urls import path
 from dashboard.views import *
 
+app_name = "dashboard"
+
 urlpatterns = [
 
     # ================= DASHBOARD =================
     path("", DashbboardIndexView.as_view(), name="dashboard_index"),
-    # path("login/", CustomLoginView.as_view(), name="login"),  # ✅ proper login URL
-
 
     # ================= CATEGORY ==================
     path("category/add/", CategoryCreateView.as_view(), name="category_form"),
-    path("categories/", AllCategory.as_view(), name="categoery_list"),
-    path("category/delete/<int:pk>/",CategoryDeleteView.as_view(),name="category_delete"),
-    path('categories/edit/<int:pk>/', CategoryUpdateView.as_view(), name='category_edit'),
+    path("categories/", CategoryListView.as_view(), name="categoery_list"),
+    path("category/edit/<int:pk>/", CategoryUpdateView.as_view(), name="category_edit"),
+    path("category/delete/<int:pk>/", CategoryDeleteView.as_view(), name="category_delete"),
 
         
 

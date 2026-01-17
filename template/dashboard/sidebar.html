@@ -2,7 +2,6 @@
     <!-- Sidebar Header -->
     <div class="header-box px-2 pt-3 pb-4 d-flex justify-content-between">
         <h1 class="fs-4">
-            {% comment %} <span class="bg-white text-dark rounded shadow px-2 me-2">CL</span> {% endcomment %}
             <span class="text-white"><i class="bi bi-speedometer2 me-2"></i>Dashboard</span>
         </h1>   
         <button class="btn d-md-none d-block close-btn px-1 py-0 text-white">
@@ -12,54 +11,62 @@
 
     <!-- Sidebar Menu -->
     <ul class="list-unstyled px-2">
-    {% comment %} <li class="{% if request.path == '/' %}active{% endif %}">
-     <li>
-        <a href="/" class="text-decoration-none px-3 py-2 d-block">
-            <i class="bi bi-house"></i> Dashboard
-        </a>
-    </li> {% endcomment %}
-    <li class="{% if request.path == '/user_list/' %}active{% endif %}">
-        <a href="{% url 'user_list' %}" class="text-decoration-none px-3 py-2 d-block">
-          <i class="bi bi-people-fill"></i> Users
-        </a>
-    </li>
-    <li class="{% if request.path == '/categoery_list/' %}active{% endif %}">
-        <a href="{% url 'categoery_list' %}" class="text-decoration-none px-3 py-2 d-block">
-            <i class="bi bi-grid"></i> Category
-        </a>
-    </li>
-    <li class="{% if request.path == '/products/' %}active{% endif %}">
-        <a href="{% url 'product_list' %}" class="text-decoration-none px-3 py-2 d-block">
+
+        <!-- Users -->
+        <li class="{% if request.path == '/user_list/' %}active{% endif %}">
+            <a href="{% url 'dashboard:user_list' %}" class="text-decoration-none px-3 py-2 d-block">
+              <i class="bi bi-people-fill"></i> Users
+            </a>
+        </li>
+
+        <!-- Categories -->
+        <li class="dropdown">
+            <a href="#" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" data-bs-toggle="collapse" data-bs-target="#categoryMenu" aria-expanded="false">
+                <span> <i class="bi bi-stack"></i> Product Management </span>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+            <ul class="collapse list-unstyled ps-3" id="categoryMenu">
+                <li>
+                    <a href="{% url 'dashboard:categoery_list' %}" class="text-decoration-none px-3 py-2 d-block"> Categoey </a>
+                </li>
+        <li>
+            <a href="{% url 'product:subcategory_list' %}" class="text-decoration-none px-3 py-2 d-block">Sub Category</a>
+        </li>
+        <li>
+            <a href="{% url 'product:product_list'%}" class="text-decoration-none px-3 py-2 d-block">Product</a>
+        </li>
+        {% comment %} <a href="{% url 'dashboard:product_list' %}" class="text-decoration-none px-3 py-2 d-block">
             <i class="bi bi-bag"></i> Product
-        </a>
-    </li>
-    <li class="{% if request.path == '/messages/' %}active{% endif %}">
-        <a href="#" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between">
-            <span><i class="bi bi-chat"></i> Messages</span>
-            <span class="bg-dark rounded-pill text-white py-0 px-2">02</span>
-        </a>
-    </li>
-    <li class="{% if request.path == '/services/' %}active{% endif %}">
-        <a href="#" class="text-decoration-none px-3 py-2 d-block">
-            <i class="bi bi-envelope-open"></i> Services
-        </a>
-    </li>
-    {% comment %} <li class="{% if request.path == '/customers/' %}active{% endif %}">
-        <a href="/customers/" class="text-decoration-none px-3 py-2 d-block">
-            <i class="bi bi-people"></i> Customers
-        </a>
-    </li> {% endcomment %}
+        </a> {% endcomment %}
+    </ul>
 
-     <li class="{% if request.path == '/banner/' %}active{% endif %}">
-        <a href="{% url 'banner' %}" class="text-decoration-none px-3 py-2 d-block">
-            <i class="bi bi-image"></i> Banner
-        </a>
-    </li>
-</ul>
+        <!-- Messages -->
+        <li class="{% if request.path == '/messages/' %}active{% endif %}">
+            <a href="#" class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between">
+                <span><i class="bi bi-chat"></i> Messages</span>
+                <span class="bg-dark rounded-pill text-white py-0 px-2">02</span>
+            </a>
+        </li>
 
+        <!-- Services -->
+        <li class="{% if request.path == '/services/' %}active{% endif %}">
+            <a href="#" class="text-decoration-none px-3 py-2 d-block">
+                <i class="bi bi-envelope-open"></i> Services
+            </a>
+        </li>
+
+        <!-- Banner -->
+        <li class="{% if request.path == '/banner/' %}active{% endif %}">
+            <a href="{% url 'dashboard:banner' %}" class="text-decoration-none px-3 py-2 d-block">
+                <i class="bi bi-image"></i> Banner
+            </a>
+        </li>
+
+    </ul>
 
     <hr class="h-color mx-2">
 
+    <!-- Settings -->
     <ul class="list-unstyled px-2">
         <li>
             <a href="#" class="text-decoration-none px-3 py-2 d-block">

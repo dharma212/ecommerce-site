@@ -10,31 +10,52 @@ class Banner(BaseModel):
     
     def __str__(self):
         return self.title
-    
-class Category(BaseModel):
-    name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to="categories/", blank=True,null=True)
-    description = models.TextField()
+
+from django.db import models
+from users.models import BaseModel
+
+# =====================
+# Main Category
+# =====================
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    image = models.ImageField(upload_to="categories/", blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 # =====================
+# SubCategory
+# =====================
+class SubCategory(models.Model):
+    category = models.ForeignKey(Category,on_delete=models.CASCADE,related_name="subcategories")
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.category.name})"
+
+
+# =====================
 # Product Model
 # =====================
-class Product(BaseModel):
-    category = models.ForeignKey(Category,on_delete=models.CASCADE,related_name="products")
+class Product(models.Model):
+    sub_category = models.ForeignKey(SubCategory,on_delete=models.CASCADE,related_name="products",null=True,blank=True)
     name = models.CharField(max_length=150)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount = models.PositiveIntegerField(default=0)
+    discount = models.PositiveIntegerField()
     screen_size = models.CharField(max_length=50)
     ram = models.CharField(max_length=50)
     rom = models.CharField(max_length=50)
     memory = models.CharField(max_length=50)
-
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name    
+        return self.name
+
+   
 
 
 # =====================

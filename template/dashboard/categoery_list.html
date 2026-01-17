@@ -6,7 +6,7 @@
     <h2 class="fw-bold mb-0">Category List</h2>
 
     <div class="d-flex gap-2">
-      <a href="{% url 'category_form' %}" class="btn btn-outline-primary d-flex align-items-center gap-2">
+      <a href="{% url 'dashboard:category_form' %}" class="btn btn-outline-primary d-flex align-items-center gap-2" title="Add Category">
         <i class="bi bi-folder-plus"></i>Add Category</a>
     </div>
   </div>
@@ -40,13 +40,13 @@
               <td class="fw-semibold">{{ categoerys.name }}</td>
               <td>{{ categoerys.description }}</td>
               <td>
-                <form method="post" action="{% url 'category_delete' categoerys.id %}" class="d-inline">
+                <form method="post" action="{% url 'dashboard:category_delete' categoerys.id %}" class="d-inline">
                   {% csrf_token %}
                   <button class="btn bg-danger text-light"title="Delete Category">
                     <i class="bi bi-trash"></i>
                   </button>
                 </form>
-                <a href="{% url 'category_edit' categoerys.id %}" class="btn bg-primary text-light" title="Edit Category">
+                <a href="{% url 'dashboard:category_edit' categoerys.id %}" class="btn bg-primary text-light" title="Edit Category">
                   <i class="bi bi-pencil"></i>
                 </a>
 

@@ -1,4 +1,5 @@
-{% extends "dashboard/base.html" %} {% block content %}
+{% extends "dashboard/base.html" %} 
+{% block content %}
 
 <div class="container-fluid">
   <!-- Header -->
@@ -6,13 +7,19 @@
     <h2 class="fw-bold mb-0">Product List</h2>
 
     <div class="d-flex gap-2">
-      <div class="d-flex gap-2">
-      <a href="{% url 'add_product' %}" class="btn btn-outline-primary d-flex align-items-center gap-2">
-        <i class="bi bi-cart-plus"></i>Add Product</a>
-    </div>
+      <!-- Add Product -->
+      <a href="{% url 'product:add_product' %}" class="btn btn-outline-primary d-flex align-items-center gap-2" title="Add Product">
+        <i class="bi bi-cart-plus"></i> Add Product
+      </a>
+
+      <!-- Add Product Image -->
+      <a href="{% url 'dashboard:add_product_image' %}" class="btn btn-outline-warning d-flex align-items-center gap-2" title="Add Product Image">
+        <i class="bi bi-image"></i> Add Product Image
+      </a>
     </div>
   </div>
 
+  <!-- Product Table -->
   <div class="card shadow-sm border-0">
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -21,49 +28,53 @@
             <tr>
               <th>#</th>
               <th>Name</th>
-              <th>Category</th>
+              {% comment %} <th>Image</th> {% endcomment %}
+              <th>Sub Category</th>
               <th>Price</th>
               <th>Discount</th>
               <th>RAM</th>
               <th>ROM</th>
-
-              <th>creat at</th>
-              <th>Update at</th>
+              <th>Created At</th>
+              <th>Updated At</th>
               <th>Action</th>
-              <th></th>
             </tr>
           </thead>
-
           <tbody>
             {% for product in products %}
             <tr>
               <td>{{ forloop.counter }}</td>
               <td class="fw-semibold">{{ product.name }}</td>
-              <td>{{ product.category }}</td>
+              <td>{{ product.sub_category }}</td>
               <td class="fw-bold text-success">₹{{ product.price }}</td>
               <td>
-                {% if product.discount %} {{ product.discount }}% {% else %} —
+                {% if product.discount %} 
+                  {{ product.discount }}% 
+                {% else %} 
+                  — 
                 {% endif %}
               </td>
               <td>{{ product.ram }}</td>
               <td>{{ product.rom }}</td>
-              <td>{{product.created_at}}</td>
-              <td>{{product.updated_at}}</td>
-              <td>
-                <form method="post" action="{% url 'product_delete' product.id %}" class="d-inline">
+              <td>{{ product.created_at }}</td>
+              <td>{{ product.updated_at }}</td>
+              <td class="d-flex justify-content-center gap-1">
+                <!-- Delete -->
+                <form method="post" action="{% url 'dashboard:product_delete' product.id %}">
                   {% csrf_token %}
-                  <button class="btn bg-danger text-light"title="Delete Product">
+                  <button class="btn btn-danger btn-sm" title="Delete Product">
                     <i class="bi bi-trash"></i>
                   </button>
                 </form>
-                <a href="{% url 'product_edit' product.id %}" class="btn bg-primary text-light" title="Edit Product">
+
+                <!-- Edit -->
+                <a href="{% url 'dashboard:product_edit' product.id %}" class="btn btn-primary btn-sm" title="Edit Product">
                   <i class="bi bi-pencil"></i>
                 </a>
               </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="7" class="text-muted py-4">No products found</td>
+              <td colspan="10" class="text-muted py-4">No products found</td>
             </tr>
             {% endfor %}
           </tbody>

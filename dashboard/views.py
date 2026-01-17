@@ -45,15 +45,6 @@ class DashboardLoginRequiredMixin(LoginRequiredMixin):
             return render(request, 'index.html')
         return super().dispatch(request, *args, **kwargs)
 
-# class CustomLoginView(LoginView):
-#     template_name = 'login.html'
-
-#     def get_success_url(self):
-#         next_url = self.request.GET.get('next')
-#         if next_url:
-#             return next_url
-#         return '/'  # fallback
-
 
 # ===========================
 # Dashboard Index
@@ -84,7 +75,7 @@ class UserCreateView(DashboardLoginRequiredMixin,LoginRequiredMixin, SuccessMess
     model = User
     form_class = UserForm
     template_name = "dashboard/add_user.html"
-    success_url = reverse_lazy("user_list")
+    success_url = reverse_lazy("dashboard:user_list")
     success_message = "User added successfully"
 
     def form_valid(self, form):
@@ -97,7 +88,7 @@ User = get_user_model()
 
 class UserDeleteView(DashboardLoginRequiredMixin,SuccessMessageMixin, DeleteView):
     model = User
-    success_url = reverse_lazy("user_list")
+    success_url = reverse_lazy("dashboard:user_list")
     # success_message = "User deleted successfully"
 
     def post(self, request, *args, **kwargs):
@@ -105,7 +96,7 @@ class UserDeleteView(DashboardLoginRequiredMixin,SuccessMessageMixin, DeleteView
 
         if user_to_delete == request.user:
             messages.error(request, "You cannot delete your own account.")
-            return redirect("user_list")
+            return redirect("dashboard:user_list")
 
         messages.success(request, "User deleted successfully.")
         return super().post(request, *args, **kwargs)
@@ -117,7 +108,7 @@ class UserUpdateView(DashboardLoginRequiredMixin,SuccessMessageMixin, UpdateView
     model = User
     form_class = UserProfileUpdateForm
     template_name = "dashboard/user_edit.html"
-    success_url = reverse_lazy("user_list")
+    success_url = reverse_lazy("dashboard:user_list")
     success_message = "User Edited Successfully."
 
     def dispatch(self, request, *args, **kwargs):
@@ -125,7 +116,7 @@ class UserUpdateView(DashboardLoginRequiredMixin,SuccessMessageMixin, UpdateView
 
         if user_to_edit == request.user:
             messages.error(request, "You cannot edit your own account.")
-            return redirect("user_list")
+            return redirect("dashboard:user_list")
 
         if user_to_edit.role == "admin":
             messages.error(request, "Admin user cannot be edited.")
@@ -152,14 +143,14 @@ class CategoryCreateView(DashboardLoginRequiredMixin,FormView):
         messages.success(self.request, "Category created successfully!")
         return super().form_valid(form)
 
-class AllCategory(DashboardLoginRequiredMixin,ListView):
+class CategoryListView(DashboardLoginRequiredMixin,ListView):
     model = Category
     template_name = "dashboard/categoery_list.html"
     context_object_name = "categoery"
     
 class CategoryDeleteView(DashboardLoginRequiredMixin,SuccessMessageMixin, DeleteView):
     model = Category
-    success_url = reverse_lazy("categoery_list")
+    success_url = reverse_lazy("dashboard:categoery_list")
     # success_message = "Product deleted successfully"
 
     def post(self, request, *args, **kwargs):
@@ -173,7 +164,7 @@ class CategoryUpdateView(DashboardLoginRequiredMixin,SuccessMessageMixin, Update
     model = Category
     form_class = CategoryForm
     template_name = "dashboard/category_edit.html"
-    success_url = reverse_lazy("categoery_list")
+    success_url = reverse_lazy("dashboard:categoery_list")
     success_message = "Category updated successfully!"
 
     def dispatch(self, request, *args, **kwargs):
@@ -181,18 +172,31 @@ class CategoryUpdateView(DashboardLoginRequiredMixin,SuccessMessageMixin, Update
 
         if not category_to_edit:
             messages.error(request, "Category not found.")
-            return redirect("categoery_list")
+            return redirect("dashboard:categoery_list")
 
         return super().dispatch(request, *args, **kwargs)
+
+from django.views.generic import ListView
+from product.models import Category
+
+class AllCategoryListView(ListView):
+    model = Category
+    template_name = "dashboard/all_categories_table.html"
+    context_object_name = "categories"
+
+    def get_queryset(self):
+        return Category.objects.prefetch_related(
+            'subcategories__product_categories'
+        )
 
     
 # ===========================
 # Product Section
 # ===========================
 class ProductCreateView(DashboardLoginRequiredMixin,FormView):
-    template_name = "product_form.html"
+    template_name = "dashboard/product_form.html"
     form_class = ProductForm
-    success_url = reverse_lazy("product:add_product")
+    success_url = reverse_lazy("dashboard:product_list")
 
     def form_valid(self, form):
         form.save()
@@ -202,7 +206,7 @@ class ProductCreateView(DashboardLoginRequiredMixin,FormView):
 class ProductImageCreateView(DashboardLoginRequiredMixin,FormView):
     template_name = "product_image_form.html"
     form_class = ProductImageForm
-    success_url = reverse_lazy("product:add_product_image")
+    success_url = reverse_lazy("product:product_list")
 
     def form_valid(self, form):
         product = form.cleaned_data["product"]
@@ -230,7 +234,7 @@ class ProductListView(DashboardLoginRequiredMixin,ListView):
     
 class ProductDeleteView(DashboardLoginRequiredMixin,SuccessMessageMixin, DeleteView):
     model = Product
-    success_url = reverse_lazy("product_list")
+    success_url = reverse_lazy("dashboard:product_list")
     # success_message = "Product deleted successfully"
 
     def post(self, request, *args, **kwargs):
@@ -263,12 +267,12 @@ class BannerCreateView(DashboardLoginRequiredMixin,SuccessMessageMixin, CreateVi
     model = Banner
     form_class = BannerForm
     template_name = "dashboard/add_banner.html"
-    success_url = reverse_lazy("banner")
+    success_url = reverse_lazy("dashboard:banner")
     success_message = "Banner added successfully"
 
 class BannerDeleteView(DashboardLoginRequiredMixin,SuccessMessageMixin, DeleteView):
     model = Banner
-    success_url = reverse_lazy("banner")
+    success_url = reverse_lazy("dashboard:banner")
     success_message = "Banner deleted successfully"
 
     # Disable confirmation page
@@ -279,7 +283,7 @@ class BannerUpdateView(DashboardLoginRequiredMixin,UpdateView):
     model = Banner
     form_class = BannerForm
     template_name = "dashboard/banner_edit.html"  
-    success_url = reverse_lazy("banner")
+    success_url = reverse_lazy("dashboard:banner")
     success_message = "Banner updated successfully!"
 
     def form_valid(self, form):
@@ -296,4 +300,4 @@ class BannerStatusToggleView(DashboardLoginRequiredMixin,View):
             messages.success(request, "Banner activated successfully")
         else:
             messages.success(request, "Banner deactivated successfully")
-        return redirect("banner")
+        return redirect("dashboard:banner")

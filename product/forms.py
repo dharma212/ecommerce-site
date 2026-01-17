@@ -1,122 +1,93 @@
 from django import forms
-from .models import Category, Product, ProductImage,Banner
+from .models import Category, Product, ProductImage,Banner,SubCategory
+from django import forms
 
-
-# =======================
-# CATEGORY FORM
-# =======================
+# -----------------------
+# Category Form
+# -----------------------
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ["name", "image", "description"]
-        error_messages = {
-            "name": {
-                "required": "Category name is required."
-            },
-            "image": {
-                "required": "Category image is required."
-            },
-            "description": {
-                "required": "Category description is required."
-            },
-        }
+        fields = ['name', 'image', 'description']
         widgets = {
-            "name": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Enter category name"
-            }),
-            "image": forms.ClearableFileInput(attrs={
-            "class": "form-control",
-            "accept": "image/*"
-            }),
-
-            "description": forms.Textarea(attrs={
-                "class": "form-control",
-                "placeholder": "Enter category description",
-                "rows": 3
-            }),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category Name'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
-    def clean_name(self):
-        name = self.cleaned_data.get('name')
-        if Category.objects.filter(name=name).exists():
-            raise forms.ValidationError("This Category Is Already Exists.")
-        return name
-    
+# -----------------------
+# SubCategory Form
+# -----------------------
+class SubCategoryForm(forms.ModelForm):
+    class Meta:
+        model = SubCategory
+        fields = ['category', 'name', 'description']
+        widgets = {
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'SubCategory Name'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+
+
 # =======================
 # PRODUCT FORM
 # =======================
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ["name", "category", "price", "discount","screen_size", "ram", "rom", "memory"]
-        error_messages = {
-            "name": {
-                "required": "Product name is required."
-            },
-            "category": {
-                "required": "Category is required."
-            },
-            "price": {
-                "required": "Price is required.",
-                "invalid": "Enter a valid price."
-            },
-            "discount": {
-                "invalid": "Enter a valid discount."
-            },
-            "screen_size": {
-                "required": "Screen size is required."
-            },
-            "ram": {
-                "required": "RAM is required."
-            },
-            "rom": {
-                "required": "ROM is required."
-            },
-            "memory": {
-                "required": "Memory is required."
-            },
-        }
+        fields = [
+            "name",
+            "sub_category",
+            "price",
+            "discount",
+            "screen_size",
+            "ram",
+            "rom",
+            "memory",
+        ]
         widgets = {
-            "name": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Enter product name"
-            }),
-            "category": forms.Select(attrs={
-                "class": "form-control"
-            }),
-            "price": forms.NumberInput(attrs={
-                "class": "form-control",
-                "placeholder": "Enter price"
-            }),
-            "discount": forms.NumberInput(attrs={
-                "class": "form-control",
-                "placeholder": "Enter discount (%)"
-            }),
-            "screen_size": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Screen size (e.g. 6.5 inch)"
-            }),
-            "ram": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "RAM (e.g. 8GB)"
-            }),
-            "rom": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "ROM (e.g. 128GB)"
-            }),
-            "memory": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "Memory (e.g. 1TB)"
-            }),
-        }
-        
+    "name": forms.TextInput(attrs={
+        "class": "form-control",
+        "placeholder": "Enter product name (e.g. Dell Inspiron 15)"
+    }),
+    "sub_category": forms.Select(attrs={
+        "class": "form-control"
+    }),
+    "price": forms.NumberInput(attrs={
+        "class": "form-control",
+        "placeholder": "Enter price (e.g. 100000)"
+    }),
+    "discount": forms.NumberInput(attrs={
+        "class": "form-control",
+        "placeholder": "Enter discount amount or %"
+    }),
+    "screen_size": forms.TextInput(attrs={
+        "class": "form-control",
+        "placeholder": "Screen size (e.g. 6.5 inch)"
+    }),
+    "ram": forms.TextInput(attrs={
+        "class": "form-control",
+        "placeholder": "RAM (e.g. 8GB)"
+    }),
+    "rom": forms.TextInput(attrs={
+        "class": "form-control",
+        "placeholder": "Storage / ROM (e.g. 128GB)"
+    }),
+    "memory": forms.TextInput(attrs={
+        "class": "form-control",
+        "placeholder": "Expandable memory (e.g. 1TB)"
+    }),
+}
+
+
     def clean_name(self):
-        name = self.cleaned_data.get('name')
+        name = self.cleaned_data.get("name")
         if Product.objects.filter(name=name).exists():
-            raise forms.ValidationError("This Product Is Already Exists.")
-        return name 
-        
+            raise forms.ValidationError("This Product already exists.")
+        return name
+
 # =======================
 # PRODUCT IMAGE FORM
 # =======================

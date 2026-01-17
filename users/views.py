@@ -77,20 +77,16 @@ class UserProfileView(LoginRequiredMixin, FormView):
         form.save()
         return super().form_valid(form)
     
-# from django.views.generic.edit import FormView
-# from django.urls import reverse_lazy
-# from .forms import ContactForm
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
+from .models import Contact
+from .forms import ContactForm
 
-# class ContactFormView(FormView):
-#     template_name = 'contact/contact.html'
-#     form_class = ContactForm
-#     success_url = reverse_lazy('contact')  # Redirect to same page after success
+class ContactCreateView(CreateView):
+    model = Contact
+    form_class = ContactForm
+    template_name = 'contact.html'
+    success_url = reverse_lazy('contact')
 
-#     def form_valid(self, form):
-#         form.save()  # Save message to database
-#         return super().form_valid(form)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['success'] = self.request.method == 'POST' and self.get_form().is_valid()
-#         return context
+    def form_valid(self, form):
+        return super().form_valid(form)

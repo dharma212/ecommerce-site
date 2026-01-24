@@ -28,16 +28,25 @@ class UserSignupView(FormView):
 # ========= LoginView =========
 # =============================
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic.edit import FormView
+from django.contrib.auth import login
+from django.shortcuts import redirect
+from .forms import UserLoginForm
+
+@method_decorator(csrf_protect, name='dispatch')
 class LoginView(FormView):
     template_name = "login.html"
     form_class = UserLoginForm
-    success_url = "/"  # redirect after successful login
 
     def form_valid(self, form):
-        # Authentication already done in form
-        user = form.get_user()  # AuthenticationForm provides this
+        user = form.get_user()
         login(self.request, user)
-        return super().form_valid(form)
+
+        if user.role == 'admin' or user.role == 'a':
+            return redirect('dashboard_index')
+        return redirect('/')
 
 # =============================
 # ========= LogoutView ========

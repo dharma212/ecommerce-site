@@ -7,7 +7,7 @@
     <h2 class="fw-bold mb-0">Sub Category List</h2>
 
     <div class="d-flex gap-2">
-      <a href="{% url 'product:subcategory_add' %}" class="btn btn-outline-primary d-flex align-items-center gap-2" title="Add Sub Category">
+      <a href="{% url 'subcategory_add' %}" class="btn btn-outline-primary d-flex align-items-center gap-2" title="Add Sub Category">
         <i class="bi bi-diagram-3"></i>
           Add Sub Category
       </a>
@@ -39,7 +39,7 @@
               <td>{{ sub.description }}</td>
               <td>
                 <!-- Delete -->
-                <form method="post" action="{% url 'product:subcategory_delete' sub.id %}" class="d-inline">
+                <form method="post" action="{% url 'subcategory_delete' sub.id %}" class="d-inline">
                     {% csrf_token %}
                     <button class="btn bg-danger text-light" title="Delete Sub Category">
                         <i class="bi bi-trash"></i>
@@ -48,7 +48,7 @@
 
 
                 <!-- Edit -->
-                <a href="{% url 'product:subcategory_edit' sub.id %}" class="btn bg-primary text-light" title="Edit Sub Category">
+                <a href="{% url 'subcategory_edit' sub.id %}" class="btn bg-primary text-light" title="Edit Sub Category">
                   <i class="bi bi-pencil"></i>
                 </a>
 

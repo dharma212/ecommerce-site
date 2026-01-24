@@ -8,12 +8,12 @@
 
     <div class="d-flex gap-2">
       <!-- Add Product -->
-      <a href="{% url 'product:add_product' %}" class="btn btn-outline-primary d-flex align-items-center gap-2" title="Add Product">
+      <a href="{% url 'add_product' %}" class="btn btn-outline-primary d-flex align-items-center gap-2" title="Add Product">
         <i class="bi bi-cart-plus"></i> Add Product
       </a>
 
       <!-- Add Product Image -->
-      <a href="{% url 'dashboard:add_product_image' %}" class="btn btn-outline-warning d-flex align-items-center gap-2" title="Add Product Image">
+      <a href="{% url 'add_product_image' %}" class="btn btn-outline-warning d-flex align-items-center gap-2" title="Add Product Image">
         <i class="bi bi-image"></i> Add Product Image
       </a>
     </div>
@@ -59,7 +59,7 @@
               <td>{{ product.updated_at }}</td>
               <td class="d-flex justify-content-center gap-1">
                 <!-- Delete -->
-                <form method="post" action="{% url 'dashboard:product_delete' product.id %}">
+                <form method="post" action="{% url 'product_delete' product.id %}">
                   {% csrf_token %}
                   <button class="btn btn-danger btn-sm" title="Delete Product">
                     <i class="bi bi-trash"></i>
@@ -67,7 +67,7 @@
                 </form>
 
                 <!-- Edit -->
-                <a href="{% url 'dashboard:product_edit' product.id %}" class="btn btn-primary btn-sm" title="Edit Product">
+                <a href="{% url 'product_edit' product.id %}" class="btn btn-primary btn-sm" title="Edit Product">
                   <i class="bi bi-pencil"></i>
                 </a>
               </td>

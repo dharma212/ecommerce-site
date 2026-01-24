@@ -21,21 +21,23 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   <div class="right-menu">
     {% if user.is_authenticated %}
     <!-- USER DROPDOWN -->
-    <div class="desktop-only admin-links">
-      <a href="{% url 'dashboard:dashboard_index' %}">
-        <i class="fa-solid fa-chart-line"></i> Dashboard
-      </a>
-    </div>
+        {% if request.user.role == "admin" %}
+          <div class="desktop-only admin-links">
+            <a href="{% url 'dashboard_index' %}">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+          </div>
+        {% endif %}
+
     <div class="desktop-only user-dropdown">
       <a href="#" class="profile-btn">
         <i class="fa-solid fa-user"></i> {{ user.username }}
         <i class="fa-solid fa-caret-down"></i>
       </a>
       <div class="dropdown-content">
-        <a href="{% url 'profile' %}"
-          ><i class="fa-solid fa-user"></i> Profile</a
-        >
+        <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i> Profile</a>
         <a href="#"><i class="fa-solid fa-box"></i> Orders</a>
+        <a href="{% url 'cart_list' %}"><i class="bi bi-cart-fill"></i> Cart </a>
         <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
       </div>
     </div>
@@ -135,3 +137,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   </section>
   {% endif %} {% endcomment %}
 </nav>
+<!-- Login Required Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <h4>Login Required</h4>
+        <p>Please login to add items to your cart.</p>
+        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-success">
+            Login
+        </a>
+        <button class="btn btn-secondary close-modal">Cancel</button>
+    </div>
+</div>

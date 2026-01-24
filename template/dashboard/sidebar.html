@@ -14,7 +14,7 @@
 
         <!-- Users -->
         <li class="{% if request.path == '/user_list/' %}active{% endif %}">
-            <a href="{% url 'dashboard:user_list' %}" class="text-decoration-none px-3 py-2 d-block">
+            <a href="{% url 'user_list' %}" class="text-decoration-none px-3 py-2 d-block">
               <i class="bi bi-people-fill"></i> Users
             </a>
         </li>
@@ -27,18 +27,25 @@
             </a>
             <ul class="collapse list-unstyled ps-3" id="categoryMenu">
                 <li>
-                    <a href="{% url 'dashboard:categoery_list' %}" class="text-decoration-none px-3 py-2 d-block"> Categoey </a>
+                    <a href="{% url 'categoery_list' %}" class="text-decoration-none px-3 py-2 d-block"> Categoey </a>
                 </li>
         <li>
-            <a href="{% url 'product:subcategory_list' %}" class="text-decoration-none px-3 py-2 d-block">Sub Category</a>
+            <a href="{% url 'subcategory_list' %}" class="text-decoration-none px-3 py-2 d-block">Sub Category</a>
         </li>
         <li>
-            <a href="{% url 'product:product_list'%}" class="text-decoration-none px-3 py-2 d-block">Product</a>
+            <a href="{% url 'product_list'%}" class="text-decoration-none px-3 py-2 d-block">Product</a>
         </li>
-        {% comment %} <a href="{% url 'dashboard:product_list' %}" class="text-decoration-none px-3 py-2 d-block">
+        {% comment %} <a href="{% url 'product_list' %}" class="text-decoration-none px-3 py-2 d-block">
             <i class="bi bi-bag"></i> Product
         </a> {% endcomment %}
     </ul>
+
+        <li class="{% if request.path == '/cart_dashboard/' %}active{% endif %}">
+            <a href="{% url 'cart_dashboard' %}" class="text-decoration-none px-3 py-2 d-block">
+                <i class="bi bi-cart"></i> Add To Cart
+            </a>
+        </li>
+
 
         <!-- Messages -->
         <li class="{% if request.path == '/messages/' %}active{% endif %}">
@@ -57,7 +64,7 @@
 
         <!-- Banner -->
         <li class="{% if request.path == '/banner/' %}active{% endif %}">
-            <a href="{% url 'dashboard:banner' %}" class="text-decoration-none px-3 py-2 d-block">
+            <a href="{% url 'banner' %}" class="text-decoration-none px-3 py-2 d-block">
                 <i class="bi bi-image"></i> Banner
             </a>
         </li>

@@ -1,0 +1,69 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+<div class="container-fluid cart-page">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 cart-left">
+        <h4 class="cart-title">My Cart ({{ cart_items.count }})</h4>
+
+        {% for item in cart_items %}
+        <div class="cart-item">
+          <div class="cart-item-inner">
+            <div class="cart-img">
+              {% if item.product.productimage_set.first %}
+              <img
+                src="{{ item.product.productimage_set.first.photo.url }}"
+                alt="{{ item.product.name }}"
+              />
+              {% else %}
+              <img src="{% static 'images/no-image.png' %}" alt="No Image" />
+              {% endif %}
+            </div>
+
+            <div class="cart-details">
+              <h6>{{ item.product.name }}</h6>
+              <p class="seller">Seller: Official Store</p>
+              <div class="price">₹{{ item.product.price }}</div>
+              <div class="qty">Qty: {{ item.quantity }}</div>
+            </div>
+          </div>
+          <div class="actions">
+            <a href="#" class="save-later">Save for Later</a>
+            <a href="#" class="remove">Remove</a>
+          </div>
+
+        </div>
+        {% empty %}
+        <div class="empty-cart">
+          <img
+            src="https://rukminim1.flixcart.com/www/800/800/promos/16/05/2019/d438a32e-765a-4d8b-b4a6-520b560971e8.png?q=90"
+            width="200"
+            alt="Empty"
+          />
+          <p>Your cart is empty!</p>
+        </div>
+        {% endfor %}
+      </div>
+    
+      <div class="col-lg-4 cart-right">
+        <div class="price-box">
+          <h6>PRICE DETAILS</h6>
+          <div class="price-row">
+            <span>Price ({{ cart_items.count }} items)</span>
+            <span>₹{{ total_price }}</span>
+          </div>
+          <div class="price-row">
+            <span>Delivery Charges</span>
+            <span class="free">FREE</span>
+          </div>
+          <div class="price-row total">
+            <span>Total Amount</span>
+            <span>₹{{ total_price }}</span>
+          </div>
+          <button class="place-order">PLACE ORDER</button>
+        </div>
+      </div>
+      {% comment %} <button class="btn btn-primary " href="{% url 'index' %}">Back</button> {% endcomment %}
+    </div>
+  </div>
+</div>
+{% endblock %}

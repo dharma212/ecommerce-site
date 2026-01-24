@@ -8,9 +8,10 @@
       <ul>
         <li>My Account</li>
         <li>Orders</li>
-        <li>Wishlist</li>
+        <li>Wishlist<i class="bi bi-heart"></i></li>
+        <li><a href="{% url 'cart_list' %}"><i class="bi bi-cart-fill"></i> Cart</a></li>
         <li>Settings</li>
-        <li><a href="{% url 'logout' %}">Logout</a></li>
+        <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
       </ul>
     </div>
 
@@ -39,6 +40,11 @@
         <div class="form-group">
           <label>Email</label>
           {{ form.email }}
+        </div>
+
+        <div clas="form-group">
+          <label>Contact Number</label>
+          {{ form.contact_number }}
         </div>
 
         <button type="submit" class="btn-primary">Update Profile</button>

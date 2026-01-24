@@ -5,7 +5,7 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="fw-bold mb-0">All User List</h2>
 
-    <a href="{% url 'dashboard:add_user'%}" class="btn btn-primary" title="Add User">
+    <a href="{% url 'add_user'%}" class="btn btn-primary" title="Add User">
       <i class="bi bi-person-plus-fill me-1"></i>
     </a>
   </div>
@@ -22,6 +22,7 @@
               <th>Last Name</th>
               <th>Email</th>
               <th>Username</th>
+              <th>Role</th>
               <th>Contact Number</th>
               <th>Action</th>
             </tr>
@@ -34,11 +35,12 @@
               <td>{{ user.last_name |default:"---"}}</td>
               <td>{{ user.email |default:"---"}}</td>
               <td>{{ user.username |default:"---"}}</td>
+              <td>{{ user.role |default:"---"}}</td>
               <td>{{ user.contact_number|default:"---" }}</td>
               <td>
                 {% if user.role != 'admin' %}
                 <!-- DELETE -->
-                <form action="{% url 'dashboard:user_delete' user.id %}" method="post" style="display: inline">
+                <form action="{% url 'user_delete' user.id %}" method="post" style="display: inline">
                   {% csrf_token %}
                   <button class="btn bg-danger text-light" title="Delete User">
                     <i class="bi bi-trash"></i>
@@ -46,7 +48,7 @@
                 </form>
 
                 <!-- EDIT -->
-                <a href="{% url 'dashboard:user_edit' user.id %}" class="btn bg-primary text-light" title="Edit User">
+                <a href="{% url 'user_edit' user.id %}" class="btn bg-primary text-light" title="Edit User">
                   <i class="bi bi-pencil"></i>
                 </a>
                 {% endif %}

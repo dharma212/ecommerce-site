@@ -19,7 +19,7 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = "category_form.html"
-    success_url = reverse_lazy("product:categoery_list")
+    success_url = reverse_lazy("categoery_list")
 
     def form_valid(self, form):
         messages.success(self.request, "Category created successfully!")
@@ -35,7 +35,7 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = "dashboard/category_edit.html"
-    success_url = reverse_lazy("dashboard:categoery_list")
+    success_url = reverse_lazy("categoery_list")
 
     def form_valid(self, form):
         messages.success(self.request, "Category updated successfully!")
@@ -43,7 +43,7 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
 
 class CategoryDeleteView(LoginRequiredMixin, DeleteView):
     model = Category
-    success_url = reverse_lazy("dashboard:categoery_list")
+    success_url = reverse_lazy("categoery_list")
 
     def post(self, request, *args, **kwargs):
         messages.success(request, "Category deleted successfully!")
@@ -59,7 +59,7 @@ class SubCategoryCreateView(LoginRequiredMixin, FormView):
     model = SubCategory
     template_name = "dashboard/subcategory_form.html"
     form_class = SubCategoryForm
-    success_url = reverse_lazy("product:subcategory_list")
+    success_url = reverse_lazy("subcategory_list")
 
     def form_valid(self, form):
         form.save()
@@ -75,7 +75,7 @@ class SubCategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = SubCategory
     form_class = SubCategoryForm
     template_name = "dashboard/sub_category_edit.html"
-    success_url = reverse_lazy("product:subcategory_list")
+    success_url = reverse_lazy("subcategory_list")
 
     def form_valid(self, form):
         messages.success(self.request, "Sub Category updated successfully!")
@@ -83,7 +83,7 @@ class SubCategoryUpdateView(LoginRequiredMixin, UpdateView):
 
 class SubCategoryDeleteView(DeleteView):
     model = SubCategory
-    success_url = reverse_lazy("product:subcategory_list")
+    success_url = reverse_lazy("subcategory_list")
 
     def post(self, request, *args, **kwargs):
         messages.success(request, "Sub Category deleted successfully!")
@@ -97,15 +97,12 @@ class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm # Ensure ProductForm does NOT mention 'category'
     template_name = 'product_form.html'
-    success_url = reverse_lazy('product:product_list')
-
+    success_url = reverse_lazy('product_list')
 
     def form_valid(self, form):
         # Just save normally. 
         # Django will only look for the fields present in your models.py
         return super().form_valid(form)
-
-
 
 # =============================
 # === Add Product Image =======
@@ -114,7 +111,7 @@ class ProductCreateView(CreateView):
 class ProductImageCreateView(FormView):
     template_name = "product_image_form.html"
     form_class = ProductImageForm
-    success_url = reverse_lazy("product:add_product_image")
+    success_url = reverse_lazy("add_product_image")
 
     def form_valid(self, form):
         product = form.cleaned_data["product"]

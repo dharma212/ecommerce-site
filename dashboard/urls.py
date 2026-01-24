@@ -1,7 +1,6 @@
 from django.urls import path
 from dashboard.views import *
 
-app_name = "dashboard"
 
 urlpatterns = [
 
@@ -37,4 +36,7 @@ urlpatterns = [
     path("users/add/", UserCreateView.as_view(), name="add_user"),
     path("users/delete/<int:pk>/", UserDeleteView.as_view(), name="user_delete"),
     path("users/edit/<int:pk>/", UserUpdateView.as_view(), name="user_edit"),
+    
+    path('cart/', CartDashboardView.as_view(), name='cart_dashboard'),
+
 ]

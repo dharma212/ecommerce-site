@@ -2,8 +2,9 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
 }
+
 .modal-content {
     background: #fff;
     padding: 20px;
@@ -11,4 +12,8 @@
     width: 300px;
     text-align: center;
     border-radius: 8px;
+}
+
+.close-modal {
+    color: white;
 }

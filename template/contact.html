@@ -1,10 +1,22 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 
 <div class="contact-page">
   <div class="contact-card">
     <div class="contact-header">
       <h2>Contact Us</h2>
     </div>
+
+    <!-- ✅ SUCCESS / ERROR MESSAGES -->
+    {% if messages %}
+      <div class="message-wrapper">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
     <div class="contact-body">
       <!-- LEFT BOX -->
@@ -61,38 +73,58 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Name</label>
-              {{ form.name }} {% if form.name.errors %}
-              <span class="error">{{ form.name.errors|striptags }}</span>
+              {{ form.name }}
+              {% if form.name.errors %}
+                <span class="error">{{ form.name.errors|striptags }}</span>
               {% endif %}
             </div>
 
             <div class="form-group">
               <label>Email</label>
-              {{ form.email }} {% if form.email.errors %}
-              <span class="error">{{ form.email.errors|striptags }}</span>
+              {{ form.email }}
+              {% if form.email.errors %}
+                <span class="error">{{ form.email.errors|striptags }}</span>
               {% endif %}
             </div>
 
             <div class="form-group">
               <label>Phone</label>
-              {{ form.phone }} {% if form.phone.errors %}
-              <span class="error">{{ form.phone.errors|striptags }}</span>
+              {{ form.phone }}
+              {% if form.phone.errors %}
+                <span class="error">{{ form.phone.errors|striptags }}</span>
               {% endif %}
             </div>
 
             <div class="form-group">
               <label>Subject</label>
-              {{ form.subject }} {% if form.subject.errors %}
-              <span class="error">{{ form.subject.errors|striptags }}</span>
+              {{ form.subject }}
+              {% if form.subject.errors %}
+                <span class="error">{{ form.subject.errors|striptags }}</span>
               {% endif %}
             </div>
 
             <div class="form-group full-width">
               <label>Message</label>
-              {{ form.message }} {% if form.message.errors %}
-              <span class="error">{{ form.message.errors|striptags }}</span>
+              {{ form.message }}
+              {% if form.message.errors %}
+                <span class="error">{{ form.message.errors|striptags }}</span>
               {% endif %}
             </div>
+            <div class="form-check terms-container mt-3">
+    <div class="d-flex align-items-start gap-2">
+        {{ form.terms_accepted }}
+        <label class="terms-label" for="{{ form.terms_accepted.id_for_label }}">
+            I agree to the 
+            <a href="{% url 'terms_public' %}" target="_blank" class="terms-link">
+                Terms & Conditions
+            </a>
+        </label>
+    </div>
+    {% if form.terms_accepted.errors %}
+        <div class="error-msg">{{ form.terms_accepted.errors|striptags }}</div>
+    {% endif %}
+</div>
+
           </div>
 
           <button type="submit" class="submit-btn">

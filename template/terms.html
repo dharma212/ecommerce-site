@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="about-page-bg">
+
+    <!-- TOP HEADER -->
+    <h1 class="title">
+        {{ terms_data.title }}
+    </h1>
+
+    <!-- ✅ FULL WIDTH -->
+    <div class="container-fluid px-5">
+        <div class="card legal-card w-100">
+            <div class="card-body card-body-content">
+
+                <div class="update-badge">
+                    Last updated: {{ terms_data.last_updated|date:"F Y" }}
+                </div>
+
+                <section class="mb-4">
+                    <h5>1. Introduction</h5>
+                    <p>{{ terms_data.introduction }}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h5>2. Use of Website</h5>
+                    <p>{{ terms_data.use_of_website }}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h5>3. User Accounts</h5>
+                    <p>{{ terms_data.user_accounts }}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h5>4. Product Information</h5>
+                    <p>{{ terms_data.product_info }}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h5>5. Limitation of Liability</h5>
+                    <p>{{ terms_data.liability }}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h5>6. Changes to Terms</h5>
+                    <p>{{ terms_data.changes_to_terms }}</p>
+                </section>
+
+                <section class="mb-4">
+                    <h5>7. Contact Us</h5>
+                    <p>
+                        If you have any questions, please
+                        <a href="{% url 'contact' %}" class="contact-link">contact us</a>.
+                    </p>
+                </section>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

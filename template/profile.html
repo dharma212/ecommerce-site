@@ -2,52 +2,81 @@
 
 <div class="profile-wrapper">
   <div class="profile-card">
-    <!-- SIDEBAR (DESKTOP ONLY) -->
     <div class="sidebar">
-      <h2>Hello, {{ user.username }}</h2>
-      <ul>
-        <li>My Account</li>
-        <li>Orders</li>
-        <li>Wishlist<i class="bi bi-heart"></i></li>
-        <li><a href="{% url 'cart_list' %}"><i class="bi bi-cart-fill"></i> Cart</a></li>
-        <li>Settings</li>
-        <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
+      <div class="user-greeting mb-4">
+        <i class="bi bi-person-circle fs-2"></i>
+        <h2 class="mt-2">Hello, {{ user.username }}</h2>
+      </div>
+      
+      <ul class="profile-menu">
+        <li class="active"><i class="bi bi-person-gear"></i> My Account</li>
+        <li><i class="bi bi-box-seam"></i> My Orders</li>
+        <li>
+          <a href="{% url 'wishlist_list' %}">
+            <i class="bi bi-heart"></i> Wishlist
+          </a>
+        </li>
+        <li>
+            <a href="{% url 'cart_list' %}" class="text-decoration-none">
+                <i class="bi bi-cart3"></i> Cart
+            </a>
+        </li>
+        <li><i class="bi bi-gear"></i> Settings</li>
+        <hr>
+        <li>
+            <a href="{% url 'logout' %}" class="text-danger text-decoration-none fw-bold">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </li>
       </ul>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div class="main">
-      <h2>Profile Settings</h2>
+      <div class="d-flex align-items-center gap-2 mb-4">
+        <i class="bi bi-pencil-square fs-4 text-primary"></i>
+        <h2 class="m-0">Profile Settings</h2>
+      </div>
 
       <form method="POST" class="profile-form">
         {% csrf_token %}
 
-        <div class="form-group">
-          <label>First Name</label>
-          {{ form.first_name }}
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label class="form-label"><i class="bi bi-person me-1"></i> First Name</label>
+              {{ form.first_name }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label class="form-label"><i class="bi bi-person me-1"></i> Last Name</label>
+              {{ form.last_name }}
+            </div>
+          </div>
         </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label class="form-label"><i class="bi bi-at me-1"></i> Username</label>
+              {{ form.username }}
+            </div>
+          </div>
 
-        <div class="form-group">
-          <label>Last Name</label>
-          {{ form.last_name }}
-        </div>
-
-        <div class="form-group">
-          <label>Username</label>
-          {{ form.username }}
-        </div>
-
-        <div class="form-group">
-          <label>Email</label>
+        <div class="form-group mb-3">
+          <label class="form-label"><i class="bi bi-envelope me-1"></i> Email Address</label>
           {{ form.email }}
         </div>
 
-        <div clas="form-group">
-          <label>Contact Number</label>
+        <div class="form-group mb-3">
+          <label class="form-label"><i class="bi bi-telephone me-1"></i> Contact Number</label>
           {{ form.contact_number }}
         </div>
+        
+        <div class="form-group mb-3">
+          <label class="form-label"><i class="bi bi-telephone me-1"></i> Address</label>
+          {{ form.address }}
+        </div>
 
-        <button type="submit" class="btn-primary">Update Profile</button>
+            <button type="submit" class="btn-primary">Update Profile</button>
         <a href="/" class="btn-secondary">Back</a>
       </form>
     </div>

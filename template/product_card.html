@@ -1,0 +1,60 @@
+{% load static %}
+
+<a href="{% url 'product_detail' product.id %}" class="product-link">
+  <div class="product-card">
+
+    <!-- ❤️ WISHLIST (overlay) -->
+    <button
+      class="wishlist-button {% if product.is_wishlisted %}active{% endif %}"
+      data-product-id="{{ product.id }}"
+      type="button"
+      onclick="event.preventDefault();"
+    >
+      <i class="fa-{% if product.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+    </button>
+
+    <!-- IMAGE -->
+    <div class="product-img-box">
+      {% if product.productimage_set.first %}
+        <img src="{{ product.productimage_set.first.photo.url }}" alt="{{ product.name }}">
+      {% else %}
+        <img src="{% static 'images/no-image.png' %}" alt="No Image">
+      {% endif %}
+    </div>
+
+    <!-- DETAILS -->
+    <div class="product-details-box">
+      <div class="product-title">{{ product.name }}</div>
+      <div class="rating">
+            <span class="badge-rating">4.3 ★</span>
+          </div>
+          <span class="rating-text">1,245 Ratings & 156 Reviews</span>
+      <div class="price-section">
+        <span class="price">₹{{ product.price }}</span>
+        {% if product.discount %}
+          <span class="old-price">₹{{ product.discount }}</span>
+        {% endif %}
+      </div>
+
+      <div class="specs">
+        {% if product.ram %}<small>RAM {{ product.ram }}</small>{% endif %}
+        {% if product.rom %}<small>ROM {{ product.rom }}</small>{% endif %}
+        {% if product.screen_size %}<small>{{ product.screen_size }}</small>{% endif %}
+      </div>
+    </div>
+
+    <!-- ADD TO CART -->
+    <div class="add-cart">
+      <button
+        class="btn btn-primary add-to-cart-btn"
+        data-product-id="{{ product.id }}"
+        data-stock="{{ product.stock }}"
+        {% if product.stock == 0 %}disabled{% endif %}
+        onclick="event.preventDefault();"
+      >
+        {% if product.stock > 0 %}Add to Cart{% else %}Out of Stock{% endif %}
+      </button>
+    </div>
+
+  </div>
+</a>

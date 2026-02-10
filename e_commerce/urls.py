@@ -5,11 +5,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", IndexView.as_view(), name="index"),
+    path("", HomeView.as_view(), name="index"),  # HOME
+    path("subcategory/<int:sub_id>/", SubCategoryProductView.as_view(), name="index2"),
     path("user/", include("users.urls")),
     path("product/", include("product.urls")),
     path("dashboard/",include("dashboard.urls")),
     path('cart/', include('cart.urls')),
+    path('order/', include('order.urls')),
 
 ]
 if settings.DEBUG:

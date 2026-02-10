@@ -1,0 +1,52 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0 p-4">
+        <h4 class="fw-bold mb-4">Manage Order #{{ order.id }}</h4>
+        
+        <div class="row">
+            <div class="col-md-7 border-end">
+                <h6 class="text-muted mb-3 uppercase small fw-bold">Items in this Order</h6>
+                {% for item in order.items.all %}
+                <div class="d-flex align-items-center mb-3 p-2 bg-light rounded">
+                    <img src="{{ item.product.productimage_set.first.photo.url }}" width="60" height="60" class="rounded me-3" style="object-fit: cover;">
+                    <div>
+                        <p class="mb-0 fw-bold">{{ item.product.name }}</p>
+                        <p class="mb-0 small text-muted">Qty: {{ item.quantity }} | Price: ₹{{ item.price }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                <hr>
+                <div class="small">
+                    <p><strong>Customer:</strong> {{ order.first_name }} ({{ order.user.username }})</p>
+                    <p><strong>Address:</strong> {{ request.user.address|truncatechars:20 }}</p>
+                    <p><strong>Phone:</strong> {{ order.phone }}</p>
+                </div>
+            </div>
+
+            <div class="col-md-5 ps-md-4">
+                <div class="p-3 bg-light rounded border mb-3">
+                    <p class="mb-1 small text-muted">Current Status:</p>
+                    <span class="badge {% if order.status == 'Delivered' %}bg-success{% elif order.status == 'Cancelled' %}bg-danger{% else %}bg-primary{% endif %}">
+                        {{ order.status }}
+                    </span>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Change Order Status</label>
+                        <select name="status" class="form-select border-primary shadow-none">
+                            {% for code, name in order.STATUS_CHOICES %}
+                                <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">UPDATE STATUS</button>
+                    <a href="{% url 'admin_order_list' %}" class="btn btn-link w-100 text-muted mt-2">Back to List</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

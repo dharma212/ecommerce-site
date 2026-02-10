@@ -1,69 +1,125 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
 <div class="container-fluid cart-page">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 cart-left">
-        <h4 class="cart-title">My Cart ({{ cart_items.count }})</h4>
+    {% if cart_items %}
+        <div class="row justify-content-between px-lg-5">
+            <div class="col-lg-7 col-md-12">
+                
+                <div class="address-section mb-3 p-3 d-flex justify-content-between align-items-center" style="background: #fff; border: 1px solid #f0f0f0;">
+                <div class="address-text">
+                    {% if user.address %}
+                        <span style="font-size: 14px;">Deliver to: <strong>{{ user.first_name }} {{ user.last_name }}</strong></span>
+                        <p class="m-0 text-muted" style="font-size: 13px;">{{ user.address }}</p>
+                    {% else %}
+                        <span class="text-danger" style="font-size: 14px; font-weight: 500;">
+                            <i class="fas fa-map-marker-alt"></i> Delivery address missing! 
+                            <span class="text-muted" style="font-weight: 400;"> Please add your address to place the order.</span>
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="address-action">
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-sm px-3" style="font-weight: 600; border-radius: 2px;">
+                        {% if user.address %}CHANGE{% else %}ADD ADDRESS{% endif %}
+                    </a>
+                </div>
+                </div>
 
-        {% for item in cart_items %}
-        <div class="cart-item">
-          <div class="cart-item-inner">
-            <div class="cart-img">
-              {% if item.product.productimage_set.first %}
-              <img
-                src="{{ item.product.productimage_set.first.photo.url }}"
-                alt="{{ item.product.name }}"
-              />
-              {% else %}
-              <img src="{% static 'images/no-image.png' %}" alt="No Image" />
-              {% endif %}
+                <div class="cart-left-section">
+                    <div class="cart-header">
+                        <h4 class="m-0">My Cart ({{ cart_items.count }})</h4>
+                    </div>
+
+                    {% for item in cart_items %}
+                    <div class="cart-item-card cart-item" data-item-id="{{ item.id }}">
+                        <div class="item-main-flex">
+                            <div class="image-qty-box text-center">
+                                <div class="cart-img">
+                                    {% if item.product.productimage_set.first %}
+                                    <img src="{{ item.product.productimage_set.first.photo.url }}" alt="{{ item.product.name }}">
+                                    {% else %}
+                                    <img src="{% static 'images/no-image.png' %}" alt="No Image">
+                                    {% endif %}
+                                </div>
+
+                                <div class="qty-controller mt-3">
+                                    <button class="qty-btn update-qty" data-item-id="{{ item.id }}" data-action="minus" {% if item.quantity <= 1 %}disabled{% endif %}>-</button>
+                                    <span class="qty-val" id="qty-{{ item.id }}">{{ item.quantity }}</span>
+                                    <button class="qty-btn update-qty" data-item-id="{{ item.id }}" data-action="plus" {% if item.quantity >= item.product.stock %}disabled{% endif %}>+</button>
+                                </div>
+                            </div>
+
+                            <div class="details-box">
+                                <h6 class="product-name">{{ item.product.name }}</h6>
+                                <p class="seller-text">Seller: SURICYBCOMBazaar</p>
+                                <div class="price-area">
+                                    <span class="current-price">₹{{ item.product.price }}</span>
+                                    {% if item.product.discount %}
+                                    <span class="old-price">₹{{ item.product.discount }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="item-actions mt-3">
+                            <a href="#" class="save-later-link">SAVE FOR LATER</a>
+                            <a href="#" class="remove-link remove-from-cart-btn" data-item-id="{{ item.id }}">REMOVE</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
 
-            <div class="cart-details">
-              <h6>{{ item.product.name }}</h6>
-              <p class="seller">Seller: Official Store</p>
-              <div class="price">₹{{ item.product.price }}</div>
-              <div class="qty">Qty: {{ item.quantity }}</div>
+            <div class="col-lg-4 col-md-12">
+                <div class="price-details-fixed">
+                    <h6 class="price-title">PRICE DETAILS</h6>
+                    <div class="price-body">
+                        <div class="price-item">
+                            <span class="price-count-text">Price ({{ cart_items.count }} items)</span>
+                            <span class="total-price-val">₹{{ total_price }}</span>
+                        </div>
+                        <div class="price-item">
+                            <span>Delivery Charges</span>
+                            <span class="text-success">FREE</span>
+                        </div>
+                        <div class="price-total">
+                            <span>Total Amount</span>
+                            <span id="grand-total">₹{{ total_price }}</span>
+                        </div>
+                        <div class="checkout-area">
+                            {% if user.address %}
+                                <a href="{% url 'checkout' %}" class="place-order-button text-center d-block" style="text-decoration: none;">PLACE ORDER</a>
+                            {% else %}
+                                <button class="place-order-button text-center d-block w-100" style="opacity: 0.6; cursor: not-allowed;">PLACE ORDER</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="actions">
-            <a href="#" class="save-later">Save for Later</a>
-            <a href="#" class="remove">Remove</a>
-          </div>
+        </div>
+    {% else %}
+        <div class="row justify-content-center px-lg-5 py-5">
+            <div class="col-md-11 text-center bg-white p-5 shadow-sm" style="border-radius: 4px;">
+                <img src="https://rukminim1.flixcart.com/www/800/800/promos/16/05/2019/d438a32e-765a-4d8b-b4a6-520b560971e8.png?q=90" 
+                     alt="Empty Cart" 
+                     style="width: 220px; height: auto;">
+                
+                <h3 style="margin-top: 25px; font-size: 18px; font-weight: 500; color: #212121;">
+                    Your cart is empty!
+                </h3>
+                
+                <p style="margin-top: 10px; font-size: 14px; color: #878787;">
+                    Explore our wide range of products and add some items to your cart.
+                </p>
 
+                <div style="margin-top: 20px;">
+                    <a href="/" style="background: #2874f0; color: #fff; padding: 12px 60px; text-decoration: none; font-size: 15px; font-weight: 500; border-radius: 2px; box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2); display: inline-block;">
+                        Shop Now
+                    </a>
+                </div>
+            </div>
         </div>
-        {% empty %}
-        <div class="empty-cart">
-          <img
-            src="https://rukminim1.flixcart.com/www/800/800/promos/16/05/2019/d438a32e-765a-4d8b-b4a6-520b560971e8.png?q=90"
-            width="200"
-            alt="Empty"
-          />
-          <p>Your cart is empty!</p>
-        </div>
-        {% endfor %}
-      </div>
-    
-      <div class="col-lg-4 cart-right">
-        <div class="price-box">
-          <h6>PRICE DETAILS</h6>
-          <div class="price-row">
-            <span>Price ({{ cart_items.count }} items)</span>
-            <span>₹{{ total_price }}</span>
-          </div>
-          <div class="price-row">
-            <span>Delivery Charges</span>
-            <span class="free">FREE</span>
-          </div>
-          <div class="price-row total">
-            <span>Total Amount</span>
-            <span>₹{{ total_price }}</span>
-          </div>
-          <button class="place-order">PLACE ORDER</button>
-        </div>
-      </div>
-      {% comment %} <button class="btn btn-primary " href="{% url 'index' %}">Back</button> {% endcomment %}
-    </div>
-  </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -2,39 +2,32 @@
 # Django Core Imports
 # ===========================
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (TemplateView,FormView,ListView,CreateView,DeleteView,UpdateView)
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import get_user_model
-from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import redirect
-from users.forms import UserProfileUpdateForm
+from users.forms import UserProfileUpdateForm,UserForm
 from django.contrib.auth.views import LoginView
-
-
+from cart.models import Cart
+from order.models import Order
 # ===========================
 # Models Imports
 # ===========================
 from users.models import *
 from product.models import *
-
+from django.db.models import Count
+from cart.models import *
 # ===========================
 # Forms Imports
 # ===========================
 from product.forms import *
-from .forms import UserForm
-from django.core.exceptions import PermissionDenied
 from django.core.exceptions import PermissionDenied
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render
 
 class DashboardLoginRequiredMixin(LoginRequiredMixin):
     login_url = '/login/'
@@ -49,9 +42,49 @@ class DashboardLoginRequiredMixin(LoginRequiredMixin):
 # ===========================
 # Dashboard Index
 # ===========================
-class DashbboardIndexView(DashboardLoginRequiredMixin, TemplateView):
-    template_name = "dashboard/index.html"
+from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+from order.models import Order  # તમારા Order મોડલનું સાચું નામ લખો
+from django.contrib.auth import get_user_model
+from django.db.models import Sum
+User = get_user_model()
 
+class DashboardIndexView(LoginRequiredMixin, View):
+    def get(self, request):
+        # ૧. મુખ્ય આંકડા (Stats)
+        total_users = User.objects.count()
+        total_sales = Order.objects.filter(status='Delivered').aggregate(Sum('total_price'))['total_price__sum'] or 0
+        pending_orders_count = Order.objects.filter(status='Pending').count()
+        
+        # ૨. યુઝર ગ્રાફ માટે (Admins vs Customers)
+        # જો તમારી પાસે 'role' ફીલ્ડ ન હોય તો is_staff નો ઉપયોગ કરી શકાય
+        admins = User.objects.filter(is_staff=True).count()
+        customers = total_users - admins
+
+        # ૩. ડાયનેમિક ટોપ સેલિંગ પ્રોડક્ટ્સ (Top 5)
+        # અમે પ્રોડક્ટને ઓર્ડર આઈટમ્સની સંખ્યા મુજબ ગણીએ છીએ
+        top_products = Product.objects.annotate(
+            sales_count=Count('orderitem')  # અહીં 'orderitem' તમારા Product મોડલની Related Name હોવી જોઈએ
+        ).filter(sales_count__gt=0).order_by('-sales_count')[:5]
+
+        # પ્રોગ્રેસ બારના પર્સન્ટેજ ગણવા માટે સૌથી વધુ સેલ્સ મેળવો
+        max_sales = top_products[0].sales_count if top_products else 1
+
+        # ૪. લેટેસ્ટ ટ્રાન્ઝેક્શન્સ
+        recent_orders = Order.objects.all().order_by('-created_at')[:5]
+
+        context = {
+            'total_users': total_users,
+            'total_sales': total_sales,
+            'pending_orders_count': pending_orders_count,
+            'customers': customers,
+            'admins': admins,
+            'top_products': top_products,
+            'max_sales': max_sales,
+            'recent_orders': recent_orders,
+        }
+        return render(request, 'dashboard/index.html', context)
 
 # ===========================
 # Users Section
@@ -176,18 +209,39 @@ class CategoryUpdateView(DashboardLoginRequiredMixin,SuccessMessageMixin, Update
 
         return super().dispatch(request, *args, **kwargs)
 
-from django.views.generic import ListView
-from product.models import Category
+class SubCategoryCreateView(LoginRequiredMixin, FormView):
+    model = SubCategory
+    template_name = "dashboard/subcategory_form.html"
+    form_class = SubCategoryForm
+    success_url = reverse_lazy("subcategory_list")
 
-class AllCategoryListView(ListView):
-    model = Category
-    template_name = "dashboard/all_categories_table.html"
-    context_object_name = "categories"
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "SubCategory created successfully!")
+        return super().form_valid(form)
 
-    def get_queryset(self):
-        return Category.objects.prefetch_related(
-            'subcategories__product_categories'
-        )
+class SubCategoryListView(LoginRequiredMixin, ListView):
+    model = SubCategory
+    template_name = "dashboard/subcategory_list.html"
+    context_object_name = "subcategories"
+
+class SubCategoryUpdateView(LoginRequiredMixin, UpdateView):
+    model = SubCategory
+    form_class = SubCategoryForm
+    template_name = "dashboard/sub_category_edit.html"
+    success_url = reverse_lazy("subcategory_list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Sub Category updated successfully!")
+        return super().form_valid(form)
+
+class SubCategoryDeleteView(DeleteView):
+    model = SubCategory
+    success_url = reverse_lazy("subcategory_list")
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, "Sub Category deleted successfully!")
+        return super().post(request, *args, **kwargs)
 
     
 # ===========================
@@ -235,7 +289,6 @@ class ProductListView(DashboardLoginRequiredMixin,ListView):
 class ProductDeleteView(DashboardLoginRequiredMixin,SuccessMessageMixin, DeleteView):
     model = Product
     success_url = reverse_lazy("product_list")
-    # success_message = "Product deleted successfully"
 
     def post(self, request, *args, **kwargs):
         messages.success(request, "Product deleted successfully")
@@ -243,12 +296,12 @@ class ProductDeleteView(DashboardLoginRequiredMixin,SuccessMessageMixin, DeleteV
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
-    
+        
 class ProductUpdateView(DashboardLoginRequiredMixin,UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = "dashboard/product_edit.html"  # Tamaru template path
-    success_url = reverse_lazy("product_list")      # Redirect after update
+    template_name = "dashboard/product_edit.html" 
+    success_url = reverse_lazy("product_list")      
     success_message = "Product updated successfully!"
 
     def form_valid(self, form):
@@ -303,15 +356,52 @@ class BannerStatusToggleView(DashboardLoginRequiredMixin,View):
         return redirect("banner")
 
 
-from django.views.generic import ListView
-from cart.models import Cart
-
 class CartDashboardView(ListView):
     model = Cart
     template_name = 'dashboard/cart.html'
     context_object_name = 'cart_items'
 
     def get_queryset(self):
-        return Cart.objects.select_related('user', 'product')
+        return (
+            Cart.objects
+            .select_related('user', 'product')
+            .order_by('-created_at')
+        )
 
+class WishlistDashboardView(ListView):
+    model = Wishlist
+    template_name = "dashboard/wishlist.html"
+    context_object_name = "wishlist_items"
 
+    def get_queryset(self):
+        return (
+            Wishlist.objects
+            .select_related("user", "product")
+            .order_by("-created_at")
+        )
+
+class ContactListView(ListView):
+    model = Contact
+    template_name = "dashboard/contactus-list.html"
+    context_object_name = "contacts"
+    ordering = ["-created_at"]
+    
+class AdminOrderListView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'dashboard/order-details.html' 
+    context_object_name = 'orders'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        return Order.objects.annotate(items_count=Count('items')).filter(items_count__gt=0).order_by('-created_at')
+
+class AdminOrderUpdateView(DashboardLoginRequiredMixin, UpdateView):
+    model = Order
+    fields = ['status']
+    template_name = 'dashboard/admin_order_update.html'
+    success_url = reverse_lazy('admin_order_list') 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order'] = self.get_object()
+        return context

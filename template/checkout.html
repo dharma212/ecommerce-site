@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body { background-color: #f1f3f6; }
+    .checkout-container { max-width: 100%; margin: 0 auto; }
+    .card { border-radius: 2px !important; }
+    .step-badge {
+        background: #f0f0f0;
+        color: #2874f0;
+        padding: 2px 8px;
+        border-radius: 2px;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+    .uppercase { text-transform: uppercase; }
+    .btn-orange {
+        background: #fb641b;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 2px;
+        border: none;
+        padding: 12px 40px;
+    }
+    .btn-orange:hover {
+        background: #f4510b;
+        color: #fff;
+    }
+</style>
+
+<form method="get" action="{% url 'payment' %}">
+    {% csrf_token %}
+
+    <div class="container-fluid py-4 checkout-container">
+        <div class="row px-md-5">
+
+            <!-- LEFT COLUMN -->
+            <div class="col-lg-8">
+
+                <!-- STEP 1: LOGIN -->
+                <div class="card mb-3 shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <div class="text-muted fw-bold uppercase">
+                            <span class="step-badge">1</span> Login
+                            <i class="fa-solid fa-check ms-2 text-primary"></i>
+                        </div>
+                        <div class="small text-end">
+                            <span class="fw-bold d-block">{{ request.user.username }}</span>
+                            <span class="text-muted">+91 {{ request.user.contact_number }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: DELIVERY ADDRESS -->
+                <div class="card mb-3 shadow-sm border-0" id="step2-card">
+
+                    <div class="card-header bg-primary text-white py-3 uppercase fw-bold" id="address-header">
+                        <span class="step-badge bg-white">2</span> Delivery Address
+                    </div>
+
+                    <div class="card-body" id="address-section">
+                        <div class="p-2">
+                            <p class="fw-bold mb-1">
+                                {{ request.user.first_name }} {{ request.user.last_name }}
+                            </p>
+                            <p class="small text-dark mb-3">
+                                {{ request.user.address }}
+                            </p>
+                            <button type="button"
+                                    class="btn btn-orange uppercase"
+                                    id="deliver-here-btn">
+                                Deliver Here
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-header bg-white py-3 d-none" id="address-collapsed">
+                        <div class="text-muted fw-bold uppercase">
+                            <span class="step-badge">2</span>
+                            Delivery Address
+                            <i class="fa-solid fa-check ms-2 text-primary"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- STEP 3: ORDER SUMMARY -->
+                <div class="card mb-3 shadow-sm border-0" id="step3-card">
+
+                    <div class="card-header bg-white py-3 text-muted uppercase fw-bold"
+                         id="summary-header">
+                        <span class="step-badge">3</span> Order Summary
+                    </div>
+
+                    <div class="card-body d-none" id="summary-section">
+
+                        {% for item in cart_items %}
+                        <div class="row mb-3 align-items-center">
+
+                            <div class="col-md-2">
+                                <img src="{{ item.product.productimage_set.first.photo.url }}"
+                                     class="img-fluid"
+                                     style="max-height: 80px;">
+                            </div>
+
+                            <div class="col-md-7">
+                                <h6 class="mb-1">{{ item.product.name }}</h6>
+                                <p class="fw-bold mb-1">₹{{ item.product.price }}</p>
+                                <p class="small mb-0">Quantity: {{ item.quantity }}</p>
+                            </div>
+
+                            <div class="col-md-3 text-end fw-bold">
+                                ₹{{ item.product.price }} × {{ item.quantity }}
+                            </div>
+
+                        </div>
+                        {% endfor %}
+
+                        <div class="border-top pt-3 d-flex justify-content-between align-items-center">
+                            <p class="small mb-0">
+                                Confirmation will be sent to
+                                <b>{{ request.user.email }}</b>
+                            </p>
+                            <button type="submit" class="btn btn-orange uppercase">
+                                Continue
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: PRICE DETAILS -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-header bg-white py-3">
+                        <h6 class="mb-0 fw-bold">PRICE DETAILS</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Price ({{ cart_items|length }} items)</span>
+                            <span>₹{{ total_price }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between fw-bold border-top pt-2">
+                            <span>Total Amount</span>
+                            <span>₹{{ total_price }}</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<script>
+    document.getElementById('deliver-here-btn').addEventListener('click', function () {
+        document.getElementById('address-section').classList.add('d-none');
+        document.getElementById('address-header').classList.add('d-none');
+        document.getElementById('address-collapsed').classList.remove('d-none');
+        document.getElementById('summary-header').classList.add('bg-primary', 'text-white');
+        document.getElementById('summary-section').classList.remove('d-none');
+    });
+</script>
+
+{% endblock content %}

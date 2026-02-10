@@ -1,22 +1,26 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
-from .models import User    
+from .models import *
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from .models import Contact
-
+from django.contrib.auth import get_user_model
 class UserRegisterForm(UserCreationForm):
+    terms_accepted = forms.BooleanField(
+        required=True,
+        label="I agree to the Terms & Conditions"
+    )
     password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
+        widget=forms.PasswordInput(render_value=True,attrs={
             "class": "form-control",
             "placeholder": "Enter password"
         })
     )
     password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
+        widget=forms.PasswordInput(render_value=True,attrs={
             "class": "form-control",
             "placeholder": "Confirm password"
         })
@@ -82,6 +86,51 @@ class UserRegisterForm(UserCreationForm):
         return contact_number
 
 
+User = get_user_model()
+
+class UserForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter password'
+        })
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'contact_number',
+            'password'
+        ]
+
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'First name'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Last name'
+            }),
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Username'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Email address'
+            }),
+            'contact_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Contact number'
+            }),
+        }
+        
+        
 class ForgotPasswordForm(forms.Form):
     identifier = forms.CharField(
         label="Username / Email / Contact Number",
@@ -132,12 +181,15 @@ class ForgotPasswordForm(forms.Form):
         return cleaned_data
 
     def save(self):
-        """Update the user's password"""
         self.user.set_password(self.cleaned_data["new_password1"])
         self.user.save()
         return self.user
     
 class UserLoginForm(AuthenticationForm):
+    terms_accepted = forms.BooleanField(
+        required=True,
+        label="I agree to the Terms & Conditions"
+    )
     username = forms.CharField(label="Username",widget=forms.TextInput(attrs={"class": "form-control",
             "placeholder": "Enter username"
         })
@@ -179,6 +231,7 @@ class UserProfileUpdateForm(forms.ModelForm):
             "contact_number",
             "first_name",
             "last_name",
+            "address",
         ]
         widgets = {
             "username": forms.TextInput(attrs={"class": "form-control"}),
@@ -186,6 +239,7 @@ class UserProfileUpdateForm(forms.ModelForm):
             "contact_number": forms.TextInput(attrs={"class": "form-control"}),
             "first_name": forms.TextInput(attrs={"class": "form-control"}),
             "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "address":forms.Textarea(attrs={"class":"form-control", "rows":2}),
         }
 
     def clean_username(self):
@@ -210,10 +264,15 @@ class UserProfileUpdateForm(forms.ModelForm):
             if User.objects.exclude(pk=self.instance.pk).filter(contact_number=contact_number).exists():
                 raise forms.ValidationError("This contact number is already registered.")
         return contact_number
+    
 from django import forms
 from .models import Contact
 
 class ContactForm(forms.ModelForm):
+    terms_accepted = forms.BooleanField(
+        required=True,
+        label="I agree to the Terms & Conditions"
+    )
     class Meta:
         model = Contact
         fields = ['name', 'email', 'phone', 'subject' ,'message']
@@ -257,3 +316,41 @@ class ContactForm(forms.ModelForm):
             raise forms.ValidationError("Phone number must be at least 10 digits")
 
         return contact
+    
+from django import forms
+from .models import AboutPage
+
+class AboutPageForm(forms.ModelForm):
+    class Meta:
+        model = AboutPage
+        fields = '__all__'
+        widgets = {
+            'store_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'hero_subtitle': forms.TextInput(attrs={'class': 'form-control'}),
+            'mission_statement': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'story_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'story_image': forms.FileInput(attrs={'class': 'form-control'}),
+            'value_one_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'value_one_desc': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'value_two_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'value_two_desc': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'value_three_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'value_three_desc': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+        }
+        
+from django import forms
+from .models import TermsAndConditions
+
+class TermsForm(forms.ModelForm):
+    class Meta:
+        model = TermsAndConditions
+        fields = '__all__'
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'introduction': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'use_of_website': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'user_accounts': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'product_info': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'liability': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'changes_to_terms': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

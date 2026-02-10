@@ -1,38 +1,10 @@
-<!-- ===== Mobile Bottom Footer ===== -->
-<nav class="mobile-bottom-nav">
-  <a href="{% url 'index'%}" class="nav-item active">
-    <i class="fa-solid fa-house"></i>
-    <span>Home</span>
-  </a>
-
-  <a href="#" class="nav-item">
-    <i class="fa-solid fa-play"></i>
-    <span>Play</span>
-  </a>
-
-  <a href="#" class="nav-item">
-    <i class="fa-solid fa-list"></i>
-    <span>Categories</span>
-  </a>
-
-  <a href="{% url 'profile' %}" class="nav-item">
-    <i class="fa-solid fa-user"></i>
-    <span>Account</span>
-  </a>
-
-  <a href="#" class="nav-item cart">
-    <i class="fa-solid fa-cart-shopping"></i>
-    <span>Cart</span>
-    <span class="cart-count">2</span>
-  </a>
-</nav>
 <!-- ===== Laptop Bottom Footer ======-->
 <footer class="footer" role="contentinfo">
   <div class="footer-content">
     <div class="footer-section">
       <h4>ABOUT</h4>
       <a href="{% url 'contact' %}"><i class="bi bi-envelope"></i> Contact Us</a>
-      <a href="#"><i class="bi bi-info-circle"></i> About Us</a>
+      <a href="{% url 'about_detail' %}"><i class="bi bi-info-circle"></i> About Us</a>
       <a href="#"><i class="bi bi-briefcase"></i> Careers</a>
     </div>
     <div class="footer-section">
@@ -43,7 +15,7 @@
     </div>
     <div class="footer-section">
       <h4>CONSUMER POLICY</h4>
-      <a href="#"><i class="bi bi-file-text"></i> Terms Of Use</a>
+      <a href="{% url 'terms_public' %}"><i class="bi bi-file-text"></i> Terms Of Use</a>
       <a href="#"><i class="bi bi-shield-lock"></i> Security</a>
       <a href="#"><i class="bi bi-person-lock"></i> Privacy</a>
     </div>

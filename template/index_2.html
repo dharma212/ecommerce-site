@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<style>
+  .product-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.laptop-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.sort-box select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #fff;
+}
+
+</style>
+<div class="product-section">
+
+  <!-- HEADER -->
+  <div class="product-header">
+  <h2 class="laptop-title">Laptop Deals</h2>
+
+  <div class="sort-box">
+    <form method="get">
+      <select name="sort" onchange="this.form.submit()">
+        <option value="">Sort By</option>
+        <option value="low"  {% if request.GET.sort == "low" %}selected{% endif %}>
+          Price: Low to High
+        </option>
+        <option value="high" {% if request.GET.sort == "high" %}selected{% endif %}>
+          Price: High to Low
+        </option>
+        <option value="new"  {% if request.GET.sort == "new" %}selected{% endif %}>
+          Newest Arrivals
+        </option>
+      </select>
+    </form>
+  </div>
+</div>
+
+
+  <!-- PRODUCTS -->
+  <div class="product-grid">
+    {% for product in all_product %}
+    <a href="{% url 'product_detail' product.id %}" class="product-link">
+      <div class="product-card">
+
+        <!-- IMAGE -->
+        <div class="product-img-box">
+          {% if product.productimage_set.first %}
+            <img src="{{ product.productimage_set.first.photo.url }}" alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'images/no-image.png' %}">
+          {% endif %}
+        </div>
+
+        <!-- DETAILS -->
+        <div class="product-details-box">
+          <div class="product-title">{{ product.name }}</div>
+
+          <div class="price-section">
+            <span class="price">₹{{ product.price }}</span>
+            {% if product.discount %}
+              <span class="old-price">₹{{ product.discount }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- CART -->
+        <div class="add-cart">
+  <button
+    class="btn btn-primary add-to-cart-btn"
+    data-product-id="{{ product.id }}"
+    data-stock="{{ product.stock }}"
+    {% if product.stock == 0 %}disabled{% endif %}
+  >
+    {% if product.stock > 0 %}
+      Add to Cart
+    {% else %}
+      Out of Stock
+    {% endif %}
+  </button>
+</div>
+
+
+      </div>
+    </a>
+    {% empty %}
+      <p>No products found.</p>
+    {% endfor %}
+  </div>
+
+</div>
+
+{% endblock %}

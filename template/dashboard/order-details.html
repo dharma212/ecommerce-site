@@ -1,0 +1,111 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold mb-0">
+      <i class="bi bi-box-seam me-2"></i> Order List
+    </h2>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table
+          id="orderTable"
+          class="table table-hover table-striped mb-0 text-center align-middle nowrap"
+          style="width:100%"
+        >
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Products</th>
+              <th>Address</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for order in orders %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+
+              <td class="text-start">
+                <div class="fw-bold">{{ order.user.username }}</div>
+                <div class="small text-muted">{{ order.phone }}</div>
+              </td>
+
+              <td>
+                {% for item in order.items.all %}
+                  <span class="badge bg-info text-dark mb-1">
+                    {{ item.product.name |truncatechars:10}} (x{{ item.quantity }})
+                  </span><br>
+                {% endfor %}
+              </td>
+
+              <td class="small">
+                {{ request.user.address|default:"No address set in profile" |truncatechars:20}}              
+              </td>
+
+              <td class="fw-bold text-primary">
+                ₹{{ order.total_price }}
+              </td>
+
+              <td>
+                {% if order.status == 'Pending' %}
+                  <span class="badge bg-secondary">
+                    <i class="bi bi-clock"></i> Pending
+                  </span>
+                {% elif order.status == 'Accepted' %}
+                  <span class="badge bg-info text-dark">
+                    <i class="bi bi-check2-all"></i> Accepted
+                  </span>
+                {% elif order.status == 'Packed' %}
+                  <span class="badge bg-primary">
+                    <i class="bi bi-box"></i> Packed
+                  </span>
+                {% elif order.status == 'Shipped' %}
+                  <span class="badge bg-warning text-dark">
+                    <i class="bi bi-truck"></i> Shipped
+                  </span>
+                {% elif order.status == 'Delivered' %}
+                  <span class="badge bg-success">
+                    <i class="bi bi-patch-check"></i> Delivered
+                  </span>
+                {% elif order.status == 'Cancelled' %}
+                  <span class="badge bg-danger">
+                    <i class="bi bi-x-circle"></i> Cancelled
+                  </span>
+                {% else %}
+                  <span class="badge bg-dark">{{ order.status }}</span>
+                {% endif %}
+              </td>
+
+              <td>
+                <a
+                  href="{% url 'admin_order_update' order.id %}"
+                  class="btn btn-sm btn-dark"
+                >
+                  <i class="bi bi-pencil-square"></i> Update
+                </a>
+              </td>
+            </tr>
+
+            {% empty %}
+            <tr>
+              <td colspan="7" class="text-muted py-5">
+                <i class="bi bi-cart-x fs-1 d-block mb-2"></i>
+                No orders found
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

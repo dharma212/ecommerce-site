@@ -5,7 +5,7 @@ from dashboard.views import *
 urlpatterns = [
 
     # ================= DASHBOARD =================
-    path("", DashbboardIndexView.as_view(), name="dashboard_index"),
+    path("", DashboardIndexView.as_view(), name="dashboard_index"),
 
     # ================= CATEGORY ==================
     path("category/add/", CategoryCreateView.as_view(), name="category_form"),
@@ -13,7 +13,11 @@ urlpatterns = [
     path("category/edit/<int:pk>/", CategoryUpdateView.as_view(), name="category_edit"),
     path("category/delete/<int:pk>/", CategoryDeleteView.as_view(), name="category_delete"),
 
-        
+    # ================= SubCategory ===============
+    path("subcategory/add/", SubCategoryCreateView.as_view(), name="subcategory_add"),
+    path("subcategory/list/", SubCategoryListView.as_view(), name="subcategory_list"),
+    path("subcategory/edit/<int:pk>/", SubCategoryUpdateView.as_view(), name="subcategory_edit"),
+    path("subcategory/delete/<int:pk>/", SubCategoryDeleteView.as_view(), name="subcategory_delete"),
 
     # ================= PRODUCTS ==================
     path("products/", ProductListView.as_view(), name="product_list"),
@@ -38,5 +42,8 @@ urlpatterns = [
     path("users/edit/<int:pk>/", UserUpdateView.as_view(), name="user_edit"),
     
     path('cart/', CartDashboardView.as_view(), name='cart_dashboard'),
-
+    path("dashboard/wishlist/", WishlistDashboardView.as_view(), name="wishlist_dashboard"),
+    path('contactus/list',ContactListView.as_view(),name="contactus"),
+    path('dashboard/orders/', AdminOrderListView.as_view(), name='admin_order_list'),
+    path('dashboard/orders/<int:pk>/update/', AdminOrderUpdateView.as_view(), name='admin_order_update'),
 ]

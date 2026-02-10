@@ -1,85 +1,81 @@
-{% extends "base.html" %} {% block content %}
-<!-- ================================ -->
-<!-- ========= Banner Section ====== -->
-<!-- ================================ -->
+{% extends "base.html" %}
 {% load static %}
+{% block content %}
+
+<!-- ================= BANNER ================= -->
 <section class="hero-banner">
   <div class="swiper bannerSwiper">
     <div class="swiper-wrapper">
       {% for banner in banners %}
-      <div class="swiper-slide">
-        <img src="{{ banner.image.url }}" alt="{{ banner.title }}" />
-      </div>
+        <div class="swiper-slide">
+          <img src="{{ banner.image.url }}" alt="{{ banner.title }}">
+        </div>
       {% endfor %}
     </div>
-
-    <!-- Optional controls -->
     <div class="swiper-pagination"></div>
     <div class="swiper-button-next"></div>
     <div class="swiper-button-prev"></div>
   </div>
 </section>
-<!-- ================================ -->
-<!-- ===== Product Section Start ==== -->
-<!-- ================================ -->
 
+<!-- ================= LAPTOP ================= -->
 <div class="product-section">
-  <h2>Laptop Deals</h2>
-
+  <h2 class="laptop-title">Laptop Deals</h2>
   <div class="product-grid">
-    {% for product in all_product %}
-    <div class="product-card">
-      <!-- Product Image -->
-      {% if product.productimage_set.first %}
-      <img
-        src="{{ product.productimage_set.first.photo.url }}"
-        alt="{{ product.name }}"
-      />
-      {% else %}
-      <img src="/static/images/no-image.png" alt="No Image" />
-      {% endif %}
-
-      <!-- Product Name -->
-      <div class="product-title">{{ product.name }}</div>
-
-      <!-- Rating (static for now) -->
-      <div class="rating">4.4 ★</div>
-
-      <!-- Price Section -->
-      <div>
-        <span class="price">₹{{ product.price }}</span>
-
-        {% if product.discount %}
-        <span class="old-price">
-          ₹{{ product.price|add:product.discount }}
-        </span>
-        {% endif %}
-      </div>
-
-      <!-- Extra Specs -->
-      <div class="specs">
-        <small><strong>RAM: </strong>{{ product.ram }}</small>
-        <small><strong>ROM: </strong>{{ product.rom }}</small>
-        <small><strong>Screen: </strong>{{ product.screen_size }}</small>
-      </div>
-      <!-- Add to Cart Button -->
-      <div class="add-cart">
-        <div class="add-cart">
-          <button
-            class="btn btn-primary add-to-cart-btn"
-            data-product-id="{{ product.id }}"
-          >
-            Add to Cart
-          </button>
-        </div>
-
-        <!-- Wishlist Button -->
-        <button class="wishlist-btn" data-product-id="{{ product.id }}">
-          <i class="fa-regular fa-heart"></i>
-        </button>
-      </div>
-    </div>
+    {% for product in laptops %}
+      {% include "product_card.html" %}
+    {% empty %}
+      <p>No laptops found.</p>
     {% endfor %}
   </div>
 </div>
-{% endblock content %}
+
+<!-- ================= MOUSE ================= -->
+<div class="product-section">
+  <h2 class="laptop-title">Mouse</h2>
+  <div class="product-grid">
+    {% for product in mouses %}
+      {% include "product_card.html" %}
+    {% empty %}
+      <p>No mouse found.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ================= TV ================= -->
+<div class="product-section">
+  <h2 class="laptop-title">TV</h2>
+  <div class="product-grid">
+    {% for product in tvs %}
+      {% include "product_card.html" %}
+    {% empty %}
+      <p>No TV found.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ================= WASHING MACHINE ================= -->
+<div class="product-section">
+  <h2 class="laptop-title">Washing Machine</h2>
+  <div class="product-grid">
+    {% for product in washing_machines %}
+      {% include "product_card.html" %}
+    {% empty %}
+      <p>No washing machines found.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ================= OTHER PRODUCTS ================= -->
+{% comment %} <div class="product-section">
+  <h2 class="laptop-title">Other Products</h2>
+  <div class="product-grid">
+    {% for product in other_products %}
+      {% include "product_card.html" %}
+    {% empty %}
+      <p>No other products available.</p>
+    {% endfor %}
+  </div>
+</div> {% endcomment %}
+
+{% endblock %}

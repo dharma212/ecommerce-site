@@ -15,56 +15,72 @@
       </div>
     {% endif %}
 
-    <!-- Row 1 -->
     <div class="form-row">
       <div class="form-group">
         <label>{{ form.username.label }}</label>
         {{ form.username }}
-        {{ form.username.errors }}
+        <div class="text-danger small">{{ form.username.errors }}</div>
       </div>
 
       <div class="form-group">
         <label>{{ form.first_name.label }}</label>
         {{ form.first_name }}
-        {{ form.first_name.errors }}
+        <div class="text-danger small">{{ form.first_name.errors }}</div>
       </div>
     </div>
 
-    <!-- Row 2 -->
     <div class="form-row">
       <div class="form-group">
         <label>{{ form.email.label }}</label>
         {{ form.email }}
-        {{ form.email.errors }}
+        <div class="text-danger small">{{ form.email.errors }}</div>
       </div>
 
       <div class="form-group">
         <label>{{ form.contact_number.label }}</label>
         {{ form.contact_number }}
-        {{ form.contact_number.errors }}
+        <div class="text-danger small">{{ form.contact_number.errors }}</div>
       </div>
     </div>
 
-    <!-- Row 3 -->
     <div class="form-row">
       <div class="form-group">
         <label>{{ form.password1.label }}</label>
         {{ form.password1 }}
-        {{ form.password1.errors }}
+        <div class="text-danger small">{{ form.password1.errors }}</div>
       </div>
 
       <div class="form-group">
         <label>{{ form.password2.label }}</label>
         {{ form.password2 }}
-        {{ form.password2.errors }}
+        <div class="text-danger small">{{ form.password2.errors }}</div>
       </div>
+    </div>
+
+    <div class="terms-wrapper" style="margin-bottom: 20px;">
+        <div class="terms-container" style="display: flex !important; flex-direction: row !important; align-items: center !important; gap: 10px !important; margin-top: 10px !important; width: 100% !important;">
+            <div style="display: flex !important; align-items: center !important; width: auto !important;">
+                {{ form.terms_accepted }}
+            </div>
+            <label for="{{ form.terms_accepted.id_for_label }}" style="margin: 0 !important; display: inline-block !important; font-size: 13px !important; white-space: nowrap !important; cursor: pointer !important; line-height: 1 !important;">
+                I agree to the 
+                <a href="{% url 'terms_public' %}" target="_blank" style="display: inline !important; color: #0d6efd !important; text-decoration: underline !important; font-weight: 600;">Terms & Conditions</a>
+            </label>
+        </div>
+        {% if form.terms_accepted.errors %}
+            <div class="text-danger" style="font-size: 11px; margin-top: 5px; margin-left: 25px;">
+                {% for error in form.terms_accepted.errors %}{{ error }}{% endfor %}
+            </div>
+        {% endif %}
     </div>
 
     <button type="submit" class="auth-btn">Sign Up</button>
 
-    <a href="{% url 'login' %}" class="auth-link">
-      Already have an account? Login
-    </a>
+    <div class="mt-3 text-center">
+        <a href="{% url 'login' %}" class="auth-link">
+          Already have an account? Login
+        </a>
+    </div>
   </form>
 </div>
 

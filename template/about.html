@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="about-wrapper">
+    <div class="about-container">
+<div class="page-title-bar">
+        <h1 class="title">About Us</h1>
+</div>        
+        <section class="about-hero">
+            <h1>We're <span class="brand-float">{{ about_data.store_name }}</span></h1>
+            <p>{{ about_data.hero_subtitle }}</p>
+        </section>
+
+        <section class="content-grid">
+            {% if about_data.story_image %}
+                <img src="{{ about_data.story_image.url }}" alt="Our Story" class="content-image">
+            {% else %}
+                <div class="content-image d-flex align-items-center justify-content-center">No Image</div>
+            {% endif %}
+            
+            <div class="content-text">
+                <h2>Our Mission</h2>
+                <p>{{ about_data.mission_statement }}</p>
+                <hr>
+                <h2>Our Story</h2>
+                <p>{{ about_data.story_description }}</p>
+            </div>
+        </section>
+
+        <section class="values-section">
+            <div class="value-card">
+                <h3>{{ about_data.value_one_title }}</h3>
+                <p>{{ about_data.value_one_desc }}</p>
+            </div>
+            <div class="value-card">
+                <h3>{{ about_data.value_two_title }}</h3>
+                <p>{{ about_data.value_two_desc }}</p>
+            </div>
+            <div class="value-card">
+                <h3>{{ about_data.value_three_title }}</h3>
+                <p>{{ about_data.value_three_desc }}</p>
+            </div>
+        </section>
+
+        <section class="about-cta">
+            <h2>Ready to see what we've built?</h2>
+            <p>Explore our curated collection and find your new favorites.</p>
+            <a href="{% url 'index' %}" class="shop-btn">Shop the Collection</a>
+        </section>
+
+    </div>
+</div>
+{% endblock content %}

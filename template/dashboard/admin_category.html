@@ -1,0 +1,31 @@
+    {% extends "dashboard/base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h3>Add Sub Category</h3>
+    <hr>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Main Category</label>
+            {{ form.category }}
+        </div>
+
+        <div class="mb-3">
+            <label>Sub Category Name</label>
+            {{ form.name }}
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'subcategory_list' %}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+
+{% endblock %}

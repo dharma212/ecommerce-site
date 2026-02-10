@@ -9,5 +9,11 @@ urlpatterns = [
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),
     path("profile/", UserProfileView.as_view(), name="profile"),
     path("contact/", ContactCreateView.as_view(), name="contact"),
-
+    
+    path('about/', AboutDetailView.as_view(), name='about_detail'),
+    path('dashboard/about/edit/', AboutUpdateView.as_view(), name='about_edit'),
+    path('terms/', TermsDetailView.as_view(), name='terms_public'),
+    path('dashboard/terms/edit/', TermsUpdateView.as_view(), name='terms_edit'),
+    # path('header/', HeaderView.as_view(), name='header'),
 ]
+

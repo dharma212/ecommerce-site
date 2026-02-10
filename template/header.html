@@ -1,150 +1,289 @@
 <link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 />
 
 <nav class="navbar">
-  <!-- LOGO -->
   <a href="/" class="logo">
     <span>E-Commerce</span>
   </a>
 
   {% if user.is_authenticated %}
-  <!-- SEARCH (DESKTOP ONLY) -->
   <div class="search desktop-only">
     <input type="search" placeholder="Search items..." />
     <button><i class="fa-solid fa-magnifying-glass"></i></button>
   </div>
   {% endif %}
 
-  <!-- RIGHT MENU -->
   <div class="right-menu">
     {% if user.is_authenticated %}
-    <!-- USER DROPDOWN -->
-        {% if request.user.role == "admin" %}
-          <div class="desktop-only admin-links">
-            <a href="{% url 'dashboard_index' %}">
-                <i class="fa-solid fa-chart-line"></i> Dashboard
-            </a>
-          </div>
-        {% endif %}
 
-    <div class="desktop-only user-dropdown">
+    <!-- ACCOUNT DROPDOWN -->
+    <div class="user-dropdown desktop-only">
       <a href="#" class="profile-btn">
-        <i class="fa-solid fa-user"></i> {{ user.username }}
+        <i class="bi bi-person"></i>
+        <span>Account</span>
         <i class="fa-solid fa-caret-down"></i>
       </a>
+
       <div class="dropdown-content">
-        <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i> Profile</a>
-        <a href="#"><i class="fa-solid fa-box"></i> Orders</a>
-        <a href="{% url 'cart_list' %}"><i class="bi bi-cart-fill"></i> Cart </a>
-        <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+        <a href="{% url 'profile' %}"> <i class="bi bi-person"></i> Profile </a>
+
+        <a href="{% url 'my_orders' %}">
+          <i class="bi bi-box"></i> My Orders
+        </a>
+
+        <a href="{% url 'wishlist_list' %}">
+          <i class="bi bi-heart"></i> Wishlist
+        </a>
+
+        <a href="#"> <i class="bi bi-gear"></i> Settings </a>
+
+        <a href="{% url 'logout' %}" class="logout-btn">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
       </div>
     </div>
+    <a href="{% url 'cart_list' %}" class="cart-link">
+      <i class="bi bi-cart"></i>
+      <span id="cart-count" class="cart-count">0</span>
+      My Cart
+    </a>
 
-    <!-- LOGOUT (DESKTOP + MOBILE) -->
-    <a href="{% url 'logout' %}" class="logout-btn">
-      <i class="fa-solid fa-right-from-bracket"></i> Logout
-    </a>
-    {% else %}
-    <a href="{% url 'signup' %}">
-      <i class="fa-solid fa-user-plus"></i> Signup
-    </a>
-    <a href="{% url 'login' %}">
-      <i class="fa-solid fa-right-to-bracket"></i> Login
+    {% if request.user.role == "admin" %}
+    <a href="{% url 'dashboard_index' %}" class="desktop-only">
+      <i class="fa-solid fa-chart-line"></i> Dashboard
     </a>
     {% endif %}
-  </div>
+    <div class="mobile-only user-dropdown-container">
+      <button class="simple-profile-btn" id="simpleProfileToggle">
+        <i class="fa-solid fa-user"></i>
+        <span>Account</span>
+        <i class="fa-solid fa-chevron-down arrow"></i>
+      </button>
 
-  <!-- ====================================== -->
-  <!-- ========= Product Categories Bar ===== -->
-  <!-- ====================================== -->
-  {% comment %} {% if user.is_authenticated %}
-  <section class="desktop-only-categories">
-    <div class="simple-dropdown">
-      <a href="#" class="main-cat-link">
-        <i class="fa-solid fa-laptop"></i> Laptops ▾
-      </a>
-      <div class="dropdown-content">
-        <!-- ===== Dell Brand ===== -->
-        <div class="submenu-container">
-          <a href="#" class="submenu-trigger">Dell</a>
-          <div class="sub-submenu-content">
-            <a href="#">Inspiron 15</a> <a href="#">XPS 13</a>
-            <a href="#">Alienware</a>
-          </div>
-        </div>
-        <!-- ===== HP Brand ===== -->
-        <div class="submenu-container">
-          <a href="#" class="submenu-trigger">HP</a>
-          <div class="sub-submenu-content">
-            <a href="#">Pavilion 14</a> <a href="#">Envy x360</a>
-            <a href="#">Spectre</a>
-          </div>
-        </div>
-        <!-- ===== Asus Brand ===== -->
-        <div class="submenu-container">
-          <a href="#" class="submenu-trigger">Asus</a>
-          <div class="sub-submenu-content">
-            <a href="#">VivoBook</a> <a href="#">ROG</a> <a href="#">ZenBook</a>
-          </div>
-        </div>
-        <!-- ===== Apple Brand ===== -->
-        <div class="submenu-container">
-          <a href="#" class="submenu-trigger">Apple</a>
-          <div class="sub-submenu-content">
-            <a href="#">MacBook Air</a> <a href="#">MacBook Pro</a>
-          </div>
-        </div>
-      </div>
+      <ul class="simple-dropdown-menu" id="simpleMenu">
+        <li>
+          <a href="{% url 'profile' %}"
+            ><i class="fa-solid fa-circle-user"></i> Profile</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'checkout' %}"
+            ><i class="fa-solid fa-box-open"></i> My Orders</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'cart_list' %}"
+            ><i class="fa-solid fa-cart-shopping"></i> My Cart</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'wishlist_list' %}"
+            ><i class="fa-solid fa-heart"></i> Wishlist</a
+          >
+        </li>
+        <li class="divider"></li>
+        <li>
+          <a href="{% url 'logout' %}" class="logout-red"
+            ><i class="fa-solid fa-power-off"></i> Logout</a
+          >
+        </li>
+      </ul>
     </div>
-    <!-- ===== Tablet Category ===== -->
-    <div class="simple-dropdown">
-      <a href="#" class="main-cat-link">
-        <i class="fa-solid fa-tablet-screen-button"></i> Tablet ▾
-      </a>
-    </div>
-    <!-- ===== Smartphone Category ===== -->
-    <div class="simple-dropdown">
-      <a href="#" class="main-cat-link">
-        <i class="fa-solid fa-mobile-screen-button"></i> Smartphones ▾
-      </a>
-    </div>
-    <!-- ===== Mouse Category ===== -->
-    <div class="simple-dropdown">
-      <a href="#" class="main-cat-link">
-        <i class="fa-solid fa-computer-mouse"></i> Mouse ▾
-      </a>
-    </div>
-    <!-- ===== Keyboard Category ===== -->
-    <div class="simple-dropdown">
-      <a href="#" class="main-cat-link">
-        <i class="fa-solid fa-keyboard"></i> Keyboards ▾
-      </a>
-    </div>
-    <!-- ===== Headphones Category ===== -->
-    <div class="simple-dropdown">
-      <a href="#" class="main-cat-link">
-        <i class="fa-solid fa-headphones"></i> Headphones & Earbuds ▾
-      </a>
-    </div>
-    <!-- ===== Smart TV Category ===== -->
-    <div class="simple-dropdown">
-      <a href="#" class="main-cat-link">
-        <i class="fa-solid fa-tv"></i> Smart TVs ▾
-      </a>
-    </div>
-  </section>
-  {% endif %} {% endcomment %}
+    {% else %}
+    <a href="{% url 'signup' %}"
+      ><i class="fa-solid fa-user-plus"></i> Signup</a
+    >
+    <a href="{% url 'login' %}"
+      ><i class="fa-solid fa-right-to-bracket"></i> Login</a
+    >
+    {% endif %}
+  </div>
 </nav>
-<!-- Login Required Modal -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <h4>Login Required</h4>
-        <p>Please login to add items to your cart.</p>
-        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-success">
-            Login
-        </a>
-        <button class="btn btn-secondary close-modal">Cancel</button>
+<style>
+.cat-header-container {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.16);
+    padding: 8px 0;
+}
+
+.cat-header-inner {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.cat-item {
+    position: relative;
+    cursor: pointer;
+}
+
+.cat-item a {
+    text-decoration: none;
+    color: #212121;
+    font-weight: 500;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.cat-item img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
+.cat-name {
+    display: flex;
+    align-items: center;
+}
+
+.cat-name i {
+    font-size: 8px;
+    margin-left: 6px;
+    color: #878787;
+    transition: transform 0.3s;
+}
+
+.cat-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: transparent;
+    min-width: 200px;
+    z-index: 1000;
+    padding-top: 10px;
+}
+
+.dropdown-inner {
+    background: #fff;
+    box-shadow: 0 4px 16px 0 rgba(0,0,0,.2);
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+}
+
+.dropdown-inner a {
+    padding: 12px 16px;
+    display: block !important;
+    text-align: left !important;
+    color: #212121 !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    border-bottom: 1px solid #f0f0f0;
+    flex-direction: row !important;
+}
+
+.dropdown-inner a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-inner a:hover {
+    background-color: #f5faff;
+    color: #2874f0 !important;
+}
+
+.cat-item:hover .cat-dropdown {
+    display: block;
+}
+
+.cat-item:hover .cat-name {
+    color: #2874f0;
+}
+
+.cat-item:hover .cat-name i {
+    transform: rotate(180deg);
+    color: #2874f0;
+}
+
+@media (max-width: 768px) {
+    .cat-header-container {
+        padding: 10px 0;
+        overflow: hidden;
+    }
+
+    .cat-mobile-wrapper {
+        display: flex !important;
+        justify-content: flex-start !important;
+        gap: 20px !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 0 15px;
+        scrollbar-width: none;
+    }
+
+    .cat-mobile-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .cat-item {
+        flex: 0 0 auto;
+        text-align: center;
+    }
+
+    .cat-item img {
+        width: 52px;
+        height: 52px;
+    }
+
+    .cat-item a {
+        font-size: 12px;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+}
+</style>
+{% if user.is_authenticated %}
+<div class="cat-header-container">
+  <div class="cat-header-inner cat-mobile-wrapper">
+    {% for category in header_categories %}
+<div class="cat-item">
+  <a href="#">
+    {% if category.image %}
+      <img src="{{ category.image.url }}" alt="{{ category.name }}">
+    {% endif %}
+
+    <span class="cat-name">
+      {{ category.name }}
+      {% if category.subcategories.all %}
+        <i class="fa-solid fa-chevron-down desktop-only"></i>
+      {% endif %}
+    </span>
+  </a>
+
+  {% if category.subcategories.all %}
+  <div class="cat-dropdown desktop-only">
+    <div class="dropdown-inner">
+      {% for sub in category.subcategories.all %}
+  <a href="{% url 'index2' sub.id %}">{{ sub.name }}</a>
+{% endfor %}
     </div>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+
+  </div>
+</div>
+{% endif %}
+</div>
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <h4>Login Required</h4>
+    <p>Please login to add items to your cart.</p>
+    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-success"
+      >Login</a
+    >
+    <button class="btn btn-secondary close-modal">Cancel</button>
+  </div>
 </div>

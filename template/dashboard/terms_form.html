@@ -1,0 +1,57 @@
+{% extends "dashboard/base.html" %} {% block content %}
+<div class="container-fluid">
+  <div class="card shadow-sm">
+    <div class="card-header  py-3 d-flex justify-content-between">
+      <h4 class="mb-0">
+        <i class="bi bi-file-earmark-text me-2"></i> Edit Terms & Conditions
+      </h4>
+      <a
+        href="{% url 'terms_public' %}"
+        target="_blank"
+        class="btn btn-sm btn-outline-primary"
+        >View Live Page</a
+      >
+    </div>
+    <div class="card-body">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label class="fw-bold">Page Title</label>
+            {{ form.title }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="fw-bold">1. Introduction</label>
+            {{ form.introduction }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="fw-bold">2. Use of Website</label>
+            {{ form.use_of_website }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="fw-bold">3. User Accounts</label>
+            {{ form.user_accounts }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="fw-bold">4. Product Information</label>
+            {{ form.product_info }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="fw-bold">5. Limitation of Liability</label>
+            {{ form.liability }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="fw-bold">6. Changes to Terms</label>
+            {{ form.changes_to_terms }}
+          </div>
+        </div>
+        <div class="text-end mt-3">
+          <button type="submit" class="btn btn-success px-5">
+            Save Legal Content
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

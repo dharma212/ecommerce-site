@@ -1,0 +1,51 @@
+{% extends "dashboard/base.html" %} {% block content %} 
+<style>
+  .table-responsive {
+    max-height: 500px;
+  }
+  .contact-header{
+    font-size: 2rem;        /* font size increase */
+    margin-bottom: 25px;    /* bottom margin */
+    margin-top: -25px
+}
+</style>
+<div class="content mt-4">
+  <h4 class="fw-bold contact-header"><i class="bi bi-chat-dots me-2"></i> Contact Us Details</h4>
+
+  {% if contacts %}
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Subject</th>
+          <th>Message</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in contacts %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ contact.name }}</td>
+          <td>{{ contact.email }}</td>
+          <td>{{ contact.phone }}</td>
+          <td>{{ contact.subject }}</td>
+          <td style="max-width: 250px">
+            {{ contact.message|truncatechars:80 }}
+          </td>
+          <td>{{ contact.created_at|date:"d M Y, h:i A" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info">No contact messages found.</div>
+  {% endif %}
+</div>
+
+{% endblock content %}

@@ -42,9 +42,11 @@ class ProductForm(forms.ModelForm):
             "sub_category",
             "price",
             "discount",
+            "stock",
             "screen_size",
             "ram",
             "rom",
+            "refresh_rate",
             "memory",
         ]
         widgets = {
@@ -63,6 +65,10 @@ class ProductForm(forms.ModelForm):
         "class": "form-control",
         "placeholder": "Enter discount amount or %"
     }),
+    "stock": forms.NumberInput(attrs={
+        "class": "form-control",
+        "placeholder": "Enter available stock"
+    }),   
     "screen_size": forms.TextInput(attrs={
         "class": "form-control",
         "placeholder": "Screen size (e.g. 6.5 inch)"
@@ -75,6 +81,10 @@ class ProductForm(forms.ModelForm):
         "class": "form-control",
         "placeholder": "Storage / ROM (e.g. 128GB)"
     }),
+    "refresh_rate": forms.TextInput(attrs={
+        "class": "form-control",
+        "placeholder": "Refresh Rate (e.g. 60Hz / 120Hz)"
+    }),
     "memory": forms.TextInput(attrs={
         "class": "form-control",
         "placeholder": "Expandable memory (e.g. 1TB)"
@@ -82,11 +92,11 @@ class ProductForm(forms.ModelForm):
 }
 
 
-    def clean_name(self):
-        name = self.cleaned_data.get("name")
-        if Product.objects.filter(name=name).exists():
-            raise forms.ValidationError("This Product already exists.")
-        return name
+    # def clean_name(self):
+    #     name = self.cleaned_data.get("name")
+    #     if Product.objects.filter(name=name).exists():
+    #         raise forms.ValidationError("This Product already exists.")
+    #     return name
 
 # =======================
 # PRODUCT IMAGE FORM

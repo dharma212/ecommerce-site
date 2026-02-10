@@ -26,6 +26,12 @@
   <body>
     {% include "header.html" %} {% block content %} {% endblock content %} {% include "footer.html" %}
      <script src="{% static 'js/jquery-3.7.1.min.js'%}"></script>
+     <script>
+    const IS_LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};
+    const CSRF_TOKEN = "{{ csrf_token }}";
+    const CART_COUNT_URL = "{% url 'cart_count' %}";
+</script>
+
 
     <script>
           const IS_LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};

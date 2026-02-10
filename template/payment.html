@@ -1,0 +1,337 @@
+{% extends "base.html" %} {% block content %}
+
+<div id="checkout-loader" class="payment-overlay d-none">
+  <div class="loader-card text-center">
+    <div
+      class="spinner-border text-primary"
+      role="status"
+      style="width: 3.5rem; height: 3.5rem"
+    ></div>
+    <h4 class="mt-4 fw-bold">Processing Order...</h4>
+    <p class="text-muted">Please wait while we secure your payment.</p>
+  </div>
+</div>
+
+<div id="success-overlay" class="success-full-page d-none">
+  <div class="success-anim-wrap text-center">
+    <div class="check-container">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <h1 class="display-3 fw-bold mt-4">Order Confirmed!</h1>
+    <p class="lead">Redirecting to your orders...</p>
+    <div class="confetti"></div>
+  </div>
+</div>
+
+<style>
+  :root {
+    --theme-blue: #2874f0;
+    --theme-orange: #fb641b;
+    --bg-shade: #f1f3f6;
+    --success-green: #2ecc71;
+  }
+
+  body {
+    background-color: var(--bg-shade);
+    font-family: "Inter", sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Overlay Styles */
+  .payment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+  }
+
+  /* FULL PAGE GREEN SUCCESS STYLE */
+  .success-full-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--success-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    color: white;
+    animation: slideUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .check-container {
+    width: 120px;
+    height: 120px;
+    background: white;
+    color: var(--success-green);
+    border-radius: 50%;
+    font-size: 60px;
+    line-height: 120px;
+    margin: 0 auto;
+    animation: popIn 0.6s 0.4s both cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes popIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Layout & Sidebar (Existing) */
+  .pay-wrap {
+    max-width: 1050px;
+    margin: 30px auto;
+  }
+  .main-pay-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    min-height: 450px;
+    overflow: hidden;
+  }
+  .pay-sidebar {
+    width: 35%;
+    background: #f8f9fa;
+    border-right: 1px solid #eee;
+  }
+  .pay-method-item {
+    padding: 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    color: #444;
+    transition: 0.2s;
+  }
+  .pay-method-item.is-active {
+    background: #fff;
+    color: var(--theme-blue);
+    border-left: 5px solid var(--theme-blue);
+  }
+  .pay-content {
+    width: 65%;
+    padding: 40px;
+  }
+  .content-panel {
+    display: none;
+    animation: fadeInQuick 0.3s ease-in-out;
+  }
+  .content-panel.is-visible {
+    display: block;
+  }
+  @keyframes fadeInQuick {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .summary-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 20px;
+  }
+  .form-input-box {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  .btn-submit-order {
+    background: var(--theme-orange);
+    color: #fff;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+  }
+  .btn-submit-order:hover {
+    background: #e85a15;
+  }
+</style>
+
+<div class="container pay-wrap">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="main-pay-card">
+        <div class="pay-sidebar">
+          <div
+            class="pay-method-item is-active"
+            onclick="toggleMethod('upi', this)"
+          >
+            <i class="fa-brands fa-google-pay fs-4"></i> UPI Options
+          </div>
+          <div class="pay-method-item" onclick="toggleMethod('card', this)">
+            <i class="fa-solid fa-credit-card"></i> Cards (Debit/Credit)
+          </div>
+          <div class="pay-method-item" onclick="toggleMethod('cod', this)">
+            <i class="fa-solid fa-truck"></i> Cash on Delivery
+          </div>
+        </div>
+
+        <div class="pay-content">
+          <form
+            id="orderForm"
+            method="POST"
+            action="{% url 'payment' %}"
+            onsubmit="runCheckout(event)"
+          >
+            {% csrf_token %}
+            <div id="panel-upi" class="content-panel is-visible">
+              <h5 class="fw-bold mb-3">Pay using UPI</h5>
+              <input
+                type="text"
+                class="form-input-box"
+                placeholder="e.g. 9876543210@upi"
+              />
+              <button type="submit" class="btn-submit-order mt-3">
+                Pay ₹{{ total_price|add:7 }}
+              </button>
+            </div>
+
+            <div id="panel-card" class="content-panel">
+              <h5 class="fw-bold mb-3">Card Details</h5>
+              <input
+                type="text"
+                class="form-input-box"
+                placeholder="Card Number"
+              />
+              <div class="row g-2">
+                <div class="col-6">
+                  <input
+                    type="text"
+                    class="form-input-box"
+                    placeholder="MM/YY"
+                  />
+                </div>
+                <div class="col-6">
+                  <input
+                    type="password"
+                    class="form-input-box"
+                    placeholder="CVV"
+                  />
+                </div>
+              </div>
+              <button type="submit" class="btn-submit-order mt-2">
+                Pay ₹{{ total_price|add:7 }}
+              </button>
+            </div>
+
+            <div id="panel-cod" class="content-panel">
+              <div class="text-center py-3">
+                <i
+                  class="fa-solid fa-circle-check text-success display-4 mb-3"
+                ></i>
+                <h5 class="fw-bold">Confirm Cash on Delivery</h5>
+                <p class="text-muted">
+                  Pay ₹{{ total_price|add:7 }} at the time of delivery.
+                </p>
+              </div>
+              <button type="submit" class="btn-submit-order">
+                Confirm Order
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="summary-card">
+        <h6 class="text-muted fw-bold mb-4">PRICE DETAILS</h6>
+        <div class="d-flex justify-content-between mb-3 text-secondary">
+          <span>Price ({{ items_count }} items)</span>
+          <span class="text-dark">₹{{ total_price }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3 text-secondary">
+          <span>Platform Fee</span>
+          <span class="text-dark">₹7</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+          <span>Delivery Charges</span>
+          <span class="text-success fw-bold">FREE</span>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-between mb-3 fs-5 fw-bold">
+          <span>Total Amount</span>
+          <span class="text-primary">₹{{ total_price|add:7 }}</span>
+        </div>
+        <div class="text-success small fw-bold">
+          <i class="fa-solid fa-shield-check"></i> Safe and Secure Payments
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleMethod(id, btn) {
+    document
+      .querySelectorAll(".content-panel")
+      .forEach((p) => p.classList.remove("is-visible"));
+    document
+      .querySelectorAll(".pay-method-item")
+      .forEach((i) => i.classList.remove("is-active"));
+    document.getElementById("panel-" + id).classList.add("is-visible");
+    btn.classList.add("is-active");
+  }
+
+  function runCheckout(e) {
+    e.preventDefault();
+    const loader = document.getElementById("checkout-loader");
+    const successOverlay = document.getElementById("success-overlay");
+    const form = e.target;
+
+    // ૧. પ્રોસેસિંગ લોડર બતાવો
+    loader.classList.remove("d-none");
+
+    // ૨. ૨.૫ સેકન્ડ પછી ગ્રીન સક્સેસ એનિમેશન બતાવો
+    setTimeout(() => {
+      loader.classList.add("d-none"); // લોડર હટાવો
+      successOverlay.classList.remove("d-none"); // ગ્રીન પેજ બતાવો
+
+      // ૩. સક્સેસ એનિમેશન પૂરું થયા પછી (૨ સેકન્ડ બાદ) ફોર્મ સબમિટ કરો
+      setTimeout(() => {
+        form.submit();
+      }, 2000);
+    }, 2500);
+  }
+</script>
+
+{% endblock %}

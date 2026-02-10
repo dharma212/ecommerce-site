@@ -1,0 +1,90 @@
+{% extends "dashboard/base.html" %} 
+{% block content %}
+
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 text-white">
+                        <i class="bi bi-info-circle me-2"></i> About Page
+                    </h4>
+                    <a href="{% url 'about_detail' %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="fa-solid fa-eye me-1"></i> View Live
+                    </a>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success border-0 shadow-sm">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold">Store Name (Animated)</label>
+                                {{ form.store_name }}
+                                <div class="form-text">This text will have the floating gradient effect.</div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold">Hero Subtitle</label>
+                                {{ form.hero_subtitle }}
+                            </div>
+
+                            <div class="col-md-5 mb-4">
+                                <label class="form-label fw-bold">Story Image</label>
+                                {{ form.story_image }}
+                                {% if object.story_image %}
+                                    <img src="{{ object.story_image.url }}" class="mt-2 rounded" style="width: 100px; height: 60px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-7 mb-4">
+                                <label class="form-label fw-bold">Mission Statement</label>
+                                {{ form.mission_statement }}
+                            </div>
+
+                            <div class="col-12 mb-4">
+                                <label class="form-label fw-bold">Detailed Story</label>
+                                {{ form.story_description }}
+                            </div>
+
+                            <hr class="my-4">
+                            <h5 class="mb-3"><i class="fa-solid fa-list-check me-2"></i>Core Values Section</h5>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Value 1 Title</label>
+                                {{ form.value_one_title }}
+                                <label class="form-label mt-2">Description</label>
+                                {{ form.value_one_desc }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Value 2 Title</label>
+                                {{ form.value_two_title }}
+                                <label class="form-label mt-2">Description</label>
+                                {{ form.value_two_desc }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Value 3 Title</label>
+                                {{ form.value_three_title }}
+                                <label class="form-label mt-2">Description</label>
+                                {{ form.value_three_desc }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-success px-5 shadow-sm">
+                                <i class="fa-solid fa-cloud-arrow-up me-2"></i> Update Animataed Page
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

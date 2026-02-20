@@ -1,96 +1,9 @@
-{% extends "base.html" %}
-{% block content %}
-
-<style>
-  body { background-color: #f1f3f6; }
-
-  .tracking-wrapper {
-    position: relative;
-    padding-left: 40px;
-    margin-top: 20px;
-  }
-
-  .main-line {
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    bottom: 5px;
-    width: 2px;
-    background: #e0e0e0;
-  }
-
-  .green-progress-line {
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    width: 2px;
-    background: #26a541;
-    height: 0;
-    transition: height 0.8s ease;
-  }
-
-  .red-progress-line {
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    width: 2px;
-    background: #ff6161;
-    height: 100%;
-  }
-
-  .status-step {
-    position: relative;
-    padding-bottom: 45px;
-    font-size: 14px;
-    color: #878787;
-  }
-
-  .status-step::before {
-    content: "";
-    position: absolute;
-    left: -40px;
-    top: 2px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #e0e0e0;
-    border: 2px solid #fff;
-  }
-
-  .status-step.completed {
-    color: #000;
-    font-weight: 500;
-  }
-
-  .status-step.completed::before {
-    background: #26a541;
-    box-shadow: 0 0 0 4px rgba(38, 165, 65, 0.2);
-  }
-
-  .status-step.cancel-red {
-    color: #ff6161;
-    font-weight: 600;
-  }
-
-  .status-step.cancel-red::before {
-    background: #ff6161;
-    box-shadow: 0 0 0 4px rgba(255, 97, 97, 0.2);
-  }
-
-  .action-btn {
-    font-size: 12px;
-    padding: 4px 10px;
-    margin-left: 5px;
-  }
-</style>
-
+{% extends "base.html" %} {% block content %}
 <div class="container-fluid py-4">
   <div class="row g-3">
-
     <!-- ================= LEFT SIDE ================= -->
     <div class="col-lg-8 col-12">
       <div class="card shadow-sm border-0 p-4">
-
         {% for item in order.items.all %}
         <div class="row align-items-center mb-3">
           <div class="col-8">
@@ -102,163 +15,266 @@
 
             <!-- ===== ITEM STATUS ===== -->
             {% if item.status == "Cancelled" %}
-              <span class="badge bg-danger">Cancelled</span>
+            <span class="badge bg-danger">Cancelled</span>
             {% elif item.status == "Returned" %}
-              <span class="badge bg-warning">Returned</span>
+            <span class="badge bg-warning">Returned</span>
             {% elif item.status == "Delivered" %}
-              <span class="badge bg-success">Delivered</span>
+            <span class="badge bg-success">Delivered</span>
             {% endif %}
 
             <!-- ===== ACTION BUTTONS ===== -->
             <div class="mt-2">
-
-              {% if item.status == "Pending" %}
-                <a href="{% url 'cancel_order_item' item.id %}"
-                   class="btn btn-outline-danger action-btn">
-                  Cancel
-                </a>
-              {% endif %}
-
-              {% if item.status == "Delivered" %}
-                <a href="{% url 'return_order_item' item.id %}"
-                   class="btn btn-outline-warning action-btn">
-                  Return
-                </a>
-
-                <a href="{% url 'replace_order_item' item.id %}"
-                   class="btn btn-outline-info action-btn">
-                  Replace
-                </a>
-              {% endif %}
-
-              <a href="#"
-                 class="btn btn-outline-primary action-btn">
-                Re-Order
+              {% if order.status == "Pending" or order.status == "Accepted" %}
+              <button
+                class="btn btn-outline-danger action-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#cancelOrderModal"
+              >
+                Cancel Order
+              </button>
+              {% endif %} {% if order.status == "Delivered" %}
+              <a href="#" class="btn btn-outline-warning action-btn">
+                Return
               </a>
 
+              <a href="#" class="btn btn-outline-info action-btn"> Exchange </a>
+              {% endif %}
+
+              <a
+                href="{% url 'payment' %}?reorder={{ order.id }}"
+                class="btn btn-outline-primary action-btn"
+              >
+                Re-Order
+              </a>
             </div>
           </div>
 
           <div class="col-4 text-end">
             {% if item.product.productimage_set.first %}
-              <img
-                src="{{ item.product.productimage_set.first.photo.url }}"
-                class="img-fluid"
-                style="max-height:90px"
-              >
+            <img
+              src="{{ item.product.productimage_set.first.photo.url }}"
+              class="img-fluid"
+              style="max-height: 90px"
+            />
             {% endif %}
           </div>
         </div>
 
         {% if not forloop.last %}
-          <hr>
-        {% endif %}
-        {% endfor %}
+        <hr />
+        {% endif %} {% endfor %}
 
         <!-- ================= TRACKING ================= -->
         <div class="tracking-wrapper mt-4">
           <div class="main-line"></div>
 
           {% if order.status == "Cancelled" %}
-            <div class="red-progress-line"></div>
+          <div class="red-progress-line"></div>
           {% else %}
-            <div id="green-line" class="green-progress-line"></div>
+          <div id="green-line" class="green-progress-line"></div>
           {% endif %}
 
           <div class="status-step completed">
             Order Confirmed – {{ order.created_at|date:"M d, Y" }}
           </div>
 
-          <div class="status-step {% if order.status != 'Pending' %}completed{% endif %}">
+          <div
+            class="status-step {% if order.status != 'Pending' %}completed{% endif %}"
+          >
             Order Accepted
           </div>
 
-          <div class="status-step {% if order.status in 'Packed Shipped Delivered' %}completed{% endif %}">
+          <div
+            class="status-step {% if order.status in 'Packed Shipped Delivered' %}completed{% endif %}"
+          >
             Packed
           </div>
 
-          <div class="status-step {% if order.status in 'Shipped Delivered' %}completed{% endif %}">
+          <div
+            class="status-step {% if order.status in 'Shipped Delivered' %}completed{% endif %}"
+          >
             Shipped
           </div>
 
-          <div class="status-step {% if order.status == 'Delivered' %}completed{% endif %}">
+          <div
+            class="status-step {% if order.status == 'Delivered' %}completed{% endif %}"
+          >
             Delivered
           </div>
 
           {% if order.status == "Cancelled" %}
-            <div class="status-step cancel-red completed">
-              Order Cancelled
-            </div>
+          <div class="status-step cancel-red completed">Order Cancelled</div>
           {% endif %}
         </div>
-
       </div>
     </div>
 
     <!-- ================= RIGHT SIDE ================= -->
     <div class="col-lg-4 col-12">
-
       <div class="card shadow-sm border-0 p-3 mb-3">
         <h6 class="fw-bold border-bottom pb-2">Delivery Address</h6>
         <p class="fw-bold mb-1">{{ order.user.get_full_name }}</p>
         <p class="small text-muted mb-1">{{ order.address }}</p>
-        <p class="small fw-bold mb-0">Phone: {{ order.user.contact_number }}</p>
+        <p>
+          <span>Phone: </span>
+          <span class="fw-bold">{{ order.user.contact_number }}</span>
+        </p>
       </div>
 
       <div class="card shadow-sm border-0 p-3">
         <h6 class="fw-bold border-bottom pb-2">Price Details</h6>
 
+        {% if not order.reordered_from %}
         <div class="d-flex justify-content-between small mb-2">
           <span>Total Items</span>
           <span>{{ order.items.count }}</span>
         </div>
+        {% endif %}
 
         <div class="d-flex justify-content-between small mb-2">
-          <span>Total Amount</span>
-          <span>{{ order.total_price }}</span>
+          <span>Items Total</span>
+          <span class="fw-bold">₹{{ order.total_price }}</span>
         </div>
 
+        <!-- ===== DELIVERY LOGIC ===== -->
         <div class="d-flex justify-content-between small mb-2">
           <span>Delivery</span>
+          {% if order.payment_method == "COD" %}
+          <span class="fw-bold">₹40</span>
+          {% else %}
           <span class="text-success">Free</span>
+          {% endif %}
         </div>
 
         <div class="d-flex justify-content-between small mb-2">
           <span>Platform Fee</span>
-          <span>₹7</span>
+          <span class="fw-bold">₹7</span>
         </div>
 
-        <hr>
+        <hr />
 
+        <!-- ===== FINAL TOTAL ===== -->
         <div class="d-flex justify-content-between fw-bold">
           <span>Total Amount</span>
-          <span>₹{{ order.total_price |add:7 }}</span>
+          {% if order.payment_method == "COD" %}
+          <span>₹{{ order.total_price|add:47 }}</span>
+          {% else %}
+          <span>₹{{ order.total_price|add:7 }}</span>
+          {% endif %}
         </div>
 
         <p class="text-success small mt-2">
-          Payment Method: {{ order.payment_method }}
+          <span> Payment Method :</span>
+          <span class="fw-bold">{{ order.get_payment_method_display }}</span>
         </p>
 
-        <!-- ===== INVOICE ===== -->
-        <a href="#"
-           class="btn btn-outline-primary btn-sm w-100 mt-2">
+        <a
+          href="{% url 'download_invoice' order.id %}"
+          class="btn btn-outline-primary btn-sm w-100 mt-2"
+        >
           <i class="fa-solid fa-file-pdf"></i> Download Invoice
         </a>
       </div>
-
     </div>
   </div>
 </div>
+<div class="container-fluid py-4">
+    </div>
+<style>
+#customReasonBox {
+    display: none;
+    width: 90%;
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none; 
+}
+
+.modal-body {
+    overflow-x: hidden;
+}
+</style>
+<div class="modal fade" id="cancelOrderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"> 
+<div class="modal-content large-modal">            
+            <div class="custom-header">
+                <h5 class="m-0 fw-bold">Select Cancellation Reason</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="{% url 'cancel_order' order.id %}" method="POST" id="cancellationForm" novalidate>
+                {% csrf_token %}
+                
+                <div class="modal-body p-0">
+                    <div class="alert alert-info rounded-0 border-0 m-0 py-2 small px-4">
+                        Please tell us why you want to cancel.
+                    </div>
+
+                    <div id="reason-list">
+                        <label class="reason-row">
+                            <input type="radio" name="reason" value="Ordered by mistake" class="custom-input-radio" required>
+                            <span>Ordered by mistake</span>
+                        </label>
+
+                        <label class="reason-row">
+                            <input type="radio" name="reason" value="Delivery time too long" class="custom-input-radio">
+                            <span>Expected delivery time is very long</span>
+                        </label>
+
+                        <label class="reason-row">
+                            <input type="radio" name="reason" value="Price dropped" class="custom-input-radio">
+                            <span>Price for the product has decreased</span>
+                        </label>
+
+                        <label class="reason-row">
+                            <input type="radio" name="reason" value="Other" id="triggerOther" class="custom-input-radio">
+                            <span class="fw-bold text-primary">Other (Please specify)</span>
+                        </label>
+
+                        <textarea 
+                            name="custom_reason" 
+                            id="customReasonBox" 
+                            rows="3" 
+                            placeholder="Please provide more details..."></textarea>
+                    </div>
+                </div>
+
+                <div class="custom-footer-bar">
+                    <button type="button" class="btn-cancel-dismiss" data-bs-dismiss="modal">CLOSE</button>
+                    <button type="submit" class="btn-cancel-confirm">SUBMIT REQUEST</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
-  function updateProgressLine() {
-    const greenLine = document.getElementById("green-line");
-    if (!greenLine) return;
-    const completed = document.querySelectorAll(".status-step.completed");
-    const last = completed[completed.length - 1];
-    greenLine.style.height = last.offsetTop + 10 + "px";
-  }
-  window.addEventListener("load", updateProgressLine);
-</script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const otherRadio = document.getElementById('triggerOther');
+        const allRadios = document.querySelectorAll('input[name="reason"]');
+        const textInput = document.getElementById('customReasonBox');
 
+        allRadios.forEach(radio => {
+            radio.addEventListener('change', function () {
+    if (otherRadio.checked) {
+        textInput.style.display = "block";
+        textInput.setAttribute('required', 'true');
+    } else {
+        textInput.style.display = "none";
+        textInput.removeAttribute('required');
+        textInput.value = "";
+    }
+});
+        });
+        const form = document.getElementById('cancellationForm');
+        form.onsubmit = function() {
+            const selected = document.querySelector('input[name="reason"]:checked');
+            if(!selected) {
+                return false;
+            }
+            return true;
+        };
+    });
+</script>
 {% endblock %}

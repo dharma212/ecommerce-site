@@ -37,7 +37,7 @@
           <i class="bi bi-heart"></i> Wishlist
         </a>
 
-        <a href="#"> <i class="bi bi-gear"></i> Settings </a>
+        {% comment %} <a href="#"> <i class="bi bi-gear"></i> Settings </a> {% endcomment %}
 
         <a href="{% url 'logout' %}" class="logout-btn">
           <i class="bi bi-box-arrow-right"></i> Logout
@@ -69,7 +69,7 @@
           >
         </li>
         <li>
-          <a href="{% url 'checkout' %}"
+          <a href="{% url 'my_orders' %}"
             ><i class="fa-solid fa-box-open"></i> My Orders</a
           >
         </li>
@@ -92,187 +92,40 @@
       </ul>
     </div>
     {% else %}
-    <a href="{% url 'signup' %}"
-      ><i class="fa-solid fa-user-plus"></i> Signup</a
-    >
-    <a href="{% url 'login' %}"
-      ><i class="fa-solid fa-right-to-bracket"></i> Login</a
-    >
+      <a href="{% url 'signup' %}"><i class="fa-solid fa-user-plus"></i> Signup</a>
+      <a href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
     {% endif %}
   </div>
 </nav>
-<style>
-.cat-header-container {
-    background: #fff;
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 1px 1px 0 rgba(0,0,0,.16);
-    padding: 8px 0;
-}
-
-.cat-header-inner {
-    display: flex;
-    justify-content: center;
-    gap: 50px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.cat-item {
-    position: relative;
-    cursor: pointer;
-}
-
-.cat-item a {
-    text-decoration: none;
-    color: #212121;
-    font-weight: 500;
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: color 0.2s;
-}
-
-.cat-item img {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
-    margin-bottom: 4px;
-}
-
-.cat-name {
-    display: flex;
-    align-items: center;
-}
-
-.cat-name i {
-    font-size: 8px;
-    margin-left: 6px;
-    color: #878787;
-    transition: transform 0.3s;
-}
-
-.cat-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: transparent;
-    min-width: 200px;
-    z-index: 1000;
-    padding-top: 10px;
-}
-
-.dropdown-inner {
-    background: #fff;
-    box-shadow: 0 4px 16px 0 rgba(0,0,0,.2);
-    border: 1px solid #f0f0f0;
-    border-radius: 2px;
-}
-
-.dropdown-inner a {
-    padding: 12px 16px;
-    display: block !important;
-    text-align: left !important;
-    color: #212121 !important;
-    font-weight: 400 !important;
-    font-size: 14px !important;
-    border-bottom: 1px solid #f0f0f0;
-    flex-direction: row !important;
-}
-
-.dropdown-inner a:last-child {
-    border-bottom: none;
-}
-
-.dropdown-inner a:hover {
-    background-color: #f5faff;
-    color: #2874f0 !important;
-}
-
-.cat-item:hover .cat-dropdown {
-    display: block;
-}
-
-.cat-item:hover .cat-name {
-    color: #2874f0;
-}
-
-.cat-item:hover .cat-name i {
-    transform: rotate(180deg);
-    color: #2874f0;
-}
-
-@media (max-width: 768px) {
-    .cat-header-container {
-        padding: 10px 0;
-        overflow: hidden;
-    }
-
-    .cat-mobile-wrapper {
-        display: flex !important;
-        justify-content: flex-start !important;
-        gap: 20px !important;
-        overflow-x: auto;
-        white-space: nowrap;
-        padding: 0 15px;
-        scrollbar-width: none;
-    }
-
-    .cat-mobile-wrapper::-webkit-scrollbar {
-        display: none;
-    }
-
-    .cat-item {
-        flex: 0 0 auto;
-        text-align: center;
-    }
-
-    .cat-item img {
-        width: 52px;
-        height: 52px;
-    }
-
-    .cat-item a {
-        font-size: 12px;
-    }
-
-    .desktop-only {
-        display: none !important;
-    }
-}
-</style>
 {% if user.is_authenticated %}
-<div class="cat-header-container">
-  <div class="cat-header-inner cat-mobile-wrapper">
-    {% for category in header_categories %}
-<div class="cat-item">
-  <a href="#">
-    {% if category.image %}
-      <img src="{{ category.image.url }}" alt="{{ category.name }}">
-    {% endif %}
+  <div class="cat-header-container">
+    <div class="cat-header-inner cat-mobile-wrapper">
+      {% for category in header_categories %}
+        <div class="cat-item">
+          <a href="#">
+            {% if category.image %}
+              <img src="{{ category.image.url }}" alt="{{ category.name }}">
+            {% endif %}
 
-    <span class="cat-name">
-      {{ category.name }}
-      {% if category.subcategories.all %}
-        <i class="fa-solid fa-chevron-down desktop-only"></i>
-      {% endif %}
-    </span>
-  </a>
+            <span class="cat-name">
+              {{ category.name }}
+              {% if category.subcategories.all %}
+                <i class="fa-solid fa-chevron-down desktop-only"></i>
+              {% endif %}
+            </span>
+          </a>
 
-  {% if category.subcategories.all %}
-  <div class="cat-dropdown desktop-only">
-    <div class="dropdown-inner">
-      {% for sub in category.subcategories.all %}
-  <a href="{% url 'index2' sub.id %}">{{ sub.name }}</a>
-{% endfor %}
-    </div>
-  </div>
-  {% endif %}
-</div>
-{% endfor %}
-
+          {% if category.subcategories.all %}
+            <div class="cat-dropdown desktop-only">
+              <div class="dropdown-inner">
+                {% for sub in category.subcategories.all %}
+                  <a href="{% url 'index2' sub.id %}">{{ sub.name }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
   </div>
 </div>
 {% endif %}

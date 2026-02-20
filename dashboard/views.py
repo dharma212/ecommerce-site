@@ -395,6 +395,16 @@ class AdminOrderListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Order.objects.annotate(items_count=Count('items')).filter(items_count__gt=0).order_by('-created_at')
 
+
+class AdminCancleOrderListView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'dashboard/cancle_order.html' 
+    context_object_name = 'orders'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        return Order.objects.filter(status__iexact="Cancelled").order_by('-created_at')
+
 class AdminOrderUpdateView(DashboardLoginRequiredMixin, UpdateView):
     model = Order
     fields = ['status']
@@ -405,3 +415,71 @@ class AdminOrderUpdateView(DashboardLoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['order'] = self.get_object()
         return context
+    
+from django.views.generic import TemplateView, View
+from django.http import JsonResponse
+from datetime import date
+# from .models import Order
+
+class PendingOrderCalendarView(TemplateView):
+    template_name = "dashboard/pending_orders.html"
+
+    
+from django.views import View
+from django.http import JsonResponse
+# from .models import Order
+
+class PendingOrderCalendarEvents(View):
+    def get(self, request, *args, **kwargs):
+
+        orders = (
+            Order.objects
+            .filter(status__iexact="Pending")
+            .values("created_at")
+        )
+
+        date_count = {}
+
+        for o in orders:
+            date = o["created_at"].date()   # convert datetime → date
+            date_count[date] = date_count.get(date, 0) + 1
+
+        events = [
+            {
+                "title": f"Pending Orders: {count}",
+                "start": str(date),   # MUST be string YYYY-MM-DD
+                "allDay": True,
+            }
+            for date, count in date_count.items()
+        ]
+
+        return JsonResponse(events, safe=False)
+    
+# views.py
+from django.views import View
+from django.http import JsonResponse
+from django.db.models.functions import TruncHour
+from django.db.models import Count
+from order.models import Order
+
+class PendingOrderHourEvents(View):
+    def get(self, request, *args, **kwargs):
+
+        orders = (
+            Order.objects
+            .filter(status="Pending")
+            .annotate(hour=TruncHour("created_at"))
+            .values("hour")
+            .annotate(count=Count("id"))
+            .order_by("hour")
+        )
+
+        events = []
+        for o in orders:
+            events.append({
+                "title": f"{o['count']} Pending Orders",
+                "start": o["hour"].isoformat(),  # IMPORTANT
+                "allDay": False,
+            })
+
+        return JsonResponse(events, safe=False)

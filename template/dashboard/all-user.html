@@ -39,35 +39,40 @@
               <td>{{ forloop.counter |default:"---"}}</td>
               <td>{{ user.first_name |default:"---"}}</td>
               <td>{{ user.last_name |default:"---"}}</td>
-              <td>{{ user.email |default:"---"}}</td>
+              <td>{{ user.email |default:"---" |truncatechars:9}}</td>
               <td>{{ user.username |default:"---"}}</td>
               <td>{{ user.role |default:"---"}}</td>
               <td>{{ user.contact_number|default:"---" }}</td>
               <td>{{ user.address|default:"---" |truncatechars:20}}</td>
-              <td>
-                {% if user.role != 'admin' %}
-                <!-- DELETE -->
-                <form
-                  action="{% url 'user_delete' user.id %}"
-                  method="post"
-                  style="display: inline"
-                >
-                  {% csrf_token %}
-                  <button class="btn bg-danger text-light" title="Delete User">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </form>
+              <td style="white-space: nowrap;">
+  {% if user.role != 'admin' %}
+  <div class="d-inline-flex align-items-center gap-2">
 
-                <!-- EDIT -->
-                <a
-                  href="{% url 'user_edit' user.id %}"
-                  class="btn bg-primary text-light"
-                  title="Edit User"
-                >
-                  <i class="bi bi-pencil"></i>
-                </a>
-                {% endif %}
-              </td>
+    <!-- DELETE -->
+    <form
+      action="{% url 'user_delete' user.id %}"
+      method="post"
+      class="m-0 p-0"
+    >
+      {% csrf_token %}
+      <button class="btn btn-danger btn-sm" title="Delete User">
+        <i class="bi bi-trash"></i>
+      </button>
+    </form>
+
+    <!-- EDIT -->
+    <a
+      href="{% url 'user_edit' user.id %}"
+      class="btn btn-primary btn-sm"
+      title="Edit User"
+    >
+      <i class="bi bi-pencil"></i>
+    </a>
+
+  </div>
+  {% endif %}
+</td>
+
             </tr>
             {% empty %}
             <tr>

@@ -1,35 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-
-<style>
-    body { background-color: #f1f3f6; }
-    .checkout-container { max-width: 100%; margin: 0 auto; }
-    .card { border-radius: 2px !important; }
-    .step-badge {
-        background: #f0f0f0;
-        color: #2874f0;
-        padding: 2px 8px;
-        border-radius: 2px;
-        font-weight: bold;
-        margin-right: 15px;
-    }
-    .uppercase { text-transform: uppercase; }
-    .btn-orange {
-        background: #fb641b;
-        color: #fff;
-        font-weight: bold;
-        border-radius: 2px;
-        border: none;
-        padding: 12px 40px;
-    }
-    .btn-orange:hover {
-        background: #f4510b;
-        color: #fff;
-    }
-</style>
-
 <form method="get" action="{% url 'payment' %}">
-    {% csrf_token %}
+    {% if buy_now %}
+        <input type="hidden" name="buy_now" value="{{ cart_items.0.product.id }}">
+    {% endif %}
 
     <div class="container-fluid py-4 checkout-container">
         <div class="row px-md-5">
@@ -121,9 +95,15 @@
                                 Confirmation will be sent to
                                 <b>{{ request.user.email }}</b>
                             </p>
-                            <button type="submit" class="btn btn-orange uppercase">
-                                Continue
-                            </button>
+                            {% if request.user.address and request.user.contact_number and request.user.first_name %}
+                                <button type="submit" class="btn btn-orange uppercase">
+                                    Continue
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary uppercase" disabled>
+                                    Complete Profile to Continue
+                                </button>
+                            {% endif %}
                         </div>
 
                     </div>
@@ -140,14 +120,22 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="d-flex justify-content-between mb-3">
                             <span>Price ({{ cart_items|length }} items)</span>
-                            <span>₹{{ total_price }}</span>
+                            <span class="mb-0 fw-bold">₹{{ total_price }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-3">
+                            <span class="text-success">Delivery</span>
+                            <span class="text-success fw-bold">Free</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-3">
+                            <span>Platform Fee</span>
+                            <span class="mb-0 fw-bold">₹7</span>
                         </div>
 
                         <div class="d-flex justify-content-between fw-bold border-top pt-2">
                             <span>Total Amount</span>
-                            <span>₹{{ total_price }}</span>
+                            <span>₹{{ total_price |add:7 }}</span>
                         </div>
                     </div>
 
@@ -157,15 +145,4 @@
         </div>
     </div>
 </form>
-
-<script>
-    document.getElementById('deliver-here-btn').addEventListener('click', function () {
-        document.getElementById('address-section').classList.add('d-none');
-        document.getElementById('address-header').classList.add('d-none');
-        document.getElementById('address-collapsed').classList.remove('d-none');
-        document.getElementById('summary-header').classList.add('bg-primary', 'text-white');
-        document.getElementById('summary-section').classList.remove('d-none');
-    });
-</script>
-
 {% endblock content %}

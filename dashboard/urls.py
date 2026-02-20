@@ -25,6 +25,8 @@ urlpatterns = [
     path("products/add/images/",ProductImageCreateView.as_view(),name="add_product_image"),
     path("product/delete/<int:pk>/",ProductDeleteView.as_view(),name="product_delete"),
     path('product/<int:pk>/edit/', ProductUpdateView.as_view(), name='product_edit'),
+    path("order/cancle-orders/",AdminCancleOrderListView.as_view(),name="cancle_orders"),
+
 
 
     # ================= BANNERS ===================
@@ -46,4 +48,7 @@ urlpatterns = [
     path('contactus/list',ContactListView.as_view(),name="contactus"),
     path('dashboard/orders/', AdminOrderListView.as_view(), name='admin_order_list'),
     path('dashboard/orders/<int:pk>/update/', AdminOrderUpdateView.as_view(), name='admin_order_update'),
+    path("pending-calendar/",PendingOrderCalendarView.as_view(),name="admin_pending_calendar"),
+    path("dashboard/pending-calendar-events/",PendingOrderCalendarEvents.as_view(),name="pending_calendar_events"),
+    path("dashboard/ajax/pending-hour-events/",PendingOrderHourEvents.as_view(),name="pending_hour_events"),
 ]

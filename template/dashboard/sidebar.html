@@ -113,11 +113,41 @@
         </li>
 
         <!-- Orders -->
-        <li class="{% if request.resolver_match.url_name == 'admin_order_list' %}active{% endif %}">
-            <a href="{% url 'admin_order_list' %}" class="text-decoration-none px-3 py-2 d-block">
-                <i class="bi bi-truck"></i> Order Summary
+<li class="dropdown">
+    <a href="#"
+       class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between"
+       data-bs-toggle="collapse"
+       data-bs-target="#orderMenu"
+       aria-expanded="{% if current in 'admin_order_list admin_cancelled_orders' %}true{% else %}false{% endif %}">
+        <span>
+            <i class="bi bi-truck"></i> Order Management
+        </span>
+        <i class="bi bi-chevron-down"></i>
+    </a>
+
+    <ul class="collapse list-unstyled ps-3 {% if current in 'admin_order_list admin_cancelled_orders' %}show{% endif %}"
+        id="orderMenu">
+
+        <li class="{% if current == 'admin_order_list' %}active{% endif %}">
+            <a href="{% url 'admin_order_list' %}" class="text-decoration-none px-3 py-2 d-block small">
+                <i class="bi bi-list-ul me-2"></i> All Orders
             </a>
         </li>
+
+        <li class="{% if current == 'cancle_orders' %}active{% endif %}">
+            <a href="{% url 'cancle_orders' %}?status=Cancelled" class="text-decoration-none px-3 py-2 d-block small">
+                <i class="bi bi-x-circle me-2"></i> Cancelled Orders
+            </a>
+        </li>
+        <li class="{% if current == 'admin_pending_calendar' %}active{% endif %}">
+    <a href="{% url 'admin_pending_calendar' %}"
+       class="text-decoration-none px-3 py-2 d-block small">
+        <i class="bi bi-calendar-event"></i> Pending Orders
+    </a>
+</li>
+
+    </ul>
+</li>
 
     </ul>
 
@@ -127,7 +157,7 @@
     <ul class="list-unstyled px-2"> 
         <li>
             <a href="/" class="text-decoration-none px-3 py-2 d-block">
-                Back To Website
+                <i class="bi bi-house-door me-1"></i> Back To Website
             </a>
         </li>
     </ul>

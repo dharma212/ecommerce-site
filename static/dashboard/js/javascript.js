@@ -78,10 +78,14 @@ $(document).ready(function () {
 });
 
 // ================================
-// User Table
 $(document).ready(function () {
   initDataTable("#userTable", {
-    columnDefs: [{ orderable: false, targets: -1 }]
+    autoWidth: false,
+    responsive: false,
+    columnDefs: [
+      { orderable: false, targets: [8] }, // Action column index
+      { width: "50px", targets: [8] }
+    ]
   });
 });
 
@@ -117,3 +121,4 @@ $(document).ready(function () {
     columnDefs: [{ orderable: false, targets: -1 }]
   });
 });
+

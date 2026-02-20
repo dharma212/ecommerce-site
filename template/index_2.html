@@ -1,30 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<style>
-  .product-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.laptop-title {
-    font-size: 22px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.sort-box select {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    background: #fff;
-}
-
-</style>
 <div class="product-section">
 
   <!-- HEADER -->
@@ -79,19 +55,19 @@
 
         <!-- CART -->
         <div class="add-cart">
-  <button
-    class="btn btn-primary add-to-cart-btn"
-    data-product-id="{{ product.id }}"
-    data-stock="{{ product.stock }}"
-    {% if product.stock == 0 %}disabled{% endif %}
-  >
-    {% if product.stock > 0 %}
-      Add to Cart
-    {% else %}
-      Out of Stock
-    {% endif %}
-  </button>
-</div>
+          <button class="wishlist-button {% if product.is_wishlisted %}active{% endif %}" data-product-id="{{ product.id }}" type="button" onclick="event.preventDefault();">
+            <i class="fa-{% if product.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+          </button>
+
+          <button class="btn btn-primary add-to-cart-btn" data-product-id="{{ product.id }}" data-stock="{{ product.stock }}"
+            {% if product.stock == 0 %}disabled{% endif %}>
+            {% if product.stock > 0 %}
+              Add to Cart
+            {% else %}
+              Out of Stock
+            {% endif %}
+          </button>
+        </div>
 
 
       </div>

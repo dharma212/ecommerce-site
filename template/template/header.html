@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h2 class="logo">My Dashboard</h2>
+        <ul>
+          <li><a href="{% url 'users' %}">Users</a></li>
+          <li><a href="{% url 'add_user' %}">Add User</a></li>
+          <li><a href="{% url 'categories' %}">Categories</a></li>
+          <li><a href="{% url 'add_product' %}">Add Product</a></li>
+          <li><a href="{% url 'products' %}">Products</a></li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="content">{% block content %}{% endblock %}</main>
+    </div>
+  </body>
+</html>

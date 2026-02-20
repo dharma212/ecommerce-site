@@ -98,106 +98,11 @@
             </button>
             
             {% if product.stock > 0 %}
-            <a href="{% url 'checkout' %}?buy_now={{ product.id }}" class="buy-btn" onclick="alert('Please add product to cart first')">
-                <i class="fa fa-bolt"></i> BUY NOW
-            </a>
+                <a href="{% url 'checkout' %}?buy_now={{ product.id }}" class="buy-btn">
+                    <i class="fa fa-bolt"></i> BUY NOW
+                </a>
             {% endif %}
         </div>
     </div>
 </div>
-<style>
-/* Base Layout */
-.product-page { display: flex; gap: 40px; padding: 25px; max-width: 1400px; margin: auto; background: #fff; }
-
-/* Images Left Side */
-.product-left { flex: 0 0 450px; position: sticky; top: 100px; height: fit-content; }
-.image-section { display: flex; gap: 15px; }
-
-.thumbs-wrapper { display: flex; flex-direction: column; align-items: center; width: 70px; }
-.thumbs { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: hidden; scroll-behavior: smooth; }
-.thumb-img { width: 60px; height: 60px; object-fit: contain; border: 1px solid #e0e0e0; cursor: pointer; padding: 5px; }
-.thumb-img:hover { border-color: #2874f0; }
-
-.main-img-container { position: relative; border: 1px solid #f0f0f0; flex: 1; }
-.main-img { height: 450px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.main-img img { max-width: 100%; max-height: 100%; transition: transform 0.3s ease; }
-
-/* Thumbs Arrow */
-.thumb-arrow { background: none; border: none; cursor: pointer; color: #878787; padding: 5px; }
-
-/* Right Side Details */
-.product-right { flex: 1; }
-.product-name { font-size: 20px; margin-bottom: 10px; color: #212121; }
-
-/* Buttons Container Styling */
-.product-buttons { display: flex; gap: 12px; margin: 20px 0; }
-.product-buttons .cart-btn, .product-buttons .buy-btn {
-    flex: 1;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
-    text-transform: uppercase;
-}
-.cart-btn { background: #ff9f00; color: #fff; }
-.buy-btn { background: #fb641b; color: #fff; }
-
-/* Price & Rating */
-.price_box { margin-bottom: 15px; }
-.new-price { font-size: 28px; font-weight: 500; }
-.old-price { color: #878787; text-decoration: line-through; margin-left: 10px; }
-.discount-percent { color: #388e3c; margin-left: 10px; font-weight: 500; }
-
-.badge-rating { background: #388e3c; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
-
-/* Wishlist Icon */
-.wishlist-btn-overlay { position: absolute; top: 15px; right: 15px; background: #fff; border: 1px solid #f0f0f0; width: 36px; height: 36px; border-radius: 50%; color: #c2c2c2; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
-
-@media (max-width: 768px) {
-    .product-page { flex-direction: column; padding: 10px; }
-    .product-left { flex: none; width: 100%; position: static; }
-    .image-section { display: none; }
-    .product-buttons { flex-direction: row; position: fixed; bottom: 0; left: 0; width: 100%; margin: 0; z-index: 1000; gap: 0; }
-    .product-buttons button, .product-buttons a { flex: 1; border-radius: 0; }
-}
-</style>
-
-<script>
-    function scrollThumbs(direction) {
-        const wrapper = document.getElementById('thumbWrapper');
-        if (direction === 'up') wrapper.scrollTop -= 80;
-        else wrapper.scrollTop += 80;
-    }
-       const slider = document.getElementById('imageSlider');
-
-    const dots = document.querySelectorAll('.dot');
-
-
-
-    if(slider) {
-
-        slider.addEventListener('scroll', () => {
-
-            const index = Math.round(slider.scrollLeft / slider.offsetWidth);
-
-            dots.forEach((dot, i) => {
-
-                dot.classList.toggle('active', i === index);
-
-            });
-
-        });
-
-    }
-
-
-</script>
-
 {% endblock %}

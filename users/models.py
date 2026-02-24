@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-# from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 
 
@@ -37,7 +36,6 @@ class Contact(models.Model):
     def __str__(self):
         return self.name
     
-from django.db import models
 
 class AboutPage(models.Model):
     store_name = models.CharField(max_length=100, default="Animataed", help_text="This will be the floating animated text.")
@@ -60,7 +58,6 @@ class AboutPage(models.Model):
     def __str__(self):
         return f"{self.store_name} Content Configuration"
     
-from django.db import models
 
 class TermsAndConditions(models.Model):
     title = models.CharField(max_length=200, default="Terms & Conditions")

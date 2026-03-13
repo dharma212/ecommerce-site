@@ -1,16 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-
 <div class="product-page">
     <div class="product-left">
         <div class="mobile-image-container mobile-only">
-            <button
-        class="wishlist-button mobile-wishlist {% if product.is_wishlisted %}active{% endif %}"
-        data-product-id="{{ product.id }}"
-        type="button">
-        <i class="fa-{% if product.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
-    </button>
+            <button class="wishlist-button mobile-wishlist {% if product.is_wishlisted %}active{% endif %}"
+                data-product-id="{{ product.id }}" type="button">
+                <i class="fa-{% if product.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+            </button>
             <div class="mobile-slider" id="imageSlider">
                 {% for img in product.productimage_set.all %}
                     <img src="{{ img.photo.url }}" class="mobile-slide">
@@ -25,19 +22,13 @@
 
         <div class="image-section desktop-only">
             <div class="thumbs-wrapper">
-                <button class="thumb-arrow up" onclick="scrollThumbs('up')">
-                    <i class="fa-solid fa-chevron-up"></i>
-                </button>
+                <button class="thumb-arrow up" onclick="scrollThumbs('up')"><i class="fa-solid fa-chevron-up"></i></button>
                 <div class="thumbs" id="thumbWrapper">
                     {% for img in product.productimage_set.all %}
-                        <img src="{{ img.photo.url }}" 
-                             onmouseover="document.getElementById('mainProductImage').src='{{ img.photo.url }}'"
-                             class="thumb-img">
+                        <img src="{{ img.photo.url }}" onmouseover="document.getElementById('mainProductImage').src='{{ img.photo.url }}'" class="thumb-img">
                     {% endfor %}
                 </div>
-                <button class="thumb-arrow down" onclick="scrollThumbs('down')">
-                    <i class="fa-solid fa-chevron-down"></i>
-                </button>
+                <button class="thumb-arrow down" onclick="scrollThumbs('down')"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
 
             <div class="main-img-container">
@@ -46,63 +37,223 @@
                         <img id="mainProductImage" src="{{ product.productimage_set.first.photo.url }}">
                     {% endif %}
                 </div>
-                <button
-    class="wishlist-button {% if product.is_wishlisted %}active{% endif %}"
-    data-product-id="{{ product.id }}"
-    type="button"
-  >
-    <i class="fa-{% if product.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
-  </button>
+                <button class="wishlist-button {% if product.is_wishlisted %}active{% endif %}"
+                    data-product-id="{{ product.id }}" type="button">
+                    <i class="fa-{% if product.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+                </button>
             </div>
         </div>
     </div>
 
     <div class="product-right">
-        <nav class="breadcrumb">Home > {{ product.category }} > {{ product.name }}</nav>
+        <nav class="breadcrumb" style="font-size: 12px; color: #878787; margin-bottom: 10px;">
+            Home > {{ product.category }} > {{ product.name }}
+        </nav>
         
-        <h1 class="product-name">{{ product.name }}</h1>
+        <h1 class="product-name" style="font-size: 18px; font-weight: 400; color: #212121; margin-bottom: 5px;">{{ product.name }}</h1>
         
-        <div class="rating-row">
-            <span class="badge-rating">4.3 ★</span>
-            <span class="rating-text">1,245 Ratings & 156 Reviews</span>
-        </div>
-
-        <div class="price_box">
-            <span class="new-price">₹{{ product.price }}</span>
-            {% if product.discount %}
-                <span class="old-price">₹{{ product.discount }}</span>
-                <span class="discount-percent">25% off</span>
+        <div class="rating-row mb-2 d-flex align-items-center">
+            {% if product.average_rating > 0 %}
+                <span class="badge-rating" style="background: #388e3c; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: 500;">
+                    {{ product.average_rating }} ★
+                </span>
+                <span class="rating-text" style="color: #878787; font-size: 14px; margin-left: 10px; font-weight: 500;">
+                    {{ product.rating_count }} Ratings & Reviews
+                </span>
             {% endif %}
         </div>
 
-        
-        <div class="offers-section">
-            <h3>Available Offers</h3>
-            <ul>
-                <li><i class="fa-solid fa-tag"></i> <b>Bank Offer</b> 10% off on SBI Credit Card.</li>
-                <li><i class="fa-solid fa-tag"></i> <b>Bank Offer</b> 5% Cashback on Flipkart Axis Bank Card.</li>
-            </ul>
+        <div class="price_box mb-3">
+            <span class="new-price" style="font-size: 28px; font-weight: 500; color: #212121;">₹{{ product.price|floatformat:0 }}</span>
+            {% if product.discount > product.price %}
+                <span class="old-price" style="text-decoration: line-through; color: #878787; margin-left: 12px; font-size: 16px;">₹{{ product.discount|floatformat:0 }}</span>
+                <span class="discount-percent" style="color: #388e3c; font-size: 16px; font-weight: 500; margin-left: 12px;">
+                    {{ product.discount_percent }}% off
+                </span>
+            {% endif %}
         </div>
 
-        <div class="highlights-section">
-            <h3>Highlights</h3>
-            <ul>
-                <li>{{ product.description|truncatewords:50 }}</li>
-                <li>7 Days Replacement Policy</li>
-                <li>Cash on Delivery Available</li>
-            </ul>
+        <div class="offers-section ">
+    <h3 style="font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #212121;">Available Offers</h3>
+    <ul style="list-style: none; padding-left: 0; font-size: 14px;">
+        <li class="mb-2 d-flex align-items-start">
+            <i class="bi bi-tag-fill me-2" style="color: #388e3c; font-size: 16px;"></i> 
+            <span>
+                <b style="color: #212121;">Bank Offer</b> 10% off on SBI Credit Card. 
+                <a href="#" style="color: #2874f0; text-decoration: none; font-weight: 500;">T&C</a>
+            </span>
+        </li>
+        
+        <li class="mb-2 d-flex align-items-start">
+            <i class="bi bi-tag-fill me-2" style="color: #388e3c; font-size: 16px;"></i> 
+            <span>
+                <b style="color: #212121;">Bank Offer</b> 5% Cashback on Flipkart Axis Bank Card. 
+                <a href="#" style="color: #2874f0; text-decoration: none; font-weight: 500;">T&C</a>
+            </span>
+        </li>
+    </ul>
+</div>
+
+    <div class="delivery-highlights-box">
+        <div class="delivery-container">
+            <div class="delivery-title">Delivery details</div>
+                <div class="delivery-row address-row">
+                        <div class="address-text">
+                            <i class="fa-solid fa-location-dot delivery-icon"></i>
+                            {% if user.is_authenticated and user.address %}
+                                <a class="text-dark d-flex" href="{% url 'profile' %}">
+                                <span style="font-weight: 400;">
+                                    {{ user.address |truncatechars:45 }}
+                                </span>
+                            </a>
+                            {% else %}
+                                <span class="text-danger">Enter Address to check delivery</span>
+                            {% endif %}
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+                </div>
+
+    <div class="delivery-row info-row">
+        <i class="fa-solid fa-truck-fast delivery-icon"></i>
+        <div>
+            <span class="express-text text-success">EXPRESS</span>
+            <span class="delivery-date">
+Delivery by {{ tomorrow|date:"D, M d" }}
+            </span>
         </div>
-        <div class="product-buttons">
-            <button class="cart-btn add-to-cart-btn {% if product.stock == 0 %}disabled{% endif %}" data-product-id="{{ product.id }}">
-                <i class="fa fa-shopping-cart"></i> ADD TO CART
+    </div>
+</div>
+
+    <div class="policy-wrapper">
+    <div class="policy-item">
+        <div class="policy-icon-box">
+            <i class="bi bi-arrow-repeat" style="font-size: 2rem; color: #000;"></i>
+        </div>
+        <span>7 Days Replacement</span>
+    </div>
+
+    <div class="policy-item">
+        <div class="policy-icon-box">
+            <i class="bi bi-cash-stack" style="font-size: 2rem; color: #000;"></i>
+        </div>
+        <span>Cash on Delivery</span>
+    </div>
+</div>
+
+            <div class="highlights-container">
+    <div class="highlights-title">
+        Product highlights
+        <i class="fa-solid fa-chevron-up" style="font-size: 14px; color: #878787;"></i>
+    </div>
+
+    {% if product.ram %}
+    <div class="highlight-item">
+        <div class="highlight-icon-box">
+            <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div>{{ product.ram }} RAM | {{ product.rom }} ROM</div>
+    </div>
+    {% endif %}
+
+    {% if product.screen_size %}
+    <div class="highlight-item">
+        <div class="highlight-icon-box">
+            <i class="fa-solid fa-laptop"></i>
+        </div>
+        <div>{{ product.screen_size }} | {{ product.refresh_rate|default:"OLED" }} Display</div>
+    </div>
+    {% endif %}
+
+    <div class="highlight-item">
+        <div class="highlight-icon-box">
+            <i class="fa-solid fa-cpu"></i>
+        </div>
+        <div>Intel Core Ultra 5</div>
+    </div>
+
+    <div class="highlight-item">
+        <div class="highlight-icon-box">
+            <i class="fa-solid fa-weight-hanging"></i>
+        </div>
+        <div>1.39 Kg</div>
+    </div>
+
+    <div class="highlight-item">
+        <div class="highlight-icon-box">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>1 Year Warranty</div>
+    </div>
+</div>
+        </div>
+
+        <div class="product-buttons mt-4 d-flex gap-3">
+            <button class="cart-btn add-to-cart-btn {% if product.stock == 0 %}disabled{% endif %}" 
+                style="background: #ff9f00; border: none; color: #fff; width: 200px; height: 50px; font-weight: 500; font-size: 16px; border-radius: 2px;" 
+                data-product-id="{{ product.id }}">
+                <i class="fa fa-shopping-cart me-2"></i> ADD TO CART
             </button>
-            
+            {% if user.is_authenticated %}
             {% if product.stock > 0 %}
-                <a href="{% url 'checkout' %}?buy_now={{ product.id }}" class="buy-btn">
-                    <i class="fa fa-bolt"></i> BUY NOW
+                <a href="{% url 'checkout' %}?buy_now={{ product.id }}" class="buy-btn" 
+                   style="background: #fb641b; border: none; color: #fff; width: 200px; height: 50px; font-weight: 500; font-size: 16px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+                    <i class="fa fa-bolt me-2"></i> BUY NOW
                 </a>
+            {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}?next={{ request.path }}" class="buy-btn"
+    style="background:#1a5bcc; border:none; color:#fff; width:200px; height:50px;
+    font-weight:500; font-size:16px; border-radius:2px; display:inline-flex;
+    align-items:center; justify-content:center; text-decoration:none;">
+        <i class="fa fa-user me-2"></i> Login to Buy
+    </a>
             {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
+
+{% if similar_products %}
+<div class="similar-products-section mt-5 px-3">
+    <h2 style="font-size: 20px; margin-top:-50px; font-weight: 500; margin-bottom: 20px; border-bottom: 1px solid #f0f0f0; padding-bottom: 0px;">Similar Products</h2>
+    <div class="similar-products-grid d-flex gap-3 overflow-auto pb-3">
+        {% for item in similar_products %}
+        <div class="similar-product-card shadow-sm border p-3" style="min-width: 220px; border-radius: 4px; background: #fff;">
+            <a href="{% url 'product_detail' item.id %}" style="text-decoration: none; color: inherit;">
+                {% if item.productimage_set.first %}
+                <img src="{{ item.productimage_set.first.photo.url }}" style="width: 100%; height: 180px; object-fit: contain;">
+                {% endif %}
+                <h4 style="font-size: 14px; margin-top: 10px; font-weight: 400;">{{ item.name|truncatechars:40 }}</h4>
+                <div class="price_box mt-2">
+                    <span style="font-weight: 500; font-size: 16px;">₹{{ item.price|floatformat:0 }}</span>
+                    {% if item.discount > item.price %}
+        <span style="text-decoration: line-through; color: #878787; font-size: 13px; margin-left: 8px;">
+            ₹{{ item.discount|floatformat:0 }}
+        </span>
+        
+        <span style="color: #388e3c; font-size: 13px; font-weight: 500; margin-left: 8px;">
+            {{ item.discount_percent }}% off
+        </span>
+    {% endif %}
+                </div>
+            </a>
+            <button
+  class="wishlist-button {% if item.is_wishlisted %}active{% endif %}"
+  data-product-id="{{ item.id }}"
+  type="button"
+  onclick="event.preventDefault();"
+>
+  <i class="fa-{% if item.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+</button>
+            <button class="btn btn-primary btn-sm w-100 mt-3 add-to-cart-btn" data-product-id="{{ item.id }}"
+                {% if item.stock == 0 %}disabled{% endif %}>
+                        <i class="bi bi-cart"></i>
+
+                {% if item.stock > 0 %}Add to Cart{% else %}Out of Stock{% endif %}
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock content %}

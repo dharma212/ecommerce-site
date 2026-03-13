@@ -55,7 +55,11 @@ function initDataTable(tableId, options = {}) {
 // Orders Table
 $(document).ready(function () {
   initDataTable("#orderTable", {
-    columnDefs: [{ orderable: false, targets: -1 }]
+    autoWidth: false,
+    responsive: false,
+    columnDefs: [
+      { orderable: false, targets: [8] },
+      { width: "50px", targets: [8] }]
   });
 });
 

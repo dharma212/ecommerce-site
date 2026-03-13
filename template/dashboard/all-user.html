@@ -43,40 +43,33 @@
               <td>{{ user.username |default:"---"}}</td>
               <td>{{ user.role |default:"---"}}</td>
               <td>{{ user.contact_number|default:"---" }}</td>
-              <td>{{ user.address|default:"---" |truncatechars:20}}</td>
-              <td style="white-space: nowrap;">
-  {% if user.role != 'admin' %}
-  <div class="d-inline-flex align-items-center gap-2">
+              <td>{{ user.address|default:"---" |truncatechars:15}}</td>
+              <td style="white-space: nowrap">
+                {% if request.user %}
+                <div class="d-inline-flex align-items-center gap-2">
+                  <!-- DELETE -->
+                  <form
+                    action="{% url 'user_delete' user.id %}"
+                    method="post"
+                    class="m-0 p-0"
+                  >
+                    {% csrf_token %}
+                    <button class="btn btn-danger btn-sm" title="Delete User">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
 
-    <!-- DELETE -->
-    <form
-      action="{% url 'user_delete' user.id %}"
-      method="post"
-      class="m-0 p-0"
-    >
-      {% csrf_token %}
-      <button class="btn btn-danger btn-sm" title="Delete User">
-        <i class="bi bi-trash"></i>
-      </button>
-    </form>
-
-    <!-- EDIT -->
-    <a
-      href="{% url 'user_edit' user.id %}"
-      class="btn btn-primary btn-sm"
-      title="Edit User"
-    >
-      <i class="bi bi-pencil"></i>
-    </a>
-
-  </div>
-  {% endif %}
-</td>
-
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="6" class="text-muted py-4">No users found</td>
+                  <!-- EDIT -->
+                  <a
+                    href="{% url 'user_edit' user.id %}"
+                    class="btn btn-primary btn-sm"
+                    title="Edit User"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                </div>
+                {% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>

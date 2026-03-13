@@ -1,15 +1,9 @@
-from django.views.generic import FormView
-from django.urls import reverse_lazy
-from django.contrib import messages
-from .forms import CategoryForm, ProductForm, ProductImageForm
-from django.views.generic import ListView
-from django.views.generic import ListView, FormView, UpdateView, DeleteView,CreateView, DetailView
-from django.urls import reverse_lazy
-from django.contrib import messages
-from product.models import *
-from product.forms import CategoryForm, SubCategoryForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.views.generic import DetailView
+from django.views import View
+from django.http import HttpResponse
+from openpyxl import Workbook
+from datetime import date
+from .models import Product
 # # -----------------------
 # # Category Views
 # # -----------------------
@@ -140,12 +134,26 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = "product_details.html"
     context_object_name = "product"
-# views.py
-from django.views import View
-from django.http import HttpResponse
-from openpyxl import Workbook
-from datetime import date
-from .models import Product
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = self.object
+
+        # Similar products (same sub-category)
+        if product.sub_category:
+            similar_products = Product.objects.filter(
+                sub_category=product.sub_category
+            ).exclude(id=product.id)
+        else:
+            similar_products = Product.objects.none()
+        import datetime
+
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+
+        context['tomorrow']=tomorrow
+        context["similar_products"] = similar_products[:8]
+        return context
+
 
 class ProductExcelDownloadView(View):
     def get(self, request, *args, **kwargs):

@@ -314,35 +314,35 @@ $(document).ready(function () {
         });
     });
 
-    /* ================= WISHLIST TOGGLE ================= */
-    $(document).on("click", ".wishlist-button", function (e) {
-        e.preventDefault();
+    // /* ================= WISHLIST TOGGLE ================= */
+    // $(document).on("click", ".wishlist-button", function (e) {
+    //     e.preventDefault();
 
-        if (!IS_LOGGED_IN) {
-            $("#loginModal").fadeIn();
-            return;
-        }
+    //     if (!IS_LOGGED_IN) {
+    //         $("#loginModal").fadeIn();
+    //         return;
+    //     }
 
-        let btn = $(this);
-        let productId = btn.data("product-id");
-        let icon = btn.find("i");
+    //     let btn = $(this);
+    //     let productId = btn.data("product-id");
+    //     let icon = btn.find("i");
 
-        $.ajax({
-            url: "/cart/wishlist/ajax/toggle/",
-            type: "POST",
-            headers: { "X-CSRFToken": CSRF_TOKEN },
-            data: { product_id: productId },
-            success: function (res) {
-                if (res.status === "added") {
-                    btn.addClass("active");
-                    icon.removeClass("fa-regular").addClass("fa-solid").css("color", "red");
-                } else {
-                    btn.removeClass("active");
-                    icon.removeClass("fa-solid").addClass("fa-regular").css("color", "");
-                }
-            }
-        });
-    });
+    //     $.ajax({
+    //         url: "/cart/wishlist/ajax/toggle/",
+    //         type: "POST",
+    //         headers: { "X-CSRFToken": CSRF_TOKEN },
+    //         data: { product_id: productId },
+    //         success: function (res) {
+    //             if (res.status === "added") {
+    //                 btn.addClass("active");
+    //                 icon.removeClass("fa-regular").addClass("fa-solid").css("color", "red");
+    //             } else {
+    //                 btn.removeClass("active");
+    //                 icon.removeClass("fa-solid").addClass("fa-regular").css("color", "");
+    //             }
+    //         }
+    //     });
+    // });
 
     /* ================= REMOVE FROM WISHLIST ================= */
     $(document).on("click", ".remove-from-wishlist-btn", function (e) {

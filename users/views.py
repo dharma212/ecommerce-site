@@ -69,7 +69,7 @@ class ForgotPasswordView(FormView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, "Password updated successfully.")
+        # messages.success(self.request, "Password updated successfully.")
         return super().form_valid(form)
 
 # =============================
@@ -88,7 +88,7 @@ class UserProfileView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, "Profile updated successfully.")
+        # messages.success(self.request, "Profile updated successfully.")
         return super().form_valid(form)
 
 # =============================
@@ -166,9 +166,24 @@ class TermsUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         obj, _ = TermsAndConditions.objects.get_or_create(id=1)
         return obj
     
-# class HeaderView(View):
-#     def get(self, request):
-#         cart_count = 0
-#         if request.user.is_authenticated:
-#             cart_count = request.user.cart_items.count()
-#         return render(request, "header.html", {"cart_count": cart_count})
+from django.views import View
+from django.http import JsonResponse
+from product.models import Product
+
+
+class ProductSearchView(View):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get("q", "").strip()
+
+        products = Product.objects.filter(
+            name__icontains=query
+        )[:10]
+
+        data = {
+            "results": [
+                {"id": p.id, "name": p.name}
+                for p in products
+            ]
+        }
+
+        return JsonResponse(data)

@@ -62,6 +62,7 @@
           <button class="btn btn-primary add-to-cart-btn" data-product-id="{{ product.id }}" data-stock="{{ product.stock }}"
             {% if product.stock == 0 %}disabled{% endif %}>
             {% if product.stock > 0 %}
+              <i class="bi bi-cart"></i>
               Add to Cart
             {% else %}
               Out of Stock

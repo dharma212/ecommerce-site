@@ -1,195 +1,424 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- ================= LOADER ================= -->
 <div id="checkout-loader" class="payment-overlay d-none">
   <div class="loader-card text-center">
-    <div class="spinner-border text-primary" role="status"
-      style="width: 3.5rem; height: 3.5rem"></div>
+    <div class="spinner-border text-primary" role="status" style="width: 3.5rem; height: 3.5rem"></div>
     <h4 class="mt-4 fw-bold">Processing Order...</h4>
     <p class="text-muted">Please wait while we secure your payment.</p>
   </div>
 </div>
 
-<!-- ================= SUCCESS ================= -->
 <div id="success-overlay" class="success-full-page d-none">
   <div class="success-anim-wrap text-center">
-    <div class="check-container">
-      <i class="fa-solid fa-check"></i>
-    </div>
+    <div class="check-container"><i class="fa-solid fa-check"></i></div>
     <h1 class="display-3 fw-bold mt-4">Order Confirmed!</h1>
     <p class="lead">Redirecting to your orders...</p>
-    <div class="confetti"></div>
   </div>
 </div>
 
-<!-- ================= MAIN ================= -->
-<div class="container-fluid pay-wrap px-lg-5">
-  <div class="row g-4 min-vh-100 align-items-stretch">
-    <div class="col-lg-8 col-12">
-      <div class="main-pay-card h-100">
-
-        <!-- ===== PAYMENT METHODS ===== -->
-        <div class="pay-sidebar">
-          <div class="pay-method-item is-active" onclick="toggleMethod('upi', this)">
-            <i class="fa-brands fa-google-pay fs-4"></i> UPI Options
-          </div>
-          <div class="pay-method-item" onclick="toggleMethod('card', this)">
-            <i class="fa-solid fa-credit-card"></i> Cards (Debit/Credit)
-          </div>
-          <div class="pay-method-item" onclick="toggleMethod('cod', this)">
-            <i class="fa-solid fa-truck"></i> Cash on Delivery
-          </div>
+<div class="container-fluid pay-wrap px-lg-5 mt-3">
+  <h4 class="mb-3 d-none d-lg-block">Payments</h4>
+  
+  <div class="d-lg-none price-accordion-mobile mb-3" id="topPriceMobile">
+    <div class="amount-bar-mobile" onclick="toggleMobilePrice()">
+        <div class="total-label-mobile">
+            Total Amount <i class="fa-solid fa-chevron-down chevron-icon"></i>
         </div>
+        <div class="total-value-mobile">₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span></div>
+    </div>
+    <div class="price-dropdown-content">
+        <div class="price-inner-padding">
+            <div class="price-row-mobile"><span>Price ({{ items_count }} items)</span><span>₹{{ total_price }}</span></div>
+            <div class="price-row-mobile"><span>Platform Fee</span><span>₹7</span></div>
+            <div class="price-row-mobile"><span>Delivery Charges</span><span class="text-success" id="mobDeliveryCharge">Free</span></div>
+            <hr>
+            <div class="price-row-mobile total-row-bold">
+                <span>Amount Payable</span>
+                <span class="text-primary">₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span></span>
+            </div>
+        </div>
+    </div>
+  </div>
 
-        <!-- ===== PAYMENT CONTENT ===== -->
-        <div class="pay-content">
-          <form id="orderForm" method="POST" action="{% url 'payment' %}" onsubmit="runCheckout(event)">
-            {% csrf_token %}
-
-            <input type="hidden" name="payment_method" id="payment_method" value="upi">
-
-            {% if reorder %}
-              <input type="hidden" name="reorder_id" value="{{ old_order.id }}">
-            {% endif %}
-            
-            {% if buy_now %}
-              <input type="hidden" name="buy_now_id" value="{{ product.id }}">
-            {% endif %}
-
-
-            <!-- ===== UPI ===== -->
+  <div class="row g-4">
+    <div class="col-lg-8 col-12">
+      <form id="orderForm" method="POST" action="{% url 'payment' %}" onsubmit="runCheckout(event)">
+        {% csrf_token %}
+        
+        <input type="hidden" name="payment_method" id="payment_method" value="Online">
+        {% if reorder %}<input type="hidden" name="reorder_id" value="{{ old_order.id }}">{% endif %}
+        {% if buy_now %}<input type="hidden" name="buy_now_id" value="{{ product.id }}">{% endif %}
+        
+        <div class="main-pay-card d-none d-lg-flex">
+          <div class="pay-sidebar">
+            <div class="pay-method-item is-active" id="btn-upi" onclick="toggleMethod('upi', this)">
+              <i class="fa-brands fa-google-pay fs-4"></i> UPI Options
+            </div>
+            <div class="pay-method-item" id="btn-card" onclick="toggleMethod('card', this)">
+              <i class="fa-solid fa-credit-card"></i> Cards (Debit/Credit)
+            </div>
+            <div class="pay-method-item" id="btn-cod" onclick="toggleMethod('cod', this)">
+              <i class="fa-solid fa-truck"></i> Cash on Delivery
+            </div>
+          </div>
+          <div class="pay-content d-flex">
             <div id="panel-upi" class="content-panel is-visible">
               <h5 class="fw-bold mb-3">Pay using UPI</h5>
               <input type="text" class="form-input-box" placeholder="e.g. 9876543210@upi" />
-              <button type="submit" class="btn-submit-order mt-3">
-                Pay ₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span>
-              </button>
+              <button type="submit" class="btn-submit-order mt-3">Pay ₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span></button>
             </div>
-
-            <!-- ===== CARD ===== -->
             <div id="panel-card" class="content-panel">
               <h5 class="fw-bold mb-3">Card Details</h5>
-              <input type="text" class="form-input-box" placeholder="Card Number" />
+              <input type="text" class="form-input-box mb-2" placeholder="Card Number" />
               <div class="row g-2">
-                <div class="col-6">
-                  <input type="text" class="form-input-box" placeholder="MM/YY" />
-                </div>
-                <div class="col-6">
-                  <input type="password" class="form-input-box" placeholder="CVV" />
-                </div>
+                <div class="col-6"><input type="text" class="form-input-box" placeholder="MM/YY" /></div>
+                <div class="col-6"><input type="password" class="form-input-box" placeholder="CVV" /></div>
               </div>
-              <button type="submit" class="btn-submit-order mt-2">
-                Pay ₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span>
-              </button>
+              <button type="submit" class="btn-submit-order mt-3">Pay ₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span></button>
             </div>
-
-            <!-- ===== COD ===== -->
             <div id="panel-cod" class="content-panel">
-              <div class="text-center py-3">
-                <i class="fa-solid fa-circle-check text-success display-4 mb-3"></i>
-                <h5 class="fw-bold">Confirm Cash on Delivery</h5>
-                <p class="text-muted">
-                  Pay ₹<span class="pay-btn-amount">{{ total_price|add:47 }}</span> at the time of delivery.
-                </p>
-              </div>
-              <button type="submit" class="btn-submit-order">
-                Confirm Order
-              </button>
+              <div class="text-center py-3"><i class="fa-solid fa-circle-check text-success display-4 mb-3"></i><h5 class="fw-bold">Confirm COD</h5></div>
+              <button type="submit" class="btn-submit-order">Confirm Order (₹<span class="pay-btn-amount">{{ total_price|add:47 }}</span>)</button>
             </div>
+          </div>
+        </div>
 
-          </form>
+        <div class="d-lg-none mobile-methods-wrap">
+           <div class="mob-method-item active" id="mob-upi-wrap">
+              <div class="mob-method-header" onclick="toggleMobileMethod('upi')">
+                <span><i class="fa-brands fa-google-pay text-primary fs-4 me-2"></i> UPI Options</span>
+                <i class="fa-solid fa-chevron-down mob-chevron"></i>
+              </div>
+              <div class="mob-method-content">
+                <div class="mob-inner-padding">
+                    <input type="text" class="form-input-box upi-val" placeholder="e.g. 9876543210@upi" />
+                    <button type="submit" class="btn-submit-order mt-3">Pay ₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span></button>
+                </div>
+              </div>
+           </div>
+           
+           <div class="mob-method-item" id="mob-card-wrap">
+              <div class="mob-method-header" onclick="toggleMobileMethod('card')">
+                <span><i class="fa-solid fa-credit-card text-muted me-2"></i> Cards</span>
+                <i class="fa-solid fa-chevron-down mob-chevron"></i>
+              </div>
+              <div class="mob-method-content">
+                <div class="mob-inner-padding">
+                    <input type="text" class="form-input-box mb-2" placeholder="Card Number" />
+                    <div class="row g-2">
+                        <div class="col-6"><input type="text" class="form-input-box" placeholder="MM/YY" /></div>
+                        <div class="col-6"><input type="password" class="form-input-box" placeholder="CVV" /></div>
+                    </div>
+                    <button type="submit" class="btn-submit-order mt-3">Pay ₹<span class="pay-btn-amount">{{ total_price|add:7 }}</span></button>
+                </div>
+              </div>
+           </div>
+
+           <div class="mob-method-item" id="mob-cod-wrap">
+              <div class="mob-method-header" onclick="toggleMobileMethod('cod')">
+                <span><i class="fa-solid fa-truck text-muted me-2"></i> Cash on Delivery</span>
+                <i class="fa-solid fa-chevron-down mob-chevron"></i>
+              </div>
+              <div class="mob-method-content">
+                <div class="mob-inner-padding text-center">
+                    <p>Pay ₹<span class="pay-btn-amount">{{ total_price|add:47 }}</span> on delivery.</p>
+                    <button type="submit" class="btn-submit-order">Place Order</button>
+                </div>
+              </div>
+           </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-lg-4 d-none d-lg-block">
+      <div class="summary-card p-3 sticky-top" style="top: 80px;">
+        <h6 class="text-muted fw-bold mb-3">PRICE DETAILS</h6>
+        <div class="price-gray-box">
+            <div class="d-flex justify-content-between mb-3"><span>Price ({{ items_count }} items)</span><span class="fw-bold">₹{{ total_price }}</span></div>
+            <div class="d-flex justify-content-between mb-3"><span>Platform Fee</span><span class="fw-bold">₹7</span></div>
+            <div class="d-flex justify-content-between mb-3"><span>Delivery Charges</span><span class="text-success fw-bold" id="deliveryCharge">Free</span></div>
+            <hr />
+            <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-light border rounded">
+                <span>Total Amount</span>
+                <span id="finalAmount" class="fw-bold text-primary">₹{{ total_price|add:7 }}</span>
+            </div>
         </div>
       </div>
     </div>
-
-    <!-- ===== PRICE SUMMARY ===== -->
-    <div class="col-lg-4">
-      <div class="summary-card">
-        <h6 class="text-muted fw-bold mb-4">PRICE DETAILS</h6>
-
-        <div class="d-flex justify-content-between mb-3">
-          <span>Price ({{ items_count }} items)</span>
-          <span class="fw-bold">₹{{ total_price }}</span>
-        </div>
-
-        <div class="d-flex justify-content-between mb-3">
-          <span>Platform Fee</span>
-          <span>₹7</span>
-        </div>
-
-        <div class="d-flex justify-content-between mb-3">
-          <span>Delivery Charges</span>
-          <span class="text-success fw-bold" id="deliveryCharge">Free</span>
-        </div>
-
-        <hr />
-
-        <div class="d-flex justify-content-between mb-3 fs-5 fw-bold">
-          <span>Total Amount</span>
-          <span class="text-primary" id="finalAmount">
-            ₹{{ total_price|add:7 }}
-          </span>
-        </div>
-
-        <div class="text-success small fw-bold">
-          <i class="fa-solid fa-shield-check"></i> Safe and Secure Payments
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- ================= JAVASCRIPT ================= -->
+<style>
+/* મોબાઈલ સ્ટાઈલિંગ */
+.mob-method-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: #fafafa; }
+.mob-method-item.active .mob-method-content { max-height: 500px; }
+.mob-method-item.active .mob-chevron { transform: rotate(180deg); }
+.mob-method-header { padding: 15px; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #eee; background: #fff; font-weight: 600; }
+.mob-method-item { border: 1px solid #ddd; margin-bottom: 8px; border-radius: 4px; overflow: hidden; }
+.price-accordion-mobile { background: #fff; border: 1px solid #ddd; border-radius: 4px; }
+.amount-bar-mobile { padding: 12px 15px; display: flex; justify-content: space-between; font-weight: bold; cursor: pointer; }
+.price-dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.price-accordion-mobile.active .price-dropdown-content { max-height: 300px; }
+.price-inner-padding { padding: 15px; }
+.price-row-mobile { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+/* MOBILE PAYMENT UI IMPROVEMENT */
+
+@media (max-width: 991px){
+
+.pay-wrap{
+    padding-left:10px;
+    padding-right:10px;
+}
+
+/* Payment Card */
+.mobile-methods-wrap{
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    padding:8px;
+}
+
+/* Method item */
+.mob-method-item{
+    border:1px solid #e6e6e6;
+    border-radius:8px;
+    margin-bottom:12px;
+    overflow:hidden;
+}
+
+/* Header */
+.mob-method-header{
+    padding:16px;
+    font-size:15px;
+    font-weight:600;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#fff;
+}
+
+/* Content */
+.mob-method-content{
+    max-height:0;
+    overflow:hidden;
+    transition:all .35s ease;
+    background:#fafafa;
+}
+
+.mob-method-item.active .mob-method-content{
+    max-height:400px;
+}
+
+/* Rotate arrow */
+.mob-method-item.active .mob-chevron{
+    transform:rotate(180deg);
+}
+
+/* Inner content */
+.mob-inner-padding{
+    padding:16px;
+}
+
+/* Input box */
+.form-input-box{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    font-size:14px;
+}
+
+/* Pay button */
+.btn-submit-order{
+    width:100%;
+    background:#2874f0;
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:6px;
+    font-size:16px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.btn-submit-order:hover{
+    background:#1f5ed6;
+}
+
+/* Sticky mobile pay bar */
+.mobile-pay-bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#fff;
+    border-top:1px solid #eee;
+    padding:10px 15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:999;
+}
+
+.mobile-total{
+    font-size:16px;
+    font-weight:700;
+}
+
+.mobile-pay-btn{
+    background:#fb641b;
+    color:#fff;
+    border:none;
+    padding:12px 20px;
+    border-radius:6px;
+    font-weight:600;
+}
+
+}
+.price-accordion-mobile{
+    background:#fff;
+    border-radius:8px;
+    border:1px solid #eee;
+}
+
+.amount-bar-mobile{
+    padding:14px;
+    font-size:15px;
+}
+
+.price-dropdown-content{
+    background:#fafafa;
+}
+
+.price-row-mobile{
+    font-size:14px;
+    margin-bottom:10px;
+}
+/* DESKTOP PAYMENT PANELS */
+
+.content-panel{
+    display:none;
+    padding:20px;
+}
+
+.content-panel.is-visible{
+    display:block;
+}
+
+/* Sidebar style */
+
+.pay-sidebar{
+    width:260px;
+    border-right:1px solid #eee;
+}
+
+.pay-method-item{
+    padding:18px;
+    cursor:pointer;
+    border-bottom:1px solid #eee;
+    font-weight:600;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.pay-method-item:hover{
+    background:#f5f7fa;
+}
+
+.pay-method-item.is-active{
+    background:#eef3ff;
+    color:#2874f0;
+}
+
+.pay-content{
+    flex:1;
+}
+</style>
+
 <script>
-const BASE_TOTAL = parseInt("{{ total_price }}");
+let currentMethod = 'upi';
+const BASE_TOTAL = parseInt("{{ total_price }}") || 0;
 const PLATFORM_FEE = 7;
 const COD_FEE = 40;
 
 function toggleMethod(id, btn) {
+    currentMethod = id;
+    updateUI(id);
+    document.querySelectorAll(".content-panel").forEach(p => p.classList.remove("is-visible"));
+    document.querySelectorAll(".pay-method-item").forEach(i => i.classList.remove("is-active"));
+    document.getElementById("panel-" + id).classList.add("is-visible");
+    btn.classList.add("is-active");
+}
 
-  document.querySelectorAll(".content-panel")
-    .forEach(p => p.classList.remove("is-visible"));
+function toggleMobileMethod(id) {
+    const target = document.getElementById("mob-" + id + "-wrap");
+    const isActive = target.classList.contains('active');
 
-  document.querySelectorAll(".pay-method-item")
-    .forEach(i => i.classList.remove("is-active"));
+    document.querySelectorAll(".mob-method-item").forEach(item => {
+        item.classList.remove("active");
+    });
 
-  document.getElementById("panel-" + id).classList.add("is-visible");
-  btn.classList.add("is-active");
+    if (!isActive) {
+        target.classList.add("active");
+        currentMethod = id;
+        updateUI(id);
+    } else {
+        currentMethod = 'upi';
+        updateUI('upi');
+    }
+}
 
-  document.getElementById("payment_method").value = id;
+function updateUI(id) {
+    const hiddenInput = document.getElementById("payment_method");
+    hiddenInput.value = (id === 'cod') ? "COD" : "Online";
 
-  let delivery = (id === "cod") ? COD_FEE : 0;
-  let finalTotal = BASE_TOTAL + PLATFORM_FEE + delivery;
+    let delivery = (id === "cod") ? COD_FEE : 0;
+    let finalTotal = BASE_TOTAL + PLATFORM_FEE + delivery;
 
-  document.getElementById("deliveryCharge").innerText =
-    delivery === 0 ? "Free" : "₹" + delivery;
+    // Desktop Updates
+    if(document.getElementById("deliveryCharge")) {
+        document.getElementById("deliveryCharge").innerText = (delivery === 0) ? "Free" : "₹" + delivery;
+    }
+    if(document.getElementById("finalAmount")) {
+        document.getElementById("finalAmount").innerText = "₹" + finalTotal;
+    }
 
-  document.getElementById("finalAmount").innerText = "₹" + finalTotal;
+    // Mobile Updates
+    if(document.getElementById("mobDeliveryCharge")) {
+        document.getElementById("mobDeliveryCharge").innerText = (delivery === 0) ? "Free" : "₹" + delivery;
+    }
 
-  document.querySelectorAll(".pay-btn-amount")
-    .forEach(el => el.innerText = finalTotal);
+    document.querySelectorAll(".pay-btn-amount").forEach(el => {
+        el.innerText = finalTotal;
+    });
+}
+
+function toggleMobilePrice() {
+    document.getElementById('topPriceMobile').classList.toggle('active');
 }
 
 function runCheckout(e) {
-  e.preventDefault();
+    e.preventDefault();
+    
+    if (currentMethod === 'upi') {
+        const upiVal = document.querySelector(".upi-val").value;
+        if (!upiVal && !document.querySelector(".d-lg-none").classList.contains('d-none')) {
+        }
+    }
 
-  const loader = document.getElementById("checkout-loader");
-  const successOverlay = document.getElementById("success-overlay");
-  const form = e.target;
+    const loader = document.getElementById("checkout-loader");
+    const successOverlay = document.getElementById("success-overlay");
+    const form = e.target;
 
-  loader.classList.remove("d-none");
-
-  setTimeout(() => {
-    loader.classList.add("d-none");
-    successOverlay.classList.remove("d-none");
-
+    loader.classList.remove("d-none");
     setTimeout(() => {
-      form.submit();
-    }, 1500);
-  }, 2000);
+        loader.classList.add("d-none");
+        successOverlay.classList.remove("d-none");
+        setTimeout(() => { form.submit(); }, 1500);
+    }, 2000);
 }
-</script>
 
+</script>
 {% endblock %}

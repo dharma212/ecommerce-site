@@ -74,7 +74,7 @@
             <tr>
               <td>{{ forloop.counter }}</td>
               <td class="fw-semibold">{{ product.name |truncatechars:10}}</td>
-              <td>{{ product.sub_category }}</td>
+              <td>{{ product.sub_category |truncatechars:10}}</td>
               <td class="fw-bold text-success">₹{{ product.price }}</td>
               <td>
                 {% if product.discount %} {{ product.discount }}% {% else %} —
@@ -111,10 +111,6 @@
                   </a>
                 </div>
               </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="10" class="text-muted py-4">No products found</td>
             </tr>
             {% endfor %}
           </tbody>

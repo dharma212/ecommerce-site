@@ -27,6 +27,13 @@ from cart.models import *
 # ===========================
 from product.forms import *
 from django.core.exceptions import PermissionDenied
+from django.db.models import Sum, F,Q
+from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+from order.models import Order  
+from django.contrib.auth import get_user_model
+from django.db.models import Sum
 
 
 class DashboardLoginRequiredMixin(LoginRequiredMixin):
@@ -38,53 +45,91 @@ class DashboardLoginRequiredMixin(LoginRequiredMixin):
             return render(request, 'index.html')
         return super().dispatch(request, *args, **kwargs)
 
-
 # ===========================
 # Dashboard Index
 # ===========================
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
-from order.models import Order  # તમારા Order મોડલનું સાચું નામ લખો
-from django.contrib.auth import get_user_model
-from django.db.models import Sum
 User = get_user_model()
 
-class DashboardIndexView(LoginRequiredMixin, View):
-    def get(self, request):
-        # ૧. મુખ્ય આંકડા (Stats)
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+from django.db.models import Sum, Q
+from django.utils import timezone
+
+User = get_user_model()
+
+from django.db.models import Count
+from django.utils import timezone
+from datetime import timedelta
+
+class DashboardIndexView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Existing stats (UNCHANGED)
         total_users = User.objects.count()
-        total_sales = Order.objects.filter(status='Delivered').aggregate(Sum('total_price'))['total_price__sum'] or 0
+        total_sales = Order.objects.filter(status='Delivered')\
+            .aggregate(Sum('total_price'))['total_price__sum'] or 0
         pending_orders_count = Order.objects.filter(status='Pending').count()
-        
-        # ૨. યુઝર ગ્રાફ માટે (Admins vs Customers)
-        # જો તમારી પાસે 'role' ફીલ્ડ ન હોય તો is_staff નો ઉપયોગ કરી શકાય
+
         admins = User.objects.filter(is_staff=True).count()
         customers = total_users - admins
 
-        # ૩. ડાયનેમિક ટોપ સેલિંગ પ્રોડક્ટ્સ (Top 5)
-        # અમે પ્રોડક્ટને ઓર્ડર આઈટમ્સની સંખ્યા મુજબ ગણીએ છીએ
-        top_products = Product.objects.annotate(
-            sales_count=Count('orderitem')  # અહીં 'orderitem' તમારા Product મોડલની Related Name હોવી જોઈએ
-        ).filter(sales_count__gt=0).order_by('-sales_count')[:5]
+        # 🔹 TOP SELLING PRODUCTS (by quantity sold)
+        top_products = (
+            Product.objects.annotate(
+                sales_count=Sum(
+                    'orderitem__quantity',
+                    filter=Q(orderitem__order__status='Delivered')
+                )
+            )
+            .filter(sales_count__gt=0)
+            .order_by('-sales_count')[:5]
+        )
 
-        # પ્રોગ્રેસ બારના પર્સન્ટેજ ગણવા માટે સૌથી વધુ સેલ્સ મેળવો
-        max_sales = top_products[0].sales_count if top_products else 1
+        # 🔹 ORDERS LAST 7 DAYS (day-wise)
+        today = timezone.now().date()
+        last_7_days = today - timedelta(days=6)
 
-        # ૪. લેટેસ્ટ ટ્રાન્ઝેક્શન્સ
-        recent_orders = Order.objects.all().order_by('-created_at')[:5]
+        orders_by_day = (
+            Order.objects
+            .filter(created_at__date__gte=last_7_days)
+            .extra(select={'day': "DATE(created_at)"})
+            .values('day')
+            .annotate(total=Count('id'))
+            .order_by('day')
+        )
 
-        context = {
+        context.update({
             'total_users': total_users,
             'total_sales': total_sales,
             'pending_orders_count': pending_orders_count,
             'customers': customers,
             'admins': admins,
             'top_products': top_products,
-            'max_sales': max_sales,
-            'recent_orders': recent_orders,
-        }
-        return render(request, 'dashboard/index.html', context)
+            'orders_by_day': orders_by_day,
+            'recent_orders': Order.objects.order_by('-created_at')[:5],
+        })
+
+        return context
+    
+    
+
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from order.models import Order
+
+class DashboardView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = "dashboard.html"
+    context_object_name = "orders"
+
+    def get_queryset(self):
+        return Order.objects.filter(
+            user=self.request.user
+        ).select_related("invoice")
 
 # ===========================
 # Users Section
@@ -388,7 +433,7 @@ class ContactListView(ListView):
     
 class AdminOrderListView(LoginRequiredMixin, ListView):
     model = Order
-    template_name = 'dashboard/order-details.html' 
+    template_name = 'dashboard/order-list.html' 
     context_object_name = 'orders'
     ordering = ['-created_at']
 
@@ -483,3 +528,42 @@ class PendingOrderHourEvents(View):
             })
 
         return JsonResponse(events, safe=False)
+    
+      
+from django.views import View
+from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404
+from order.models import Invoice       
+        
+class InvoiceDownloadView(View):
+    def get(self, request, pk):
+        invoice = get_object_or_404(Invoice, pk=pk)
+
+        if not invoice.invoice_file:
+            raise Http404("Invoice file not found")
+
+        return FileResponse(
+            invoice.invoice_file.open('rb'),
+            as_attachment=True,
+            filename=f"{invoice.invoice_number}.pdf"
+        )
+        
+from django.views import View
+from django.shortcuts import get_object_or_404
+from django.http import FileResponse
+from order.models import Invoice
+
+class DownloadInvoiceView(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        invoice = get_object_or_404(
+            Invoice,
+            pk=pk,
+            order__user=request.user
+        )
+
+        return FileResponse(
+            invoice.invoice_file.open(),
+            as_attachment=True,
+            filename=invoice.invoice_file.name
+        )

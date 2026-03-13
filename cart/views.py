@@ -1,18 +1,12 @@
-from django.views import View
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from product.models import Product
 from cart.models import *
 from django.http import JsonResponse
 from django.views.generic import ListView
-from django.db.models import Sum, F
-# from .models import CartItem
-
-
 from django.views import View
 from django.http import JsonResponse
 from django.db.models import Sum, F
-from cart.models import Cart
 
 class CartCountView(View):
     def get(self, request, *args, **kwargs):
@@ -208,24 +202,24 @@ class AddToCartView(LoginRequiredMixin, View):
         return JsonResponse({"success": True, "product_id": product.id})
 
 # ================= TOGGLE WISHLIST =================
-class ToggleWishlistView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        product_id = request.POST.get("product_id")
-        if not product_id:
-            return JsonResponse({"status": "error", "message": "No product id provided"})
+# class ToggleWishlistView(LoginRequiredMixin, View):
+#     def post(self, request, *args, **kwargs):
+#         product_id = request.POST.get("product_id")
+#         if not product_id:
+#             return JsonResponse({"status": "error", "message": "No product id provided"})
         
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "Product not found"})
+#         try:
+#             product = Product.objects.get(id=product_id)
+#         except Product.DoesNotExist:
+#             return JsonResponse({"status": "error", "message": "Product not found"})
         
-        wishlist_item = Wishlist.objects.filter(user=request.user, product=product).first()
-        if wishlist_item:
-            wishlist_item.delete()
-            return JsonResponse({"status": "removed", "product_id": product.id})
-        else:
-            Wishlist.objects.create(user=request.user, product=product)
-            return JsonResponse({"status": "added", "product_id": product.id})
+#         wishlist_item = Wishlist.objects.filter(user=request.user, product=product).first()
+#         if wishlist_item:
+#             wishlist_item.delete()
+#             return JsonResponse({"status": "removed", "product_id": product.id})
+#         else:
+#             Wishlist.objects.create(user=request.user, product=product)
+#             return JsonResponse({"status": "added", "product_id": product.id})
 
 # ================= GET CURRENT CART & WISHLIST =================
 class GetCartWishlistView(LoginRequiredMixin, View):

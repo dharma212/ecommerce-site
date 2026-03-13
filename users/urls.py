@@ -14,6 +14,6 @@ urlpatterns = [
     path('dashboard/about/edit/', AboutUpdateView.as_view(), name='about_edit'),
     path('terms/', TermsDetailView.as_view(), name='terms_public'),
     path('dashboard/terms/edit/', TermsUpdateView.as_view(), name='terms_edit'),
-    # path('header/', HeaderView.as_view(), name='header'),
+    path("ajax/product-search/", ProductSearchView.as_view(), name="product_search"),
 ]
 

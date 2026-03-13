@@ -21,7 +21,26 @@
     <p><strong>Customer:</strong> {{ order.first_name }} ({{ order.user.username }})</p>
     <p><strong>Address:</strong> {{ request.user.address|truncatechars:20 }}</p>
     <p><strong>Phone:</strong> {{ order.phone }}</p>
+<h6 class="fw-bold mt-3">Customer Feedback</h6>
 
+{% if order.feedback %}
+  ⭐ {{ order.feedback.rating }}/5
+{% if order.feedback.comment %}
+    <p class="small">“{{ order.feedback.comment }}”</p>
+{% endif %}
+{% else %}
+  <span class="text-muted small">Customer has not rated this order</span>
+{% endif %}
+
+<hr>
+
+<h6 class="fw-bold">Overall Product Rating</h6>
+
+{% for item in order.items.all %}
+  {% with item.product.average_rating as rating %}
+    ⭐ {{ rating }} ({{ item.product.rating_count }})
+  {% endwith %}
+{% endfor %}
                     
 </div>
 

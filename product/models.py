@@ -1,5 +1,7 @@
 from django.db import models
 from users.models import BaseModel
+from django.db.models import Avg   # 👈 ADD THIS
+
 # =====================
 # Category Model
 # =====================
@@ -44,6 +46,11 @@ class Product(models.Model):
     name = models.CharField(max_length=150)
     price = models.IntegerField()
     discount = models.PositiveIntegerField()
+    @property
+    def discount_percent(self):
+        if self.discount and self.discount > self.price:
+            return int(((self.discount - self.price) / self.discount) * 100)
+        return 0
     stock = models.PositiveIntegerField(default=0)
     
     screen_size = models.CharField(max_length=50, blank=True, null=True)
@@ -53,6 +60,14 @@ class Product(models.Model):
     memory = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True,null=True)
     updated_at = models.DateTimeField(auto_now=True)
+    @property
+    def average_rating(self):
+        avg = self.feedbacks.aggregate(avg=Avg("rating"))["avg"]
+        return round(avg or 0, 1)
+
+    @property
+    def rating_count(self):
+        return self.feedbacks.count()
 
     def __str__(self):
         return self.name

@@ -1,6 +1,16 @@
 {% extends "dashboard/base.html" %}
 
 {% block content %}
+<style>
+    .table-responsive {
+    max-height: 500px;
+  }
+  .contact-header{
+    font-size: 2rem;        /* font size increase */
+    margin-bottom: 25px;    /* bottom margin */
+    margin-top: -25px
+}
+</style>
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="fw-bold mb-0">
@@ -25,6 +35,7 @@
               <th>Address</th>
               <th>Total</th>
               <th>Status</th>
+              <th>Rating</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -52,7 +63,7 @@
               </td>
 
               <td class="small">
-                {{ request.user.address|default:"No address set in profile" |truncatechars:20}}              
+                {{ request.user.address|default:"No address set in profile" |truncatechars:15}}              
               </td>
 
               <td class="fw-bold text-primary">
@@ -88,7 +99,19 @@
                   <span class="badge bg-dark">{{ order.status }}</span>
                 {% endif %}
               </td>
-
+              <td>
+                {% for item in order.items.all %}
+                  <div>
+                    {% with item.product.average_rating as rating %}
+                      {% if rating > 0 %}
+                        ⭐ {{ rating }} ({{ item.product.rating_count }})
+                      {% else %}
+                        <span class="text-muted small">No rating</span>
+                      {% endif %}
+                    {% endwith %}
+                  </div>
+                {% endfor %}
+              </td>
               <td>
                 <a
                   href="{% url 'admin_order_update' order.id %}"
@@ -96,14 +119,12 @@
                 >
                   <i class="bi bi-pencil-square"></i> Update
                 </a>
-              </td>
-            </tr>
-
-            {% empty %}
-            <tr>
-              <td colspan="7" class="text-muted py-5">
-                <i class="bi bi-cart-x fs-1 d-block mb-2"></i>
-                No orders found
+                  {% if order.invoice %}
+                    <a href="{% url 'download_invoice' order.id %}" target="_blank"
+                      class="btn btn-primary">
+                      <i class="bi bi-file-earmark-pdf"></i>
+                    </a>
+                  {% endif %}
               </td>
             </tr>
             {% endfor %}

@@ -1,9 +1,8 @@
 {% extends "base.html" %} {% block content %}
 <div class="container-fluid py-4">
   <div class="row g-3">
-    <!-- ================= LEFT SIDE ================= -->
     <div class="col-lg-8 col-12">
-      <div class="card shadow-sm border-0 p-4">
+      <div class="card shadow-sm p-4">
         {% for item in order.items.all %}
         <div class="row align-items-center mb-3">
           <div class="col-8">
@@ -13,7 +12,6 @@
               ₹{{ item.product.price }} × {{ item.quantity }}
             </h6>
 
-            <!-- ===== ITEM STATUS ===== -->
             {% if item.status == "Cancelled" %}
             <span class="badge bg-danger">Cancelled</span>
             {% elif item.status == "Returned" %}
@@ -22,28 +20,19 @@
             <span class="badge bg-success">Delivered</span>
             {% endif %}
 
-            <!-- ===== ACTION BUTTONS ===== -->
             <div class="mt-2">
               {% if order.status == "Pending" or order.status == "Accepted" %}
-              <button
-                class="btn btn-outline-danger action-btn"
-                data-bs-toggle="modal"
-                data-bs-target="#cancelOrderModal"
-              >
+              <button class="btn btn-outline-danger action-btn" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                 Cancel Order
               </button>
-              {% endif %} {% if order.status == "Delivered" %}
-              <a href="#" class="btn btn-outline-warning action-btn">
-                Return
-              </a>
-
+              {% endif %} 
+              
+              {% if order.status == "Delivered" %}
+              <a href="#" class="btn btn-outline-warning action-btn"> Return </a>
               <a href="#" class="btn btn-outline-info action-btn"> Exchange </a>
               {% endif %}
 
-              <a
-                href="{% url 'payment' %}?reorder={{ order.id }}"
-                class="btn btn-outline-primary action-btn"
-              >
+              <a href="{% url 'payment' %}?reorder={{ order.id }}" class="btn btn-outline-primary action-btn">
                 Re-Order
               </a>
             </div>
@@ -51,150 +40,159 @@
 
           <div class="col-4 text-end">
             {% if item.product.productimage_set.first %}
-            <img
-              src="{{ item.product.productimage_set.first.photo.url }}"
-              class="img-fluid"
-              style="max-height: 90px"
-            />
+            <img src="{{ item.product.productimage_set.first.photo.url }}" class="img-fluid" style="max-height: 90px" />
             {% endif %}
           </div>
         </div>
 
         {% if not forloop.last %}
         <hr />
-        {% endif %} {% endfor %}
+        {% endif %} 
+        {% endfor %}
 
-        <!-- ================= TRACKING ================= -->
-        <div class="tracking-wrapper mt-4">
-          <div class="main-line"></div>
-
-          {% if order.status == "Cancelled" %}
-          <div class="red-progress-line"></div>
-          {% else %}
-          <div id="green-line" class="green-progress-line"></div>
-          {% endif %}
-
+        <div class="tracking-wrapper mt-4 border-top pt-4">
           <div class="status-step completed">
             Order Confirmed – {{ order.created_at|date:"M d, Y" }}
           </div>
-
-          <div
-            class="status-step {% if order.status != 'Pending' %}completed{% endif %}"
-          >
+          <div class="status-step {% if order.status != 'Pending' %}completed{% endif %}">
             Order Accepted
           </div>
-
-          <div
-            class="status-step {% if order.status in 'Packed Shipped Delivered' %}completed{% endif %}"
-          >
+          <div class="status-step {% if order.status in 'Packed Shipped Delivered' %}completed{% endif %}">
             Packed
           </div>
-
-          <div
-            class="status-step {% if order.status in 'Shipped Delivered' %}completed{% endif %}"
-          >
+          <div class="status-step {% if order.status in 'Shipped Delivered' %}completed{% endif %}">
             Shipped
           </div>
-
-          <div
-            class="status-step {% if order.status == 'Delivered' %}completed{% endif %}"
-          >
+          <div class="status-step {% if order.status == 'Delivered' %}completed{% endif %}">
             Delivered
           </div>
-
           {% if order.status == "Cancelled" %}
-          <div class="status-step cancel-red completed">Order Cancelled</div>
+          <div class="status-step completed text-danger">Order Cancelled</div>
           {% endif %}
         </div>
-      </div>
-    </div>
 
-    <!-- ================= RIGHT SIDE ================= -->
-    <div class="col-lg-4 col-12">
-      <div class="card shadow-sm border-0 p-3 mb-3">
-        <h6 class="fw-bold border-bottom pb-2">Delivery Address</h6>
-        <p class="fw-bold mb-1">{{ order.user.get_full_name }}</p>
-        <p class="small text-muted mb-1">{{ order.address }}</p>
-        <p>
-          <span>Phone: </span>
-          <span class="fw-bold">{{ order.user.contact_number }}</span>
-        </p>
-      </div>
+        {% if order.status == "Delivered" %}
+<div class="mt-4 border-top pt-4">
+    <div class="feedback-box bg-light p-3 rounded">
+        {% if order.feedback %}
+            <!-- DISPLAY MODE: After Rating -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold">Product Rating</span>
+                <div class="stars readonly text-warning">
+                    {% for i in "12345" %}
+                        <span class="star {% if order.feedback.rating|add:0 >= forloop.counter %}active{% endif %}">★</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="p-2 bg-white border rounded">
+                {{ order.feedback.comment|default:"No comment provided." }}
+            </div>
+        {% else %}
+            <!-- FORM MODE: To Give Rating -->
+            <form method="POST" action="{% url 'order_feedback' order.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="rating" id="ratingInput" required>
+                
+                <!-- ROW 1: Rating Title and Stars -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">Product Rating</h6>
+                    <div class="stars clickable text-muted">
+                        {% for i in "12345" %}
+                            <span class="star fs-4" style="cursor:pointer;" data-value="{{ forloop.counter }}">★</span>
+                        {% endfor %}
+                    </div>
+                </div>
 
-      <div class="card shadow-sm border-0 p-3">
-        <h6 class="fw-bold border-bottom pb-2">Price Details</h6>
+                <!-- ROW 2: Textarea -->
+                <div class="mb-3">
+                    <textarea name="comment" class="form-control" rows="3" placeholder="Write your review here..."></textarea>
+                </div>
 
-        {% if not order.reordered_from %}
-        <div class="d-flex justify-content-between small mb-2">
-          <span>Total Items</span>
-          <span>{{ order.items.count }}</span>
-        </div>
+                <!-- ROW 3: Submit Button (End/Right Aligned) -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success px-4 fw-bold">Submit</button>
+                </div>
+            </form>
         {% endif %}
+    </div>
+</div>
+{% endif %}
 
-        <div class="d-flex justify-content-between small mb-2">
-          <span>Items Total</span>
-          <span class="fw-bold">₹{{ order.total_price }}</span>
-        </div>
-
-        <!-- ===== DELIVERY LOGIC ===== -->
-        <div class="d-flex justify-content-between small mb-2">
-          <span>Delivery</span>
-          {% if order.payment_method == "COD" %}
-          <span class="fw-bold">₹40</span>
-          {% else %}
-          <span class="text-success">Free</span>
-          {% endif %}
-        </div>
-
-        <div class="d-flex justify-content-between small mb-2">
-          <span>Platform Fee</span>
-          <span class="fw-bold">₹7</span>
-        </div>
-
-        <hr />
-
-        <!-- ===== FINAL TOTAL ===== -->
-        <div class="d-flex justify-content-between fw-bold">
-          <span>Total Amount</span>
-          {% if order.payment_method == "COD" %}
-          <span>₹{{ order.total_price|add:47 }}</span>
-          {% else %}
-          <span>₹{{ order.total_price|add:7 }}</span>
-          {% endif %}
-        </div>
-
-        <p class="text-success small mt-2">
-          <span> Payment Method :</span>
-          <span class="fw-bold">{{ order.get_payment_method_display }}</span>
-        </p>
-
-        <a
-          href="{% url 'download_invoice' order.id %}"
-          class="btn btn-outline-primary btn-sm w-100 mt-2"
-        >
-          <i class="fa-solid fa-file-pdf"></i> Download Invoice
-        </a>
       </div>
     </div>
-  </div>
-</div>
-<div class="container-fluid py-4">
-    </div>
-<style>
-#customReasonBox {
-    display: none;
-    width: 90%;
-    margin: 10px auto;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: none; 
-}
 
-.modal-body {
-    overflow-x: hidden;
-}
-</style>
+    <div class="col-lg-4 col-12">
+    
+    <div class="card shadow-sm mb-3" style="border: 1px solid #f0f0f0; border-radius: 8px; overflow: hidden;">
+        <div class="p-3 bg-white">
+            <h6 class="fw-bold mb-0" style="font-family: serif; font-size: 18px;">Delivery details</h6>
+        </div>
+        
+        <div class="p-3" style="background-color: #f9f9f9; border-top: 1px solid #f0f0f0; margin: 10px; border-radius: 12px;">
+            <div class="d-flex align-items-start mb-3">
+                <i class="fa-solid fa-location-dot text-muted me-3 mt-1"></i>
+                <div class="small">
+                    <p class="mb-1"><span class="fw-bold">Other</span> <span class="text-muted">{{ order.address }}</span></p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-user text-muted me-3"></i>
+                <p class="mb-0 small">
+                    <span class="fw-bold">{{ order.user.get_full_name }}</span> 
+                    <span class="ms-2 text-muted">{{ order.user.contact_number }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3" style="border: 1px solid #f0f0f0; border-radius: 8px; overflow: hidden;">
+        <div class="p-3 bg-white">
+            <h6 class="fw-bold mb-0" style="font-family: serif; font-size: 18px;">Price details</h6>
+        </div>
+
+        <div class="p-3" style="background-color: #f9f9f9; border-top: 1px solid #f0f0f0; margin: 10px; border-radius: 12px;">
+            <div class="d-flex justify-content-between small mb-2">
+                <span class="text-muted">Listing price</span>
+                <span class="text-decoration-line-through text-muted">
+                    ₹{% with order.items.first as first_item %}{{ first_item.product.discount }}{% endwith %}
+                </span>
+            </div>
+            <div class="d-flex justify-content-between small mb-2">
+                <span class="text-muted">Selling price <i class="fa-regular fa-circle-question ms-1"></i></span>
+                <span class="fw-bold text-black">₹{{ order.total_price|floatformat:0 }}</span>
+            </div>
+            <div class="d-flex justify-content-between small mb-2">
+                <span class="text-muted">Total fees <i class="fa-solid fa-chevron-down ms-1" style="font-size: 10px;"></i></span>
+                <span class="fw-bold">₹{% if order.payment_method == "COD" %}47{% else %}7{% endif %}</span>
+            </div>
+
+            <hr style="border-top: 1px dashed #bbb; margin: 15px 0;">
+
+            <div class="d-flex justify-content-between fw-bold mb-3" style="font-size: 16px;">
+                <span>Total amount</span>
+                <span>₹{% if order.payment_method == "COD" %}{{ order.total_price|add:47 }}{% else %}{{ order.total_price|add:7 }}{% endif %}</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center p-2 mb-3" style="border: 1px solid #e0e0e0; border-radius: 8px; background: #fff;">
+                <span class="small text-muted">Payment method</span>
+                <div class="small fw-bold">
+                    {% if order.payment_method == "Online" %}
+                        <i class="fa-solid fa-credit-card me-1"></i> Online Payment
+                    {% else %}
+                        <i class="fa-solid fa-money-bill-1-wave me-1"></i> Cash on Delivery
+                    {% endif %}
+                </div>
+            </div>
+
+            <a href="{% url 'download_invoice' order.id %}" class="btn btn-white w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="border: 1px solid #e0e0e0; border-radius: 8px; font-weight: 500; background-color: #fff;">
+                <i class="fa-solid fa-download text-muted"></i> Download Invoice
+            </a>
+        </div>
+    </div>
+</div>  </div>
+</div>
+
 <div class="modal fade" id="cancelOrderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered"> 
 <div class="modal-content large-modal">            
@@ -250,31 +248,30 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const otherRadio = document.getElementById('triggerOther');
-        const allRadios = document.querySelectorAll('input[name="reason"]');
-        const textInput = document.getElementById('customReasonBox');
-
-        allRadios.forEach(radio => {
-            radio.addEventListener('change', function () {
-    if (otherRadio.checked) {
-        textInput.style.display = "block";
-        textInput.setAttribute('required', 'true');
-    } else {
-        textInput.style.display = "none";
-        textInput.removeAttribute('required');
-        textInput.value = "";
-    }
-});
-        });
-        const form = document.getElementById('cancellationForm');
-        form.onsubmit = function() {
-            const selected = document.querySelector('input[name="reason"]:checked');
-            if(!selected) {
-                return false;
-            }
-            return true;
-        };
+  document.querySelectorAll(".stars.clickable .star").forEach(star => {
+    star.addEventListener("click", function () {
+      const value = this.dataset.value;
+      document.getElementById("ratingInput").value = value;
+      this.parentElement.querySelectorAll(".star").forEach(s => {
+        s.classList.toggle("active", s.dataset.value <= value);
+      });
     });
+  });
 </script>
+{% comment %} <style>
+.modal-backdrop {
+    background-color: #000 !important;
+}
+
+.modal-backdrop.show {
+    opacity: 0.5 !important; 
+}
+
+.modal {
+    z-index: 1055 !important;
+}
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+</style> {% endcomment %}
 {% endblock %}

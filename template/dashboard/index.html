@@ -34,42 +34,22 @@
     </div>
 
     <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="section-card">
-                <div class="section-title">Top Selling Products</div>
-                
-                {% for product in top_products %}
-                <div class="product-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold small text-dark">{{ product.name }}</span>
-                        <span class="badge bg-light text-dark border small">{{ product.sales_count }} Sales</span>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar {% if forloop.first %}bg-primary{% else %}bg-info{% endif %}" 
-                             role="progressbar" 
-                             style="width: {% widthratio product.sales_count max_sales 100 %}%">
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="text-center py-5">
-                    <i class="bi bi-box-seam text-muted" style="font-size: 2rem;"></i>
-                    <p class="text-muted mt-2 small">No products have been sold yet.</p>
-                </div>
-                {% endfor %}
-            </div>
+    <!-- Top Products -->
+    <div class="col-lg-6">
+        <div class="section-card">
+            <div class="section-title">Top Selling Products</div>
+            <canvas id="topProductsChart"></canvas>
         </div>
-
-        {% comment %} <div class="col-lg-4">
-            <div class="section-card">
-                <div class="section-title">User Roles</div>
-                <div class="chart-container">
-                    <canvas id="userChart"></canvas>
-                </div>
-            </div>
-        </div> {% endcomment %}
     </div>
 
+    <!-- Orders by Day -->
+    <div class="col-lg-6">
+        <div class="section-card">
+            <div class="section-title">Orders (Last 7 Days)</div>
+            <canvas id="orders7DaysChart"></canvas>
+        </div>
+    </div>
+</div>
     <div class="section-card mt-4">
         <div class="section-title">Recent Transactions</div>
         <div class="table-responsive">
@@ -100,37 +80,92 @@
                         </td>
                         <td class="text-muted small">{{ order.created_at|date:"d M, Y" }}</td>
                     </tr>
-                    {% empty %}
-                    <tr><td colspan="5" class="text-center py-4 text-muted small">No recent orders found.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+{% endblock content %}
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // User Roles Chart logic
-    const ctxUser = document.getElementById('userChart').getContext('2d');
-    new Chart(ctxUser, {
-        type: 'doughnut',
-        data: {
-            labels: ['Customers', 'Admins'],
-            datasets: [{
-                data: [{{ customers|default:0 }}, {{ admins|default:0 }}],
-                backgroundColor: ['#2ecc71', '#2874f0'],
-                borderWidth: 4,
-                borderColor: '#ffffff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '75%',
-            plugins: {
-                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 20, font: { size: 12 } } }
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ===============================
+       TOP SELLING PRODUCTS (BAR)
+    ================================ */
+    const productCanvas = document.getElementById("topProductsChart");
+    if (productCanvas) {
+        new Chart(productCanvas, {
+            type: "bar",
+            data: {
+                labels: [
+                    {% for p in top_products %}
+                        "{{ p.name|truncatechars:10|escapejs }}",
+                    {% endfor %}
+                ],
+                datasets: [{
+                    data: [
+                        {% for p in top_products %}
+                            {{ p.sales_count }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        "#0d6efd", "#198754", "#ffc107", "#dc3545", "#6f42c1"
+                    ],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: "Units Sold" }},
+                    x: { title: { display: true, text: "Products" }}
+                }
             }
-        }
-    });
+        });
+    }
+
+    /* ===============================
+       ORDERS LAST 7 DAYS (LINE)
+    ================================ */
+    const ordersCanvas = document.getElementById("orders7DaysChart");
+    if (ordersCanvas) {
+        new Chart(ordersCanvas, {
+            type: "line",
+            data: {
+                labels: [
+                    {% for o in orders_by_day %}
+                        "{{ o.day }}",
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: "Orders",
+                    data: [
+                        {% for o in orders_by_day %}
+                            {{ o.total }},
+                        {% endfor %}
+                    ],
+                    borderColor: "#0d6efd",
+                    backgroundColor: "  rgba(13,110,253,0.2)",
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: "Orders" }},
+                    x: { title: { display: true, text: "Date" }}
+                }
+            }
+        });
+    }
+
+});
 </script>
-{% endblock content %}
+{% endblock script %}

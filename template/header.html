@@ -1,20 +1,18 @@
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
+<link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
 <nav class="navbar">
+  <button class="hamburger mobile-only" id="menuToggle">
+    <i class="fa-solid fa-bars"></i>
+  </button> 
   <a href="/" class="logo">
     <span>E-Commerce</span>
   </a>
-
-  {% if user.is_authenticated %}
-  <div class="search desktop-only">
-    <input type="search" placeholder="Search items..." />
-    <button><i class="fa-solid fa-magnifying-glass"></i></button>
+{% if user.is_authenticated %}
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Search For Products, Brands And More......."/>
+    <div id="searchResults" class="search-results"></div>
   </div>
-  {% endif %}
-
+{% endif %}
   <div class="right-menu">
     {% if user.is_authenticated %}
 
@@ -23,12 +21,18 @@
       <a href="#" class="profile-btn">
         <i class="bi bi-person"></i>
         <span>Account</span>
-        <i class="fa-solid fa-caret-down"></i>
+        <i class="fa-solid fa-chevron-down desktop-only"></i>
       </a>
 
       <div class="dropdown-content">
         <a href="{% url 'profile' %}"> <i class="bi bi-person"></i> Profile </a>
-
+        
+        <a href="{% url 'cart_list' %}" class="cart-link">
+          <i class="bi bi-cart"></i>
+          <span id="cart-count" class="cart-count">0</span>
+          My Cart
+        </a>
+        
         <a href="{% url 'my_orders' %}">
           <i class="bi bi-box"></i> My Orders
         </a>
@@ -44,59 +48,63 @@
         </a>
       </div>
     </div>
-    <a href="{% url 'cart_list' %}" class="cart-link">
-      <i class="bi bi-cart"></i>
-      <span id="cart-count" class="cart-count">0</span>
-      My Cart
-    </a>
 
     {% if request.user.role == "admin" %}
     <a href="{% url 'dashboard_index' %}" class="desktop-only">
       <i class="fa-solid fa-chart-line"></i> Dashboard
     </a>
     {% endif %}
-    <div class="mobile-only user-dropdown-container">
-      <button class="simple-profile-btn" id="simpleProfileToggle">
-        <i class="fa-solid fa-user"></i>
-        <span>Account</span>
-        <i class="fa-solid fa-chevron-down arrow"></i>
-      </button>
-
-      <ul class="simple-dropdown-menu" id="simpleMenu">
-        <li>
-          <a href="{% url 'profile' %}"
-            ><i class="fa-solid fa-circle-user"></i> Profile</a
-          >
-        </li>
-        <li>
-          <a href="{% url 'my_orders' %}"
-            ><i class="fa-solid fa-box-open"></i> My Orders</a
-          >
-        </li>
-        <li>
-          <a href="{% url 'cart_list' %}"
-            ><i class="fa-solid fa-cart-shopping"></i> My Cart</a
-          >
-        </li>
-        <li>
-          <a href="{% url 'wishlist_list' %}"
-            ><i class="fa-solid fa-heart"></i> Wishlist</a
-          >
-        </li>
-        <li class="divider"></li>
-        <li>
-          <a href="{% url 'logout' %}" class="logout-red"
-            ><i class="fa-solid fa-power-off"></i> Logout</a
-          >
-        </li>
-      </ul>
-    </div>
     {% else %}
       <a href="{% url 'signup' %}"><i class="fa-solid fa-user-plus"></i> Signup</a>
       <a href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
     {% endif %}
   </div>
 </nav>
+ <div class="mobile-menu" id="mobileMenu">
+
+  {% if user.is_authenticated %}
+
+    <a href="{% url 'profile' %}" class="mobile-link">
+      <i class="fa-solid fa-circle-user"></i> Profile
+    </a>
+
+    <a href="{% url 'my_orders' %}" class="mobile-link">
+      <i class="fa-solid fa-box-open"></i> My Orders
+    </a>
+
+    <a href="{% url 'cart_list' %}" class="mobile-link">
+      <i class="fa-solid fa-cart-shopping"></i> My Cart
+    </a>
+
+    <a href="{% url 'wishlist_list' %}" class="mobile-link">
+      <i class="fa-solid fa-heart"></i> Wishlist
+    </a>
+
+    {% if request.user.role == "admin" %}
+    <a href="{% url 'dashboard_index' %}" class="mobile-link">
+      <i class="fa-solid fa-chart-line"></i> Dashboard
+    </a>
+    {% endif %}
+
+    <hr>
+
+    <a href="{% url 'logout' %}" class="mobile-link logout-red">
+      <i class="fa-solid fa-power-off"></i> Logout
+    </a>
+
+  {% else %}
+
+    <a href="{% url 'login' %}" class="mobile-link">
+      <i class="fa-solid fa-right-to-bracket"></i> Login
+    </a>
+
+    <a href="{% url 'signup' %}" class="mobile-link">
+      <i class="fa-solid fa-user-plus"></i> Signup
+    </a>
+
+  {% endif %}
+
+</div> 
 {% if user.is_authenticated %}
   <div class="cat-header-container">
     <div class="cat-header-inner cat-mobile-wrapper">
@@ -117,11 +125,9 @@
 
           {% if category.subcategories.all %}
             <div class="cat-dropdown desktop-only">
-              <div class="dropdown-inner">
                 {% for sub in category.subcategories.all %}
                   <a href="{% url 'index2' sub.id %}">{{ sub.name }}</a>
                 {% endfor %}
-              </div>
             </div>
           {% endif %}
         </div>
@@ -140,3 +146,25 @@
     <button class="btn btn-secondary close-modal">Cancel</button>
   </div>
 </div>
+<script>
+const menuToggle = document.getElementById("menuToggle");
+const mobileMenu = document.getElementById("mobileMenu");
+
+// Toggle menu when clicking hamburger
+menuToggle.addEventListener("click", function (e) {
+  e.stopPropagation(); // prevent immediate close
+  mobileMenu.classList.toggle("active");
+  menuToggle.classList.toggle("active");
+});
+
+// Prevent closing when clicking inside menu
+mobileMenu.addEventListener("click", function (e) {
+  e.stopPropagation();
+});
+
+// Close when clicking outside
+document.addEventListener("click", function () {
+  mobileMenu.classList.remove("active");
+  menuToggle.classList.remove("active");
+});
+</script>

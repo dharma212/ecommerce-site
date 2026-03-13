@@ -1,18 +1,19 @@
-  const swiper = new Swiper(".bannerSwiper", {
-    loop: true,
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false,
-    },
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-    },
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-  });
+const swiper = new Swiper(".bannerSwiper", {
+  loop: true,
+  autoplay: {
+    delay: 3000,
+    disableOnInteraction: false,
+  },
+  pagination: {
+    el: ".swiper-pagination",
+    clickable: true,
+  },
+  navigation: {
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+  },
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('simpleProfileToggle');
     const menu = document.getElementById('simpleMenu');
@@ -31,14 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-document.getElementById('deliver-here-btn').addEventListener('click', function () {
-        document.getElementById('address-section').classList.add('d-none');
-        document.getElementById('address-header').classList.add('d-none');
-        document.getElementById('address-collapsed').classList.remove('d-none');
-        document.getElementById('summary-header').classList.add('bg-primary', 'text-white');
-        document.getElementById('summary-section').classList.remove('d-none');
-    });
+const deliverBtn = document.getElementById('deliver-here-btn');
 
+if (deliverBtn) {
+    deliverBtn.addEventListener('click', function () {
+        document.getElementById('address-section')?.classList.add('d-none');
+        document.getElementById('address-header')?.classList.add('d-none');
+        document.getElementById('address-collapsed')?.classList.remove('d-none');
+        document.getElementById('summary-header')?.classList.add('bg-primary', 'text-white');
+        document.getElementById('summary-section')?.classList.remove('d-none');
+    });
+}
  function scrollThumbs(direction) {
         const wrapper = document.getElementById('thumbWrapper');
         if (direction === 'up') wrapper.scrollTop -= 80;
@@ -95,3 +99,132 @@ document.getElementById('deliver-here-btn').addEventListener('click', function (
   window.addEventListener("load", updateProgressLine);
 
 
+document.addEventListener("DOMContentLoaded", function () {
+  const navbar = document.querySelector(".navbar");
+
+  function handleScroll() {
+    if (window.scrollY > 30) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");  
+    }
+  }
+
+  handleScroll(); // run on load
+  window.addEventListener("scroll", handleScroll);
+});
+
+
+
+// ===============================
+// Footer JS 
+// ===============================
+let lastScrollTop = 0;
+const bottomNav = document.getElementById("bottomNav");
+
+window.addEventListener("scroll", function () {
+    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (currentScroll > lastScrollTop) {
+        // Scrolling DOWN
+        bottomNav.classList.add("hide");
+    } else {
+        // Scrolling UP
+        bottomNav.classList.remove("hide");
+    }
+
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+});
+
+
+// ================================
+// Order Details Page JS
+// ================================
+document.addEventListener("DOMContentLoaded", function () {
+
+    const otherRadio = document.getElementById('triggerOther');
+    const allRadios = document.querySelectorAll('input[name="reason"]');
+    const textInput = document.getElementById('customReasonBox');
+    const form = document.getElementById('cancellationForm');
+
+    // 🚨 SAFETY CHECK
+    if (!form || !otherRadio || !textInput) {
+        return; // stop script if elements not on this page
+    }
+
+    allRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (otherRadio.checked) {
+                textInput.style.display = "block";
+                textInput.setAttribute('required', 'true');
+            } else {
+                textInput.style.display = "none";
+                textInput.removeAttribute('required');
+                textInput.value = "";
+            }
+        });
+    });
+
+    form.onsubmit = function () {
+        const selected = document.querySelector('input[name="reason"]:checked');
+        if (!selected) {
+            alert("Please select a reason");
+            return false;
+        }
+        return true;
+    };
+});
+
+
+// // ==========================
+// // Payment Page JS
+// // ==========================
+// const BASE_TOTAL = parseInt(
+//   document.getElementById("page-data").dataset.total
+// );
+// const PLATFORM_FEE = 7;
+// const COD_FEE = 40;
+
+// function toggleMethod(id, btn) {
+
+//   document.querySelectorAll(".content-panel")
+//     .forEach(p => p.classList.remove("is-visible"));
+
+//   document.querySelectorAll(".pay-method-item")
+//     .forEach(i => i.classList.remove("is-active"));
+
+//   document.getElementById("panel-" + id).classList.add("is-visible");
+//   btn.classList.add("is-active");
+
+//   document.getElementById("payment_method").value = id;
+
+//   let delivery = (id === "cod") ? COD_FEE : 0;
+//   let finalTotal = BASE_TOTAL + PLATFORM_FEE + delivery;
+
+//   document.getElementById("deliveryCharge").innerText =
+//     delivery === 0 ? "Free" : "₹" + delivery;
+
+//   document.getElementById("finalAmount").innerText = "₹" + finalTotal;
+
+//   document.querySelectorAll(".pay-btn-amount")
+//     .forEach(el => el.innerText = finalTotal);
+// }
+
+// function runCheckout(e) {
+//   e.preventDefault();
+
+//   const loader = document.getElementById("checkout-loader");
+//   const successOverlay = document.getElementById("success-overlay");
+//   const form = e.target;
+
+//   loader.classList.remove("d-none");
+
+//   setTimeout(() => {
+//     loader.classList.add("d-none");
+//     successOverlay.classList.remove("d-none");
+
+//     setTimeout(() => {
+//       form.submit();
+//     }, 1500);
+//   }, 2000);
+// }

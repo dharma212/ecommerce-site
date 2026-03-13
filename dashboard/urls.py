@@ -51,4 +51,18 @@ urlpatterns = [
     path("pending-calendar/",PendingOrderCalendarView.as_view(),name="admin_pending_calendar"),
     path("dashboard/pending-calendar-events/",PendingOrderCalendarEvents.as_view(),name="pending_calendar_events"),
     path("dashboard/ajax/pending-hour-events/",PendingOrderHourEvents.as_view(),name="pending_hour_events"),
+path(
+    'invoice/download/<int:pk>/',
+    InvoiceDownloadView.as_view(),
+    name='invoice-download'
+),
+  path(
+        "invoice/<int:order_id>/",
+        InvoiceDownloadView.as_view(),
+        name="download_invoice"
+    ),
+      path("dashboard/", DashboardView.as_view(), name="dashboard"),
+    path("invoice/download/<int:pk>/",
+         DownloadInvoiceView.as_view(),
+         name="download_invoice"),
 ]

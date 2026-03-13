@@ -2,8 +2,9 @@
 
 <a href="{% url 'product_detail' product.id %}" class="product-link">
   <div class="product-card">
-
-    <!-- ❤️ WISHLIST (overlay) -->
+{% if product.id in best_seller_ids %}
+    <span class="badge bestseller-badge">🔥 Best Seller</span>
+{% endif %}
     <button
       class="wishlist-button {% if product.is_wishlisted %}active{% endif %}"
       data-product-id="{{ product.id }}"
@@ -13,7 +14,6 @@
       <i class="fa-{% if product.is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
     </button>
 
-    <!-- IMAGE -->
     <div class="product-img-box">
       {% if product.productimage_set.first %}
         <img src="{{ product.productimage_set.first.photo.url }}" alt="{{ product.name }}">
@@ -22,42 +22,48 @@
       {% endif %}
     </div>
 
-    <!-- DETAILS -->
     <div class="product-details-box">
-      <div class="product-title">{{ product.name }}</div>
-      <div class="rating">
-            <span class="badge-rating">4.3 ★</span>
-          </div>
-          {% comment %} <span class="rating-text">1,245 Ratings & 156 Reviews</span> {% endcomment %}
-      <div class="price-section">
-        <span class="price">₹{{ product.price }}</span>
-        {% if product.discount %}
-          <span class="old-price">₹{{ product.discount }}</span>
-        {% endif %}
-      </div>
+        <div class="product-title fw-bold mb-1">{{ product.name }}</div>
+        
+        <div class="rating-row mb-2">
+            {% if product.average_rating > 0 %}
+                <span class="badge-rating" style="background: #388e3c; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: 500;">
+                    {{ product.average_rating }} ★
+                </span>
+                <span class="rating-text" style="color: #878787; font-size: 13px; margin-left: 5px; font-weight: 500;">
+                    {{ product.rating_count }} Ratings & Reviews
+                </span>
+            {% else %}
+                <span class="text-muted small" style="font-size: 12px;">No ratings yet</span>
+            {% endif %}
+        </div>
 
-      <div class="specs">
-        {% if product.ram %}<small>RAM {{ product.ram }}</small>{% endif %}
-        {% if product.rom %}<small>ROM {{ product.rom }}</small>{% endif %}
-        {% if product.screen_size %}<small>{{ product.screen_size }}</small>{% endif %}
-      </div>
-    </div>
+        <div class="price-section">
+            <span class="price fw-bold">₹{{ product.price }}</span>
+            {% if product.discount_percent > 0 %}
+                <span class="old-price text-decoration-line-through text-muted small ms-1">₹{{ product.discount }}</span>
+                <span class="discount-percent text-success small ms-1">
+                    {{ product.discount_percent }}% off
+                </span>
+            {% endif %}
+        </div>
 
-    <!-- ADD TO CART -->
-    <div class="add-cart">
-      <button
-        class="btn btn-primary add-to-cart-btn"
+        <div class="specs mt-1">
+            {% if product.ram %}<small class="text-muted">RAM {{ product.ram }}</small>{% endif %}
+            {% if product.rom %}<small class="text-muted">ROM {{ product.rom }}</small>{% endif %}
+            {% if product.screen_size %}<br><small class="text-muted">{{ product.screen_size }}</small>{% endif %}
+        </div>
+    </div> <div class="add-cart p-2">
+      <button 
+        class="btn btn-primary btn-sm w-100 add-to-cart-btn"
         data-product-id="{{ product.id }}"
         data-stock="{{ product.stock }}"
         {% if product.stock == 0 %}disabled{% endif %}
         onclick="event.preventDefault();"
       >
+        <i class="bi bi-cart"></i>
         {% if product.stock > 0 %}Add to Cart{% else %}Out of Stock{% endif %}
       </button>
     </div>
 
-  </div>
-</a>
-<style>
-
-</style>
+  </div> </a>

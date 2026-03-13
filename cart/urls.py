@@ -10,7 +10,7 @@ urlpatterns = [
 
   path('wishlist/', WishlistListView.as_view(), name='wishlist_list'),
   path("wishlist/ajax/toggle/", WishlistToggleAjaxView.as_view(), name="wishlist_toggle"),
-  path('wishlist/ajax/toggle/', ToggleWishlistView.as_view(), name='toggle-wishlist-ajax'),
+#   path('wishlist/ajax/toggle/', ToggleWishlistView.as_view(), name='toggle-wishlist-ajax'),
   path('ajax/get_items/', GetCartWishlistView.as_view(), name='get-cart-wishlist'),
  path("ajax/wishlist/remove/",RemoveFromWishlistAjaxView.as_view(),name="wishlist_remove",),  
 path(

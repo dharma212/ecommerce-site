@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from  product.models import *
+from cart.models import *
 # Create your views here.
 from django.views.generic import TemplateView
 from product.models import Product, Banner, SubCategory
@@ -28,7 +29,7 @@ class HomeView(TemplateView):
         context["washing_machines"] = Product.objects.filter(
             sub_category__category__name="Washing Machine"
         )[:8]
-
+        context['welcome_coupon'] = Coupon.objects.filter(active=True).order_by('-id').first()
         return context
 
 

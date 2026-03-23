@@ -1185,7 +1185,6 @@ body {
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: none;
-    /* શરૂઆતમાં છુપાયેલું */
     z-index: 1000;
 }
 
@@ -1237,7 +1236,6 @@ body {
     }
 }
 
-/* Mobile Fix: સાઇડમાં ન જાય તે માટે */
 @media (max-width: 768px) {
     .simple-dropdown-menu {
         position: fixed;
@@ -1245,7 +1243,6 @@ body {
         right: 10px;
         width: auto;
         top: 60px;
-        /* હેડરની નીચે */
     }
 }
 
@@ -4524,7 +4521,190 @@ body {
 .btn-submit-order:hover {
     background: #e85a15;
 }
+.mob-method-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: #fafafa; }
+.mob-method-item.active .mob-method-content { max-height: 500px; }
+.mob-method-item.active .mob-chevron { transform: rotate(180deg); }
+.mob-method-header { padding: 15px; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #eee; background: #fff; font-weight: 600; }
+.mob-method-item { border: 1px solid #ddd; margin-bottom: 8px; border-radius: 4px; overflow: hidden; }
+.price-accordion-mobile { background: #fff; border: 1px solid #ddd; border-radius: 4px; }
+.amount-bar-mobile { padding: 12px 15px; display: flex; justify-content: space-between; font-weight: bold; cursor: pointer; }
+.price-dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.price-accordion-mobile.active .price-dropdown-content { max-height: 300px; }
+.price-inner-padding { padding: 15px; }
+.price-row-mobile { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+/* MOBILE PAYMENT UI IMPROVEMENT */
 
+@media (max-width: 991px){
+
+.pay-wrap{
+    padding-left:10px;
+    padding-right:10px;
+}
+
+/* Payment Card */
+.mobile-methods-wrap{
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    padding:8px;
+}
+
+/* Method item */
+.mob-method-item{
+    border:1px solid #e6e6e6;
+    border-radius:8px;
+    margin-bottom:12px;
+    overflow:hidden;
+}
+
+/* Header */
+.mob-method-header{
+    padding:16px;
+    font-size:15px;
+    font-weight:600;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#fff;
+}
+
+/* Content */
+.mob-method-content{
+    max-height:0;
+    overflow:hidden;
+    transition:all .35s ease;
+    background:#fafafa;
+}
+
+.mob-method-item.active .mob-method-content{
+    max-height:400px;
+}
+
+/* Rotate arrow */
+.mob-method-item.active .mob-chevron{
+    transform:rotate(180deg);
+}
+
+/* Inner content */
+.mob-inner-padding{
+    padding:16px;
+}
+
+/* Input box */
+.form-input-box{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    font-size:14px;
+}
+
+/* Pay button */
+.btn-submit-order{
+    width:100%;
+    background:#2874f0;
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:6px;
+    font-size:16px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.btn-submit-order:hover{
+    background:#1f5ed6;
+}
+
+/* Sticky mobile pay bar */
+.mobile-pay-bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#fff;
+    border-top:1px solid #eee;
+    padding:10px 15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:999;
+}
+
+.mobile-total{
+    font-size:16px;
+    font-weight:700;
+}
+
+.mobile-pay-btn{
+    background:#fb641b;
+    color:#fff;
+    border:none;
+    padding:12px 20px;
+    border-radius:6px;
+    font-weight:600;
+}
+
+}
+.price-accordion-mobile{
+    background:#fff;
+    border-radius:8px;
+    border:1px solid #eee;
+}
+
+.amount-bar-mobile{
+    padding:14px;
+    font-size:15px;
+}
+
+.price-dropdown-content{
+    background:#fafafa;
+}
+
+.price-row-mobile{
+    font-size:14px;
+    margin-bottom:10px;
+}
+/* DESKTOP PAYMENT PANELS */
+
+.content-panel{
+    display:none;
+    padding:20px;
+}
+
+.content-panel.is-visible{
+    display:block;
+}
+
+/* Sidebar style */
+
+.pay-sidebar{
+    width:260px;
+    border-right:1px solid #eee;
+}
+
+.pay-method-item{
+    padding:18px;
+    cursor:pointer;
+    border-bottom:1px solid #eee;
+    font-weight:600;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.pay-method-item:hover{
+    background:#f5f7fa;
+}
+
+.pay-method-item.is-active{
+    background:#eef3ff;
+    color:#2874f0;
+}
+
+.pay-content{
+    flex:1;
+}
 
 /* ====================== */
 /* product Details page */
@@ -5553,3 +5733,104 @@ a {
     float: right;
     cursor: pointer;
 }
+
+/* ========================= */
+/* Coupon Page  */
+/* ========================= */
+/* Main Wrapper */
+    .coupons-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: Roboto, Arial, sans-serif;
+    }
+
+    /* Grid Layout */
+    .coupons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    /* Flipkart Ticket Style Card */
+    .fk-card {
+        background: #fff;
+        border: 1px dashed #2874f0;
+        border-radius: 8px;
+        position: relative;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        min-height: 200px;
+    }
+
+    /* Side Circles (Notches) */
+    .fk-card::before, .fk-card::after {
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background-color: #f1f3f6; /* આ તમારા Page નો Background color હોવો જોઈએ */
+        border-radius: 50%;
+        top: 60%;
+        transform: translateY(-50%);
+        border: 1px dashed #2874f0;
+    }
+    .fk-card::before { left: -13px; }
+    .fk-card::after { right: -13px; }
+
+    /* Text Styles */
+    .off-text {
+        color: #2874f0;
+        font-size: 24px;
+        font-weight: 900;
+        margin-bottom: 5px;
+    }
+    .coupon-desc {
+        color: #878787;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    .code-box {
+        display: inline-block;
+        border: 1px solid #e0e0e0;
+        background: #f9f9f9;
+        padding: 5px 15px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        color: #212121;
+        margin-bottom: 15px;
+    }
+
+    /* Horizontal line (dashed) */
+    .fk-divider {
+        border-top: 1px dashed #d1d1d1;
+        margin: 15px 0;
+        width: 100%;
+    }
+
+    /* Button Style */
+    .fk-apply-btn {
+        background: #fb641b;
+        color: white;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 2px;
+        margin-top: auto;
+    }
+    .fk-apply-btn:hover { background: #f4511e; }
+    .fk-apply-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+    .expiry-text {
+        font-size: 12px;
+        color: #212121;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }

@@ -63,6 +63,33 @@ $(document).ready(function () {
   });
 });
 
+$(document).ready(function () {
+  $('#cancelOrderTable').DataTable({
+    responsive: true,
+    autoWidth: false,
+    pageLength: 10,
+    scrollX: true,
+
+    columnDefs: [
+      { orderable: false, targets: [7] },  // Action column
+      { width: "90px", targets: [7] }
+    ],
+
+    order: [[0, "asc"]],
+
+    language: {
+      search: "_INPUT_",
+      searchPlaceholder: "Search cancelled orders...",
+      lengthMenu: "Show _MENU_ entries",
+      info: "Showing _START_ to _END_ of _TOTAL_ cancelled orders",
+      paginate: {
+        previous: "←",
+        next: "→"
+      }
+    }
+  });
+});
+
 // ================================
 // Wishlist Table
 $(document).ready(function () {

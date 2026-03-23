@@ -73,28 +73,126 @@
 
             <div class="col-lg-4 col-md-12">
                 <div class="price-details-fixed">
+                    <!-- ✅ COUPON SECTION -->
+<div class="coupon-box mb-3 p-3" style="background:#fff; border:1px solid #f0f0f0;">
+    <h6 style="font-size:14px; font-weight:600;">Apply Coupon</h6>
+
+    <form method="POST" action="{% url 'apply_coupon' %}" novalidate>
+        {% csrf_token %}
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <input 
+                type="text" 
+                name="coupon_code" 
+                placeholder="Enter coupon code"
+                style="flex:1; padding:8px; border:1px solid #ccc; border-radius:3px;"
+                required
+            >
+            <button 
+                type="submit"
+                style="background:#2874f0; color:#fff; border:none; padding:8px 15px; border-radius:3px;">
+                Apply
+            </button>
+        </div>
+        {% if messages %}
+    {% for message in messages %}
+        <div style="
+            padding:10px;
+            margin-bottom:10px;
+            border-radius:4px;
+            font-size:14px;
+            {% if message.tags == 'error' %}
+                background:#ffe5e5; color:#d32f2f;
+            {% else %}
+                background:#e6f4ea; color:#2e7d32;
+            {% endif %}
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+    </form>
+
+    <!-- ✅ SHOW APPLIED COUPON -->
+    {% if coupon %}
+    <p style="color:green; font-size:13px; margin-top:10px;">
+        Coupon Applied:
+        
+        {% if coupon.discount_type == "percent" %}
+            {{ coupon.discount_value }}% OFF
+        {% else %}
+            ₹{{ coupon.discount_value }} OFF
+        {% endif %}
+    </p>
+{% endif %}
+</div>
                     <h6 class="price-title">PRICE DETAILS</h6>
-                    <div class="price-body">
-                        <div class="price-item">
-                            <span class="price-count-text">Price ({{ cart_items.count }} items)</span>
-                            <span class="total-price-val">₹{{ total_price }}</span>
-                        </div>
-                        <div class="price-item">
-                            <span>Delivery Charges</span>
-                            <span class="text-success">FREE</span>
-                        </div>
-                        <div class="price-total">
-                            <span>Total Amount</span>
-                            <span id="grand-total">₹{{ total_price }}</span>
-                        </div>
-                        <div class="checkout-area">
-                            {% if user.address %}
-                                <a href="{% url 'checkout' %}" class="place-order-button text-center d-block" style="text-decoration: none;">PLACE ORDER</a>
-                            {% else %}
-                                <button class="place-order-button text-center d-block w-100" style="opacity: 0.6; cursor: not-allowed;">PLACE ORDER</button>
-                            {% endif %}
-                        </div>
-                    </div>
+
+<div class="price-body">
+
+    <!-- Total Price -->
+    <div class="d-flex justify-content-between mb-2">
+        <span>Price ({{ cart_items|length }} items)</span>
+        <span>
+            <span style="text-decoration: line-through; color:#878787; margin-right:6px;">
+                ₹{{ total_mrp }}
+            </span>
+            <span class="fw-bold">
+                ₹{{ total_price }}
+            </span>
+        </span>
+    </div>
+
+    <!-- Delivery -->
+    <div class="price-item">
+        <span>Delivery Charges</span>
+        <span class="text-success text-bold">FREE</span>
+    </div>
+    <div class="price-item">
+        <span>Platform Fee</span>
+        <span class="text-bold">₹7</span>
+    </div>
+
+    <!-- ✅ SHOW DISCOUNT ONLY IF COUPON APPLIED -->
+    {% if discount_amount > 0 %}
+<div class="price-item">
+    <span>Coupon Discount</span>
+    <span class="text-success">-₹{{ discount_amount|floatformat:2 }}</span>
+</div>
+{% endif %}
+
+    <!-- ✅ FINAL PRICE -->
+    <div class="price-total">
+        <span>Total Amount</span>
+        <span id="grand-total">
+    ₹{% if discount_amount > 0 %}
+        {{ final_price }}
+     {% else %}
+        {{ total_price }}
+     {% endif %}
+</span>
+    </div>
+{% if total_savings > 0 %}
+<div class="save-msg p-2 mt-2" style="color: #388e3c; font-weight: 600; font-size: 14px; background: #f6fff6; border-radius: 2px;">
+    You will save ₹{{ total_savings|floatformat:2 }} on this order
+</div>
+{% endif %}
+    <!-- Checkout -->
+    <div class="checkout-area">
+        {% if user.address %}
+            <a href="{% url 'checkout' %}" 
+               class="place-order-button text-center d-block" 
+               style="text-decoration: none;">
+               PLACE ORDER
+            </a>
+        {% else %}
+            <button class="place-order-button text-center d-block w-100" 
+                    style="opacity: 0.6; cursor: not-allowed;">
+                PLACE ORDER
+            </button>
+        {% endif %}
+    </div>
+
+</div>
                 </div>
             </div>
         </div>

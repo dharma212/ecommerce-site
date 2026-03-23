@@ -113,19 +113,22 @@
         </li>
 
         <!-- Orders -->
+{% with current=request.resolver_match.url_name %}
 <li class="dropdown">
     <a href="#"
        class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between"
        data-bs-toggle="collapse"
        data-bs-target="#orderMenu"
-       aria-expanded="{% if current in 'admin_order_list admin_cancelled_orders' %}true{% else %}false{% endif %}">
+       aria-expanded="{% if current == 'admin_order_list' or current == 'cancle_orders' or current == 'admin_pending_calendar' or current == 'dashboard_coupons' %}true{% else %}false{% endif %}">
+        
         <span>
             <i class="bi bi-truck"></i> Order Management
         </span>
         <i class="bi bi-chevron-down"></i>
     </a>
 
-    <ul class="collapse list-unstyled ps-3 {% if current in 'admin_order_list admin_cancelled_orders' %}show{% endif %}"
+    <ul class="collapse list-unstyled ps-3 
+        {% if current == 'admin_order_list' or current == 'cancle_orders' or current == 'admin_pending_calendar' or current == 'dashboard_coupons' %}show{% endif %}"
         id="orderMenu">
 
         <li class="{% if current == 'admin_order_list' %}active{% endif %}">
@@ -139,15 +142,22 @@
                 <i class="bi bi-x-circle me-2"></i> Cancelled Orders
             </a>
         </li>
+
         <li class="{% if current == 'admin_pending_calendar' %}active{% endif %}">
-    <a href="{% url 'admin_pending_calendar' %}"
-       class="text-decoration-none px-3 py-2 d-block small">
-        <i class="bi bi-calendar-event"></i> Pending Orders
-    </a>
-</li>
+            <a href="{% url 'admin_pending_calendar' %}" class="text-decoration-none px-3 py-2 d-block small">
+                <i class="bi bi-calendar-event me-2"></i> Pending Orders
+            </a>
+        </li>
+
+        <li class="{% if current == 'dashboard_coupons' %}active{% endif %}">
+            <a href="{% url 'dashboard_coupons' %}" class="text-decoration-none px-3 py-2 d-block small">
+                <i class="bi bi-ticket-perforated me-2"></i> Coupon Cards
+            </a>
+        </li>
 
     </ul>
 </li>
+{% endwith %}
 
     </ul>
 

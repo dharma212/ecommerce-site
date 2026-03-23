@@ -7,6 +7,13 @@ from django.views.generic import ListView
 from django.views import View
 from django.http import JsonResponse
 from django.db.models import Sum, F
+from django.utils import timezone
+from .models import Coupon
+from django.views import View
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.utils import timezone
+from .models import Coupon, Cart
 
 class CartCountView(View):
     def get(self, request, *args, **kwargs):
@@ -15,17 +22,43 @@ class CartCountView(View):
 
         cart_items = Cart.objects.filter(user=request.user)
 
+        # ✅ Count
         count = cart_items.aggregate(
             total_qty=Sum("quantity")
         )["total_qty"] or 0
 
-        total_amount = cart_items.aggregate(
-            total=Sum(F("quantity") * F("product__price"))
-        )["total"] or 0
+        # ✅ Total price
+        total_amount = sum(item.product.price * item.quantity for item in cart_items)
+
+        # ✅ Apply coupon
+        coupon_id = request.session.get('coupon_id')
+        discount_amount = 0
+
+        if coupon_id:
+            try:
+                coupon = Coupon.objects.get(id=coupon_id)
+                today = timezone.now().date()
+
+                if coupon.valid_from <= today <= coupon.valid_to:
+
+                    if coupon.discount_type == 'percent':
+                        discount_amount = (total_amount * coupon.discount_value) / 100
+
+                    elif coupon.discount_type == 'flat':
+                        discount_amount = coupon.discount_value
+
+            except Coupon.DoesNotExist:
+                pass
+
+        # ✅ Safety
+        if discount_amount > total_amount:
+            discount_amount = total_amount
+
+        final_total = total_amount - discount_amount
 
         return JsonResponse({
             "count": count,
-            "total": float(total_amount)
+            "total": float(final_total)
         })
 
 class AddToCartView(LoginRequiredMixin, View):
@@ -46,26 +79,110 @@ class AddToCartView(LoginRequiredMixin, View):
         # Redirect to the cart list using namespaced URL
         return redirect('cart_list')
 
+
 class CartListView(LoginRequiredMixin, ListView):
     model = Cart
     template_name = 'cart_list.html'
     context_object_name = 'cart_items'
 
+    # ✅ Get cart items + stock fix
     def get_queryset(self):
         items = Cart.objects.select_related('product').filter(user=self.request.user)
+
         for item in items:
             if item.product.stock > 0 and item.quantity > item.product.stock:
                 item.quantity = item.product.stock
                 item.save()
             elif item.product.stock == 0:
-                item.quantity = 0 
+                item.quantity = 0
                 item.save()
+
         return items
 
+    # ✅ Main logic
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_price = sum(item.product.price * item.quantity for item in context['cart_items'] if item.product.stock > 0)
-        context['total_price'] = total_price
+        cart_items = context['cart_items']
+
+        # ==============================
+        # ✅ Step 1: Calculate totals
+        # ==============================
+        total_selling_price = 0
+        total_mrp = 0
+
+        for item in cart_items:
+            if item.product.stock > 0:
+
+                # Selling price
+                item_selling_total = item.product.price * item.quantity
+
+                # MRP (original price)
+                mrp = item.product.discount if item.product.discount else item.product.price
+                item_mrp_total = mrp * item.quantity
+
+                total_selling_price += item_selling_total
+                total_mrp += item_mrp_total
+
+
+        # ==============================
+        # ✅ Step 2: Apply Coupon
+        # ==============================
+        coupon_discount_amount = 0
+        coupon_id = self.request.session.get('coupon_id')
+
+        if coupon_id:
+            try:
+                coupon = Coupon.objects.get(id=coupon_id)
+                today = timezone.now().date()
+
+                # ✅ Check validity + minimum amount
+                if (
+                    coupon.valid_from <= today <= coupon.valid_to and
+                    total_selling_price >= coupon.min_amount
+                ):
+
+                    # 🔥 Handle BOTH types
+                    if coupon.discount_type == 'percent':
+                        coupon_discount_amount = (total_selling_price * coupon.discount_value) / 100
+
+                    elif coupon.discount_type == 'flat':
+                        coupon_discount_amount = coupon.discount_value
+
+                else:
+                    # ❌ Remove invalid coupon
+                    self.request.session['coupon_id'] = None
+
+            except Coupon.DoesNotExist:
+                pass
+
+
+        # ==============================
+        # ✅ Step 3: Safety check
+        # ==============================
+        if coupon_discount_amount > total_selling_price:
+            coupon_discount_amount = total_selling_price
+
+
+        # ==============================
+        # ✅ Step 4: Final calculations
+        # ==============================
+        final_price = total_selling_price - coupon_discount_amount
+
+        product_savings = total_mrp - total_selling_price
+        total_savings = product_savings + coupon_discount_amount
+
+
+        # ==============================
+        # ✅ Step 5: Send to template
+        # ==============================
+        context.update({
+            'total_price': total_selling_price,
+            'total_mrp': total_mrp,
+            'discount_amount': coupon_discount_amount,
+            'final_price': final_price,
+            'total_savings': total_savings,
+        })
+
         return context
 
 class AddToCartAjaxView(LoginRequiredMixin, View):
@@ -201,26 +318,6 @@ class AddToCartView(LoginRequiredMixin, View):
         
         return JsonResponse({"success": True, "product_id": product.id})
 
-# ================= TOGGLE WISHLIST =================
-# class ToggleWishlistView(LoginRequiredMixin, View):
-#     def post(self, request, *args, **kwargs):
-#         product_id = request.POST.get("product_id")
-#         if not product_id:
-#             return JsonResponse({"status": "error", "message": "No product id provided"})
-        
-#         try:
-#             product = Product.objects.get(id=product_id)
-#         except Product.DoesNotExist:
-#             return JsonResponse({"status": "error", "message": "Product not found"})
-        
-#         wishlist_item = Wishlist.objects.filter(user=request.user, product=product).first()
-#         if wishlist_item:
-#             wishlist_item.delete()
-#             return JsonResponse({"status": "removed", "product_id": product.id})
-#         else:
-#             Wishlist.objects.create(user=request.user, product=product)
-#             return JsonResponse({"status": "added", "product_id": product.id})
-
 # ================= GET CURRENT CART & WISHLIST =================
 class GetCartWishlistView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -237,27 +334,125 @@ class UpdateCartQtyAjaxView(LoginRequiredMixin, View):
     def post(self, request):
         item_id = request.POST.get("item_id")
         action = request.POST.get("action")
+
         cart_item = get_object_or_404(Cart, id=item_id, user=request.user)
         product = cart_item.product
 
+        # ✅ Update quantity
         if action == "plus":
             if cart_item.quantity < product.stock:
                 cart_item.quantity += 1
             else:
-                return JsonResponse({"success": False, "error": f"Only {product.stock} items in stock!"})
+                return JsonResponse({
+                    "success": False,
+                    "error": f"Only {product.stock} items in stock!"
+                })
+
         elif action == "minus":
             if cart_item.quantity > 1:
                 cart_item.quantity -= 1
-        
+
         cart_item.save()
 
+        # ✅ Calculate total price FIRST
         cart_items = Cart.objects.filter(user=request.user)
         total_price = sum(i.product.price * i.quantity for i in cart_items)
+
+        # ✅ Apply coupon
+        coupon_id = request.session.get('coupon_id')
+        discount_amount = 0
+
+        if coupon_id:
+            try:
+                coupon = Coupon.objects.get(id=coupon_id)
+
+                if coupon.discount_type == 'percent':
+                    discount_amount = (total_price * coupon.discount_value) / 100
+                elif coupon.discount_type == 'flat':
+                    discount_amount = coupon.discount_value
+
+            except Coupon.DoesNotExist:
+                pass
+
+        # ✅ Safety check
+        if discount_amount > total_price:
+            discount_amount = total_price
+
+        final_price = total_price - discount_amount
 
         return JsonResponse({
             "success": True,
             "quantity": cart_item.quantity,
-            "total_price": total_price
+            "total_price": final_price,
+            "discount": discount_amount
         })
-        
-        
+
+class ApplyCouponView(View):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            messages.error(request, "Please login first ❌")
+            return redirect('login')
+
+        code = request.POST.get('coupon_code')
+        request.session.pop('coupon_id', None)
+
+        today = timezone.now().date()
+
+        coupon = Coupon.objects.filter(
+            code__iexact=code,
+            active=True,
+            valid_from__lte=today,
+            valid_to__gte=today
+        ).order_by('-id').first()   
+
+        if not coupon:
+            messages.error(request, "Invalid or expired coupon ")
+            return redirect('cart_list')
+
+        # ✅ CHECK ALREADY USED
+        if CouponUsage.objects.filter(user=request.user, coupon=coupon).exists():
+            messages.error(request, "Coupon already used ")
+            return redirect('cart_list')
+
+        # ✅ CART TOTAL
+        cart_items = Cart.objects.filter(user=request.user)
+        total = sum(item.product.price * item.quantity for item in cart_items)
+
+        # ❌ MINIMUM AMOUNT
+        if total < coupon.min_amount:
+            messages.error(request, f"Minimum order ₹{coupon.min_amount} required")
+            return redirect('cart_list')
+
+        # ✅ APPLY
+        request.session['coupon_id'] = coupon.id
+        messages.success(request, "Coupon applied successfully ")
+
+        return redirect('cart_list')
+    
+class CouponListView(LoginRequiredMixin, ListView):
+    model = Coupon
+    template_name = "coupon.html"
+    context_object_name = "coupons"
+
+    def get_queryset(self):
+        return Coupon.objects.all().order_by('-valid_to')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        used_coupons = CouponUsage.objects.filter(
+            user=self.request.user
+        ).values_list('coupon_id', flat=True)
+
+        context['used_coupons'] = used_coupons
+        return context
+    
+from django.views import View
+from django.http import JsonResponse
+
+class ClearCouponPopupView(View):
+    def post(self, request):
+        request.session.pop('show_coupon_popup', None)
+        request.session.pop('popup_coupon_id', None)
+
+        return JsonResponse({"success": True})

@@ -1,0 +1,413 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --fk-blue:#2874f0;--fk-blue-dark:#1a5dc8;--fk-yellow:#ff9f00;
+  --fk-green:#388e3c;--fk-red:#ff6161;
+  --bg:#f1f3f6;--white:#fff;--border:#e0e0e0;
+  --text:#212121;--muted:#878787;--light:#f5f5f5;
+}
+body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+.page{max-width:900px;margin:0 auto;padding:16px}
+.fk-header{background:var(--fk-blue);padding:10px 20px;display:flex;align-items:center;gap:16px;margin-bottom:16px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.fk-logo{font-size:22px;font-weight:700;color:#fff;font-style:italic;letter-spacing:.5px}
+.fk-logo span{color:var(--fk-yellow)}
+.fk-steps{display:flex;align-items:center;gap:0;margin-left:auto}
+.step{display:flex;align-items:center;gap:6px;padding:4px 14px;font-size:12px;font-weight:500;color:rgba(255,255,255,.6)}
+.step.done{color:#fff}.step.active{color:var(--fk-yellow)}
+.step-num{width:20px;height:20px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.step.done .step-num{background:rgba(255,255,255,.2)}
+.step.active .step-num{background:var(--fk-yellow);color:#333;border-color:var(--fk-yellow)}
+.step-divider{width:24px;height:2px;background:rgba(255,255,255,.25)}
+
+.layout{display:flex;gap:16px;align-items:flex-start}
+.left{flex:1;min-width:0}
+.right{width:300px;flex-shrink:0}
+
+.card{background:var(--white);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+.addr-bar{background:var(--white);padding:14px 18px;border-bottom:1px solid var(--border);border-radius:2px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.1);margin-bottom:4px;cursor:pointer;transition:background .2s}
+.addr-bar:hover{background:#fafafa}
+.addr-tag{background:var(--fk-blue);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;letter-spacing:.5px}
+.addr-text{font-size:13px;color:var(--text);flex:1}
+.addr-text span{color:var(--muted);margin-left:6px;font-size:12px}
+.addr-change{color:var(--fk-blue);font-size:13px;font-weight:500;cursor:pointer}
+
+.pay-card{background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.1);border-radius:2px;overflow:hidden}
+.pay-inner{display:flex;min-height:380px}
+
+.sidebar{width:220px;border-right:1px solid var(--border);flex-shrink:0}
+.sidebar-title{padding:14px 16px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);background:#fafafa}
+.method-item{padding:14px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .18s;position:relative}
+.method-item:hover{background:#f5f5f5}
+.method-item.active{background:#e8f0fe;border-left:3px solid var(--fk-blue)}
+.method-item.active .m-label{color:var(--fk-blue);font-weight:600}
+.method-item .m-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.method-item .m-label{font-size:13px;color:var(--text)}
+.method-item .m-badge{background:#ff6161;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:auto}
+
+.content-area{flex:1;padding:20px 24px;position:relative;overflow:hidden}
+.panel{display:none;animation:fadeIn .25s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+
+.panel-title{font-size:15px;font-weight:700;margin-bottom:18px;color:var(--text)}
+.inp{width:100%;border:1px solid var(--border);border-radius:2px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;transition:border .2s;background:#fff;color:var(--text)}
+.inp:focus{border-color:var(--fk-blue);box-shadow:0 0 0 2px rgba(40,116,240,.12)}
+.inp-label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;display:block}
+.inp-row{display:flex;gap:12px;margin-top:12px}
+.inp-row .inp-grp{flex:1}
+
+.upi-apps{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.upi-app{display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:4px;padding:8px 14px;cursor:pointer;transition:all .18s;font-size:13px;font-weight:500}
+.upi-app:hover{border-color:var(--fk-blue);background:#f0f5ff}
+.upi-app.sel{border-color:var(--fk-blue);background:#e8f0fe;color:var(--fk-blue)}
+.upi-app .upi-logo{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.gpay{background:linear-gradient(135deg,#4285f4,#34a853)}
+.phonepe{background:#5f259f}
+.paytm{background:#00baf2}
+.bhim{background:#0a6e3f}
+.upi-or{width:100%;text-align:center;font-size:12px;color:var(--muted);margin:10px 0;position:relative}
+.upi-or::before,.upi-or::after{content:'';position:absolute;top:50%;width:43%;height:1px;background:var(--border)}
+.upi-or::before{left:0}.upi-or::after{right:0}
+
+.pay-btn{background:var(--fk-yellow);color:#fff;border:none;border-radius:2px;padding:12px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;gap:8px;margin-top:20px}
+.pay-btn:hover{background:#e68f00;transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,159,0,.35)}
+.pay-btn:active{transform:translateY(0)}
+.pay-btn .lock-icon{font-size:13px}
+
+.card-icons{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.card-icon{width:44px;height:28px;border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:.3px}
+.visa-ic{color:#1a1f71}
+.mc-ic{background:linear-gradient(90deg,#eb001b 40%,#f79e1b 60%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.rupay-ic{color:#006a4e}
+
+.cod-box{text-align:center;padding:20px 10px}
+.cod-icon{width:80px;height:80px;background:#fff8e1;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px}
+.cod-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.cod-note{font-size:13px;color:var(--muted);line-height:1.6;max-width:260px;margin:0 auto 8px}
+.cod-fee{background:#fff3e0;border:1px solid #ffe0b2;border-radius:4px;padding:8px 16px;font-size:13px;color:#e65100;margin:12px 0;display:inline-block}
+
+.emi-list{display:flex;flex-direction:column;gap:8px}
+.emi-item{border:1.5px solid var(--border);border-radius:4px;padding:12px 14px;cursor:pointer;transition:all .18s}
+.emi-item:hover{border-color:var(--fk-blue)}
+.emi-item.sel{border-color:var(--fk-blue);background:#f0f5ff}
+.emi-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.emi-bank{font-size:13px;font-weight:600}
+.emi-rate{font-size:12px;color:var(--fk-green);font-weight:600}
+.emi-detail{font-size:12px;color:var(--muted)}
+
+.secure-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:16px}
+.secure-badge .shield{color:var(--fk-green);font-size:14px}
+
+.summary-card{background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.1);border-radius:2px;overflow:hidden}
+.sum-header{background:#fafafa;padding:12px 16px;font-size:12px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border);letter-spacing:.5px}
+.sum-body{padding:14px 16px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:14px}
+.sum-row.total{font-size:15px;font-weight:700;color:var(--text)}
+.sum-row .label{color:var(--muted)}
+.sum-row .free{color:var(--fk-green);font-weight:600}
+.sum-row .strike{text-decoration:line-through;font-size:12px;color:var(--muted);margin-right:4px}
+.sum-divider{border:none;border-top:1px dashed var(--border);margin:8px 0}
+.sum-saving{background:#e8f5e9;border-radius:2px;padding:8px 12px;font-size:13px;color:var(--fk-green);font-weight:500;margin-top:8px;display:flex;align-items:center;gap:6px}
+
+.offers-card{background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.1);border-radius:2px;margin-top:12px}
+.offers-header{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;cursor:pointer}
+.offers-header span{color:var(--fk-blue);font-size:12px;font-weight:500}
+.offer-item{padding:10px 16px;border-bottom:1px solid #f5f5f5;font-size:12px;display:flex;gap:8px;align-items:flex-start}
+.offer-tag{background:#e8f5e9;color:var(--fk-green);font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.offer-text{color:var(--muted);line-height:1.5}
+.offer-text strong{color:var(--text)}
+
+.item-preview{background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.1);border-radius:2px;padding:12px 16px;margin-bottom:4px;display:flex;align-items:center;gap:12px}
+.item-thumb{width:52px;height:52px;background:#f5f5f5;border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.item-info{flex:1}
+.item-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.item-meta{font-size:12px;color:var(--muted)}
+.item-price{font-size:14px;font-weight:700;color:var(--text);flex-shrink:0}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(2px)}
+.overlay.show{display:flex;animation:fadeOverlay .2s ease}
+@keyframes fadeOverlay{from{opacity:0}to{opacity:1}}
+.loader-box{background:#fff;border-radius:8px;padding:40px 48px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.spinner{width:56px;height:56px;border:5px solid #e8f0fe;border-top-color:var(--fk-blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px}
+.loader-sub{font-size:13px;color:var(--muted)}
+
+.success-box{background:#fff;border-radius:8px;padding:48px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.check-anim{width:80px;height:80px;border-radius:50%;background:var(--fk-green);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:checkPop .5s .2s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes checkPop{from{transform:scale(0)}to{transform:scale(1)}}
+.check-anim svg{width:40px;height:40px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.check-anim svg path{stroke-dasharray:50;stroke-dashoffset:50;animation:drawCheck .4s .5s ease forwards}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+.success-title{font-size:24px;font-weight:700;color:var(--fk-green);margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+.order-id{background:#f5f5f5;border-radius:4px;padding:8px 20px;font-size:13px;font-weight:600;color:var(--text);display:inline-block;margin-bottom:20px}
+.success-close{background:var(--fk-blue);color:#fff;border:none;border-radius:2px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+</style>
+
+<div class="page">
+  <div class="fk-header">
+    <div class="fk-logo">flip<span>kart</span></div>
+    <div class="fk-steps">
+      <div class="step done"><div class="step-num">✓</div> Cart</div>
+      <div class="step-divider"></div>
+      <div class="step done"><div class="step-num">✓</div> Address</div>
+      <div class="step-divider"></div>
+      <div class="step active"><div class="step-num">3</div> Payment</div>
+    </div>
+  </div>
+
+  <div class="item-preview">
+    <div class="item-thumb">📱</div>
+    <div class="item-info">
+      <div class="item-name">Samsung Galaxy S24 (Phantom Black, 256GB)</div>
+      <div class="item-meta">Seller: RetailNet &nbsp;|&nbsp; Qty: 1 &nbsp;|&nbsp; Color: Phantom Black</div>
+    </div>
+    <div class="item-price">₹74,999</div>
+  </div>
+
+  <div class="layout">
+    <div class="left">
+      <div class="addr-bar">
+        <span>📍</span>
+        <div class="addr-text">Delivering to <strong>Rahul Sharma</strong> <span>- 380015, Ahmedabad</span></div>
+        <div class="addr-change">Change</div>
+      </div>
+
+      <div class="pay-card" style="margin-top:4px">
+        <div class="pay-inner">
+          <div class="sidebar">
+            <div class="sidebar-title">PAYMENT OPTIONS</div>
+            <div class="method-item active" onclick="switchMethod('upi',this)">
+              <span class="m-icon">⚡</span>
+              <span class="m-label">UPI</span>
+              <span class="m-badge">FAST</span>
+            </div>
+            <div class="method-item" onclick="switchMethod('card',this)">
+              <span class="m-icon">💳</span>
+              <span class="m-label">Credit / Debit Card</span>
+            </div>
+            <div class="method-item" onclick="switchMethod('emi',this)">
+              <span class="m-icon">🏦</span>
+              <span class="m-label">EMI</span>
+            </div>
+            <div class="method-item" onclick="switchMethod('nb',this)">
+              <span class="m-icon">🌐</span>
+              <span class="m-label">Net Banking</span>
+            </div>
+            <div class="method-item" onclick="switchMethod('cod',this)">
+              <span class="m-icon">🚚</span>
+              <span class="m-label">Cash on Delivery</span>
+            </div>
+          </div>
+
+          <div class="content-area">
+            <div class="panel active" id="panel-upi">
+              <div class="panel-title">Pay using UPI App</div>
+              <div class="upi-apps">
+                <div class="upi-app" onclick="selUpi(this)">
+                  <div class="upi-logo gpay">G</div> Google Pay
+                </div>
+                <div class="upi-app" onclick="selUpi(this)">
+                  <div class="upi-logo phonepe">P</div> PhonePe
+                </div>
+                <div class="upi-app" onclick="selUpi(this)">
+                  <div class="upi-logo paytm">₹</div> Paytm
+                </div>
+                <div class="upi-app" onclick="selUpi(this)">
+                  <div class="upi-logo bhim">B</div> BHIM
+                </div>
+              </div>
+              <div class="upi-or">OR enter UPI ID</div>
+              <label class="inp-label">UPI ID</label>
+              <input class="inp" placeholder="e.g. mobilenumber@upi" style="max-width:320px" />
+              <div class="secure-badge"><span class="shield">🔒</span> 100% Safe & Secure Payments</div>
+              <button class="pay-btn" onclick="doCheckout()">
+                <span class="lock-icon">🔒</span> PAY ₹75,006
+              </button>
+            </div>
+
+            <div class="panel" id="panel-card">
+              <div class="panel-title">Add Credit / Debit Card</div>
+              <div class="card-icons">
+                <div class="card-icon visa-ic">VISA</div>
+                <div class="card-icon mc-ic">MC</div>
+                <div class="card-icon rupay-ic">RuPay</div>
+              </div>
+              <label class="inp-label">Card Number</label>
+              <input class="inp" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)" />
+              <div class="inp-row">
+                <div class="inp-grp">
+                  <label class="inp-label">Expiry Date</label>
+                  <input class="inp" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)" />
+                </div>
+                <div class="inp-grp">
+                  <label class="inp-label">CVV</label>
+                  <input class="inp" placeholder="• • •" type="password" maxlength="3" />
+                </div>
+              </div>
+              <div class="inp-row" style="margin-top:12px">
+                <div class="inp-grp">
+                  <label class="inp-label">Name on Card</label>
+                  <input class="inp" placeholder="As printed on card" />
+                </div>
+              </div>
+              <div class="secure-badge" style="margin-top:12px"><span class="shield">🔒</span> 256-bit SSL encrypted</div>
+              <button class="pay-btn" onclick="doCheckout()">
+                <span class="lock-icon">🔒</span> PAY ₹75,006
+              </button>
+            </div>
+
+            <div class="panel" id="panel-emi">
+              <div class="panel-title">EMI Plans</div>
+              <div class="emi-list">
+                <div class="emi-item sel" onclick="selEmi(this)">
+                  <div class="emi-top"><span class="emi-bank">HDFC Bank</span><span class="emi-rate">No Cost EMI</span></div>
+                  <div class="emi-detail">₹12,499/month × 6 months &nbsp;|&nbsp; 0% interest</div>
+                </div>
+                <div class="emi-item" onclick="selEmi(this)">
+                  <div class="emi-top"><span class="emi-bank">ICICI Bank</span><span class="emi-rate" style="color:#e65100">13% p.a.</span></div>
+                  <div class="emi-detail">₹10,200/month × 9 months</div>
+                </div>
+                <div class="emi-item" onclick="selEmi(this)">
+                  <div class="emi-top"><span class="emi-bank">Axis Bank</span><span class="emi-rate" style="color:#e65100">15% p.a.</span></div>
+                  <div class="emi-detail">₹8,100/month × 12 months</div>
+                </div>
+                <div class="emi-item" onclick="selEmi(this)">
+                  <div class="emi-top"><span class="emi-bank">Flipkart Axis Credit Card</span><span class="emi-rate">No Cost EMI</span></div>
+                  <div class="emi-detail">₹6,250/month × 12 months &nbsp;|&nbsp; 0% interest</div>
+                </div>
+              </div>
+              <button class="pay-btn" onclick="doCheckout()" style="margin-top:16px">
+                <span class="lock-icon">🔒</span> PROCEED WITH EMI
+              </button>
+            </div>
+
+            <div class="panel" id="panel-nb">
+              <div class="panel-title">Net Banking</div>
+              <label class="inp-label">Select Bank</label>
+              <select class="inp" style="max-width:280px;cursor:pointer">
+                <option>-- Choose your bank --</option>
+                <option>State Bank of India</option>
+                <option>HDFC Bank</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+                <option>Kotak Mahindra Bank</option>
+                <option>Punjab National Bank</option>
+                <option>Bank of Baroda</option>
+              </select>
+              <div class="secure-badge" style="margin-top:14px"><span class="shield">🔒</span> Redirected securely to your bank</div>
+              <button class="pay-btn" onclick="doCheckout()">
+                <span class="lock-icon">🔒</span> PAY ₹75,006
+              </button>
+            </div>
+
+            <div class="panel" id="panel-cod">
+              <div class="cod-box">
+                <div class="cod-icon">🚚</div>
+                <div class="cod-title">Cash on Delivery</div>
+                <div class="cod-note">Pay in cash when your order is delivered. COD charges apply.</div>
+                <div class="cod-fee">+ ₹40 COD Handling Fee = Total ₹75,039</div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Keep exact change handy for a smooth delivery experience.</div>
+                <button class="pay-btn" onclick="doCheckout()">
+                  CONFIRM ORDER
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="summary-card">
+        <div class="sum-header">PRICE DETAILS (1 Item)</div>
+        <div class="sum-body">
+          <div class="sum-row"><span class="label">Price (1 item)</span><span>₹79,999</span></div>
+          <div class="sum-row" style="color:var(--fk-green)"><span class="label">Discount</span><span>− ₹5,000</span></div>
+          <div class="sum-row"><span class="label">Platform Fee</span><span>₹7</span></div>
+          <div class="sum-row"><span class="label">Delivery Charges</span><span class="free">FREE</span></div>
+          <hr class="sum-divider">
+          <div class="sum-row total"><span>Amount Payable</span><span>₹75,006</span></div>
+          <div class="sum-saving">🎉 You save ₹4,993 on this order!</div>
+        </div>
+      </div>
+
+      <div class="offers-card">
+        <div class="offers-header">Available Offers <span>View all</span></div>
+        <div class="offer-item">
+          <div class="offer-tag">BANK</div>
+          <div class="offer-text"><strong>10% off</strong> on HDFC Bank Credit Cards. Max savings ₹1,500</div>
+        </div>
+        <div class="offer-item">
+          <div class="offer-tag">UPI</div>
+          <div class="offer-text"><strong>5% cashback</strong> on Flipkart Axis Bank Card</div>
+        </div>
+        <div class="offer-item" style="border-bottom:none">
+          <div class="offer-tag">EMI</div>
+          <div class="offer-text"><strong>No-cost EMI</strong> starting ₹6,250/month</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-loader">
+  <div class="loader-box">
+    <div class="spinner"></div>
+    <div class="loader-title">Processing Payment...</div>
+    <div class="loader-sub">Please do not close this window</div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-success">
+  <div class="success-box">
+    <div class="check-anim">
+      <svg viewBox="0 0 24 24"><path d="M4 13l5 5L20 6"/></svg>
+    </div>
+    <div class="success-title">Order Placed!</div>
+    <div class="success-sub">Your order has been confirmed. You'll receive an email shortly.</div>
+    <div class="order-id">Order ID: OD-8473920128</div>
+    <button class="success-close" onclick="document.getElementById('overlay-success').classList.remove('show')">Continue Shopping</button>
+  </div>
+</div>
+
+<script>
+function switchMethod(id, el) {
+  document.querySelectorAll('.method-item').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+function selUpi(el) {
+  document.querySelectorAll('.upi-app').forEach(a => a.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function selEmi(el) {
+  document.querySelectorAll('.emi-item').forEach(a => a.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function fmtCard(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,16);
+  el.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+function fmtExpiry(el) {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length >= 2) v = v.slice(0,2) + ' / ' + v.slice(2,4);
+  el.value = v;
+}
+function doCheckout() {
+  const loader = document.getElementById('overlay-loader');
+  const success = document.getElementById('overlay-success');
+  loader.classList.add('show');
+  setTimeout(() => {
+    loader.classList.remove('show');
+    success.classList.add('show');
+  }, 2200);
+}
+</script>

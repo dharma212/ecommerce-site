@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="coupons-container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-weight: bold; color: #212121;"> My Coupons</h2>
+        <span style="color: #878787;">{{ coupons|length }} Coupons available</span>
+    </div>
+
+    <div class="coupons-grid">
+        {% for coupon in coupons %}
+        <div class="fk-card">
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+<div class="off-text">
+  {% if coupon.discount_type == "percent" %}
+    {{ coupon.discount_value }}% OFF
+  {% else %}
+    ₹{{ coupon.discount_value }} OFF
+  {% endif %}
+</div>                    <div class="coupon-desc">Extra discount on your purchase</div>
+                </div>
+                <img src="https://img.icons8.com/color/48/000000/discount--v1.png" width="40" height="40"/>
+            </div>
+
+            <div>
+                <span style="font-size: 12px; color: #878787; display: block;">USE CODE:</span>
+                <div class="code-box">{{ coupon.code }}</div>
+            </div>
+
+            <div class="fk-divider"></div>
+
+            <div class="expiry-text">
+                <span>Valid till: <b>{{ coupon.valid_to|date:"d M, Y" }}</b></span>
+                {% if coupon.active %}
+                    <span style="color: #388e3c; font-weight: bold;">ACTIVE</span>
+                {% else %}
+                    <span style="color: #d32f2f; font-weight: bold;">EXPIRED</span>
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 15px;">
+
+    {% if coupon.id in used_coupons %}
+        <button class="fk-apply-btn" disabled style="background:#ccc; cursor:not-allowed;">
+            Already Used 
+        </button>
+
+    {% elif coupon.active %}
+        <form method="POST" action="{% url 'apply_coupon' %}">
+            {% csrf_token %}
+            <input type="hidden" name="coupon_code" value="{{ coupon.code }}">
+            <button type="submit" class="fk-apply-btn">Apply Now</button>
+        </form>
+
+    {% else %}
+        <button class="fk-apply-btn" disabled>Not Available</button>
+    {% endif %}
+
+</div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+            <h3>No coupons found!</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

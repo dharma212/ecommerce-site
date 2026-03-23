@@ -112,35 +112,79 @@
             </div>
 
             <!-- RIGHT COLUMN: PRICE DETAILS -->
-            <div class="col-lg-4">
-                <div class="card shadow-sm border-0">
+            <!-- RIGHT COLUMN: PRICE DETAILS -->
+<div class="col-lg-4">
+    <div class="card shadow-sm border-0">
 
-                    <div class="card-header bg-white py-3">
-                        <h6 class="mb-0 fw-bold">PRICE DETAILS</h6>
-                    </div>
+        <!-- HEADER -->
+        <div class="card-header bg-white py-3">
+            <h6 class="price-title mb-0">PRICE DETAILS</h6>
+        </div>
 
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Price ({{ cart_items|length }} items)</span>
-                            <span class="mb-0 fw-bold">₹{{ total_price }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between small mb-3">
-                            <span>Delivery</span>
-                            <span class="text-success fw-bold">Free</span>
-                        </div>
-                        <div class="d-flex justify-content-between small mb-3">
-                            <span>Platform Fee</span>
-                            <span class="mb-0 fw-bold">₹7</span>
-                        </div>
+        <!-- BODY -->
+        <div class="card-body price-body">
 
-                        <div class="d-flex justify-content-between fw-bold border-top pt-2">
-                            <span>Total Amount</span>
-                            <span>₹{{ total_price |add:7 }}</span>
-                        </div>
-                    </div>
-
-                </div>
+            <!-- Total Price -->
+            <div class="price-item d-flex justify-content-between mb-2">
+                <span>Price ({{ cart_items|length }} items)</span>
+                <span>
+                    <span style="text-decoration: line-through; color:#878787; margin-right:6px;">
+                        ₹{{ total_mrp }}
+                    </span>
+                    <span class="fw-bold">
+                        ₹{{ total_price }}
+                    </span>
+                </span>
             </div>
+
+            <!-- Delivery -->
+            <div class="price-item d-flex justify-content-between mb-2">
+                <span>Delivery Charges</span>
+                <span class="text-success fw-bold">FREE</span>
+            </div>
+
+            <!-- Platform Fee -->
+            <div class="price-item d-flex justify-content-between mb-2">
+                <span>Platform Fee</span>
+                <span class="fw-bold">₹7</span>
+            </div>
+
+            <!-- Coupon -->
+            {% if discount_amount > 0 %}
+            <div class="price-item d-flex justify-content-between mb-2">
+                <span>Coupon Discount</span>
+                <span class="text-success fw-bold">
+                    -₹{{ discount_amount|floatformat:2 }}
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- Divider -->
+            <hr>
+
+            <!-- Final Total -->
+            <div class="price-total d-flex justify-content-between fw-bold">
+                <span>Total Amount</span>
+                <span>
+                    ₹{% if discount_amount > 0 %}
+                        {{ final_price|add:7|floatformat:2 }}
+                    {% else %}
+                        {{ total_price|add:7 }}
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Savings -->
+            {% if total_savings > 0 %}
+            <div class="save-msg p-2 mt-3"
+                 style="color:#388e3c; font-weight:600; font-size:14px; background:#f6fff6; border-radius:2px;">
+                You will save ₹{{ total_savings|floatformat:2 }} on this order
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
 
         </div>
     </div>

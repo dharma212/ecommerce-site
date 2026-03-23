@@ -99,17 +99,17 @@
             <div class="delivery-title">Delivery details</div>
                 <div class="delivery-row address-row">
                         <div class="address-text">
-                            <i class="fa-solid fa-location-dot delivery-icon"></i>
                             {% if user.is_authenticated and user.address %}
-                                <a class="text-dark d-flex" href="{% url 'profile' %}">
+                            <a class="text-dark d-flex" href="{% url 'profile' %}">
                                 <span style="font-weight: 400;">
+                                    <i class="fa-solid fa-location-dot delivery-icon"></i>
                                     {{ user.address |truncatechars:45 }}
+                                    <i class="fa-solid fa-c     hevron-right chevron-icon"></i>
                                 </span>
                             </a>
                             {% else %}
                                 <span class="text-danger">Enter Address to check delivery</span>
                             {% endif %}
-                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
                         </div>
                 </div>
 

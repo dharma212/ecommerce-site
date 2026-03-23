@@ -14,22 +14,22 @@ const swiper = new Swiper(".bannerSwiper", {
   },
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('simpleProfileToggle');
-    const menu = document.getElementById('simpleMenu');
+// document.addEventListener('DOMContentLoaded', () => {
+//     const toggleBtn = document.getElementById('simpleProfileToggle');
+//     const menu = document.getElementById('simpleMenu');
 
-    toggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        menu.classList.toggle('show');
-        const arrow = toggleBtn.querySelector('.arrow');
-        arrow.style.transform = menu.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
-    });
+//     toggleBtn.addEventListener('click', (e) => {
+//         e.stopPropagation();
+//         menu.classList.toggle('show');
+//         const arrow = toggleBtn.querySelector('.arrow');
+//         arrow.style.transform = menu.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+//     });
 
-    document.addEventListener('click', () => {
-        menu.classList.remove('show');
-        toggleBtn.querySelector('.arrow').style.transform = 'rotate(0deg)';
-    });
-});
+//     document.addEventListener('click', () => {
+//         menu.classList.remove('show');
+//         toggleBtn.querySelector('.arrow').style.transform = 'rotate(0deg)';
+//     });
+// });
 
 
 const deliverBtn = document.getElementById('deliver-here-btn');
@@ -174,57 +174,3 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
     };
 });
-
-
-// // ==========================
-// // Payment Page JS
-// // ==========================
-// const BASE_TOTAL = parseInt(
-//   document.getElementById("page-data").dataset.total
-// );
-// const PLATFORM_FEE = 7;
-// const COD_FEE = 40;
-
-// function toggleMethod(id, btn) {
-
-//   document.querySelectorAll(".content-panel")
-//     .forEach(p => p.classList.remove("is-visible"));
-
-//   document.querySelectorAll(".pay-method-item")
-//     .forEach(i => i.classList.remove("is-active"));
-
-//   document.getElementById("panel-" + id).classList.add("is-visible");
-//   btn.classList.add("is-active");
-
-//   document.getElementById("payment_method").value = id;
-
-//   let delivery = (id === "cod") ? COD_FEE : 0;
-//   let finalTotal = BASE_TOTAL + PLATFORM_FEE + delivery;
-
-//   document.getElementById("deliveryCharge").innerText =
-//     delivery === 0 ? "Free" : "₹" + delivery;
-
-//   document.getElementById("finalAmount").innerText = "₹" + finalTotal;
-
-//   document.querySelectorAll(".pay-btn-amount")
-//     .forEach(el => el.innerText = finalTotal);
-// }
-
-// function runCheckout(e) {
-//   e.preventDefault();
-
-//   const loader = document.getElementById("checkout-loader");
-//   const successOverlay = document.getElementById("success-overlay");
-//   const form = e.target;
-
-//   loader.classList.remove("d-none");
-
-//   setTimeout(() => {
-//     loader.classList.add("d-none");
-//     successOverlay.classList.remove("d-none");
-
-//     setTimeout(() => {
-//       form.submit();
-//     }, 1500);
-//   }, 2000);
-// }

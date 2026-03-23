@@ -567,3 +567,36 @@ class DownloadInvoiceView(LoginRequiredMixin, View):
             as_attachment=True,
             filename=invoice.invoice_file.name
         )
+        
+class DashboardCouponListView(ListView):
+    model = Coupon
+    template_name = 'dashboard/admin_coupon.html'
+    context_object_name = 'coupons'
+    
+class CouponCreateView(CreateView):
+    model = Coupon
+    template_name = 'dashboard/add_coupon.html'
+    success_url = reverse_lazy('dashboard_coupons')
+
+    fields = [
+        'code',
+        'discount_type',
+        'discount_value',
+        'min_amount',
+        'valid_from',
+        'valid_to',
+        'active'
+    ]
+    
+class ToggleCouponView(View):
+    def get(self, request, pk):
+        coupon = get_object_or_404(Coupon, pk=pk)
+        coupon.active = not coupon.active
+        coupon.save()
+        return redirect('dashboard_coupons')
+    
+class DeleteCouponView(View):
+    def post(self, request, pk):
+        coupon = get_object_or_404(Coupon, pk=pk)
+        coupon.delete()
+        return redirect('dashboard_coupons')

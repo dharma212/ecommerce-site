@@ -43,7 +43,7 @@
               <td>{{ user.username |default:"---"}}</td>
               <td>{{ user.role |default:"---"}}</td>
               <td>{{ user.contact_number|default:"---" }}</td>
-              <td>{{ user.address|default:"---" |truncatechars:15}}</td>
+              <td>{{ user.address|default:"---" |truncatechars:12}}</td>
               <td style="white-space: nowrap">
                 {% if request.user %}
                 <div class="d-inline-flex align-items-center gap-2">

@@ -65,4 +65,8 @@ path(
     path("invoice/download/<int:pk>/",
          DownloadInvoiceView.as_view(),
          name="download_invoice"),
+path('dashboard/coupons/', DashboardCouponListView.as_view(), name='dashboard_coupons'),
+    path('dashboard/coupons/add/', CouponCreateView.as_view(), name='add_coupon'),
+    path('dashboard/coupons/toggle/<int:pk>/', ToggleCouponView.as_view(), name='toggle_coupon'),
+    path('dashboard/delete/<int:pk>/',DeleteCouponView.as_view(),name="delete_coupon"),
 ]

@@ -1,0 +1,95 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+  <!-- ===== Header ===== -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Add Coupon</h4>
+  </div>
+
+  <!-- ===== Card ===== -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <!-- ===== Messages ===== -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- ===== Non-field errors ===== -->
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors|striptags }}
+        </div>
+      {% endif %}
+
+      <!-- ===== Form ===== -->
+      <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+          <!-- Coupon Code -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Coupon Code <span class="text-danger">*</span></label>
+            <input type="text" name="code" class="form-control" required>
+          </div>
+
+          <!-- Discount Type -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Discount Type <span class="text-danger">*</span></label>
+            <select name="discount_type" class="form-control" required>
+              <option value="percent">Percentage (%)</option>
+              <option value="flat">Flat (₹)</option>
+            </select>
+          </div>
+
+          <!-- Discount Value -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Discount Value <span class="text-danger">*</span></label>
+            <input type="number" name="discount_value" class="form-control" required>
+          </div>
+
+          <!-- Minimum Amount -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Minimum Amount <span class="text-danger">*</span></label>
+            <input type="number" name="min_amount" class="form-control" required>
+          </div>
+
+          <!-- Valid From -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Valid From <span class="text-danger">*</span></label>
+            <input type="date" name="valid_from" class="form-control" required>
+          </div>
+
+          <!-- Valid To -->
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Valid To <span class="text-danger">*</span></label>
+            <input type="date" name="valid_to" class="form-control" required>
+          </div>
+
+          <!-- Active -->
+          <div class="col-12 mb-3">
+            <div class="form-check">
+              <input type="checkbox" name="active" class="form-check-input" checked>
+              <label class="form-check-label">Active</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Buttons ===== -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <a href="{% url 'coupon_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back
+          </a>
+
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-save me-1"></i> Save Coupon
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

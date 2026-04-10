@@ -1,5 +1,25 @@
 <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<style>
+  .search {
+  position: relative;
+  width: 300px;
+}
 
+.search input {
+  width: 100%;
+  padding: 10px 10px 10px 40px; /* left ma space icon mate */
+  border-radius: 20px;
+  }
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: gray;
+  font-size: 16px;
+}
+</style>
 <nav class="navbar">
   <button class="hamburger mobile-only" id="menuToggle">
     <i class="fa-solid fa-bars"></i>
@@ -7,58 +27,78 @@
   <a href="/" class="logo">
     <span>E-Commerce</span>
   </a>
-{% if user.is_authenticated %}
-  <div class="search">
-    <input type="text" id="searchInput" placeholder="Search For Products, Brands And More......."/>
-    <div id="searchResults" class="search-results"></div>
-  </div>
-{% endif %}
+<div class="search">
+  <i class="bi bi-search search-icon"></i>
+  
+  <input 
+    type="text" 
+    id="searchInput" 
+    placeholder="Search For Products, Brands And More......." 
+  />
+  
+  <div id="searchResults" class="search-results"></div>
+</div>
   <div class="right-menu">
-    {% if user.is_authenticated %}
 
     <!-- ACCOUNT DROPDOWN -->
     <div class="user-dropdown desktop-only">
-      <a href="#" class="profile-btn">
-        <i class="bi bi-person"></i>
-        <span>Account</span>
-        <i class="fa-solid fa-chevron-down desktop-only"></i>
+  <a href="#" class="profile-btn">
+      <i class="bi bi-person"></i>
+      <span>Account</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </a>
+
+    <div class="dropdown-content">
+
+      <a href="{% url 'profile' %}" class="requires-login">
+        <i class="bi bi-person"></i> Profile
       </a>
 
-      <div class="dropdown-content">
-        <a href="{% url 'profile' %}"> <i class="bi bi-person"></i> Profile </a>
-        
-        <a href="{% url 'cart_list' %}" class="cart-link">
-          <i class="bi bi-cart"></i>
-          <span id="cart-count" class="cart-count">0</span>
-          My Cart
-        </a>
-        
-        <a href="{% url 'my_orders' %}">
-          <i class="bi bi-box"></i> My Orders
-        </a>
+      <a href="{% url 'cart_list' %}" class="requires-login">
+        <i class="bi bi-cart"></i> My Cart
+      </a>
 
-        <a href="{% url 'wishlist_list' %}">
-          <i class="bi bi-heart"></i> Wishlist
-        </a>
+      <a href="{% url 'my_orders' %}" class="requires-login">
+        <i class="bi bi-box"></i> My Orders
+      </a>
 
-        <a href="{% url 'coupon_list' %}"> <i class="bi bi-ticket-perforated"></i> Coupon </a>
+      <a href="{% url 'wishlist_list' %}" class="requires-login">
+        <i class="bi bi-heart"></i> Wishlist
+      </a>
 
-        <a href="{% url 'logout' %}" class="logout-btn">
+      <a href="{% url 'coupon_list' %}" class="requires-login">
+        <i class="bi bi-ticket-perforated"></i> Coupon
+      </a>
+
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'logout' %}">
           <i class="bi bi-box-arrow-right"></i> Logout
         </a>
-      </div>
-    </div>
+      {% endif %}
 
-    {% if request.user.role == "admin" %}
-    <a href="{% url 'dashboard_index' %}" class="desktop-only">
-      <i class="fa-solid fa-chart-line"></i> Dashboard
-    </a>
-    {% endif %}
-    {% else %}
-      <a href="{% url 'signup' %}"><i class="fa-solid fa-user-plus"></i> Signup</a>
-      <a href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-    {% endif %}
+    </div>
   </div>
+ {% if request.user.is_authenticated %}
+
+      {% if request.user.role == "admin" %}
+        <a href="{% url 'dashboard_index' %}" class="nav-link">
+          <i class="fa-solid fa-chart-line"></i> Dashboard
+        </a>
+      {% endif %}
+
+  {% else %}
+
+      <a href="{% url 'signup' %}" class="nav-link">
+        <i class="fa-solid fa-user-plus"></i> Signup
+      </a>
+
+      <a href="{% url 'login' %}" class="nav-link">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </a>
+
+  {% endif %}
+
+</div>
 </nav>
  <div class="mobile-menu" id="mobileMenu">
 
@@ -146,6 +186,9 @@
     <button class="btn btn-secondary close-modal">Cancel</button>
   </div>
 </div>
+<script>
+    var isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
+</script>
 <script>
 const menuToggle = document.getElementById("menuToggle");
 const mobileMenu = document.getElementById("mobileMenu");

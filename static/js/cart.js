@@ -33,6 +33,15 @@ $(document).ready(function () {
     }
 
     /* ================= CLOSE LOGIN MODAL ================= */
+    $(document).ready(function () {
+
+    $(document).on("click", ".requires-login", function (e) {
+        if (!isAuthenticated) {
+            e.preventDefault(); // STOP redirect
+            $("#loginModal").fadeIn();
+        }
+    });
+
     $(document).on("click", ".close-modal", function () {
         $("#loginModal").fadeOut();
     });
@@ -42,6 +51,8 @@ $(document).ready(function () {
             $(this).fadeOut();
         }
     });
+
+});
 
     /* ================= ADD TO CART ================= */
     $(document).on("click", ".add-to-cart-btn", function (e) {

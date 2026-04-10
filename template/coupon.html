@@ -30,15 +30,15 @@
             </div>
 
             <div class="fk-divider"></div>
+<div class="expiry-text">
+    <span>Valid till: <b>{{ coupon.valid_to|date:"d M, Y" }}</b></span>
 
-            <div class="expiry-text">
-                <span>Valid till: <b>{{ coupon.valid_to|date:"d M, Y" }}</b></span>
-                {% if coupon.active %}
-                    <span style="color: #388e3c; font-weight: bold;">ACTIVE</span>
-                {% else %}
-                    <span style="color: #d32f2f; font-weight: bold;">EXPIRED</span>
-                {% endif %}
-            </div>
+    {% if coupon.active and coupon.valid_from <= today and coupon.valid_to >= today %}
+        <span style="color: #388e3c; font-weight: bold;">ACTIVE</span>
+    {% else %}
+        <span style="color: #d32f2f; font-weight: bold;">EXPIRED</span>
+    {% endif %}
+</div>
 
             <div style="margin-top: 15px;">
 

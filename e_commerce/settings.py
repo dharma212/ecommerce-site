@@ -92,7 +92,7 @@ DATABASES = {
     }
 }
 
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -128,13 +128,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Adjust BASE_DIR as necessary
+    BASE_DIR / 'static', 
 ]
+
 MEDIA_URL = '/media/'
 
-# File system path to save uploaded media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'          # 👈 index / home page
+LOGIN_REDIRECT_URL = '/'          
 LOGOUT_REDIRECT_URL = '/login/'
